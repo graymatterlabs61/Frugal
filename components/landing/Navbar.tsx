@@ -56,7 +56,7 @@ export function Navbar() {
           >
             <img src="/logo.svg" alt="Frugal Logo" className="h-10 w-10 object-contain" />
           </div>
-          <span className="font-heading text-lg md:text-xl lg:text-2xl font-bold tracking-tight text-foreground hidden sm:block">
+          <span className="font-ethnocentric text-base md:text-lg lg:text-xl tracking-tight text-foreground hidden sm:block">
             Frugal
           </span>
         </a>

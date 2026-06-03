@@ -3,7 +3,6 @@ import { ProvidersBar } from "@/components/landing/ProvidersBar"
 import { ProblemSection } from "@/components/landing/ProblemSection"
 import { FeaturesGrid } from "@/components/landing/FeaturesGrid"
 import { HowItWorks } from "@/components/landing/HowItWorks"
-import { TestimonialsSection } from "@/components/landing/TestimonialsSection"
 import { UseCases } from "@/components/landing/UseCases"
 import { PricingTeaser } from "@/components/landing/PricingTeaser"
 import { FaqSection } from "@/components/landing/FaqSection"
@@ -13,7 +12,7 @@ import { Navbar } from "@/components/landing/Navbar"
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground relative z-0">
+    <div className="bg-background text-foreground relative z-0">
       {/* Global Ambient Background */}
       <div className="mesh-bg">
         <div className="mesh-orb mesh-orb-1" />

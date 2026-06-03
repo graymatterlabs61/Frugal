@@ -101,11 +101,11 @@ export function FeaturesGrid() {
       <div className="mx-auto max-w-6xl">
         {/* Heading */}
         <div className="feat-heading mb-14 text-center">
-          <p className="mb-3 font-heading text-xs font-semibold uppercase tracking-widest text-primary">
+          <p className="mb-3 font-ethnocentric text-[10px] tracking-widest text-primary">
             Features
           </p>
           <h2 className="font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-            Developer-first <span className="text-foreground italic font-serif tracking-normal font-normal">cost control</span>
+            Developer-first <span className="font-playfair italic tracking-normal font-normal">cost control</span>
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
             Everything you need to monitor, alert on, and control AI API spend

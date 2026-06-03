@@ -1,203 +1,96 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { LegalLayout, LegalSection, LegalList, LegalCard } from "@/components/legal"
 
 export const metadata: Metadata = {
   title: "Refund Policy | Frugal",
   description: "Frugal refund and cancellation policy.",
 }
 
-function Section({
-  title,
-  children,
-}: {
-  title: string
-  children: React.ReactNode
-}) {
-  return (
-    <section className="space-y-4">
-      <h2 className="font-heading text-xl font-semibold text-foreground">
-        {title}
-      </h2>
-      <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
-        {children}
-      </div>
-    </section>
-  )
-}
-
-function UL({ children }: { children: React.ReactNode }) {
-  return <ul className="ml-5 list-disc space-y-1.5">{children}</ul>
-}
+const SECTIONS = [
+  { id: "eligibility", title: "Refund Eligibility" },
+  { id: "processing", title: "Refund Processing" },
+  { id: "changes", title: "Subscription Changes" },
+]
 
 export default function RefundPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Nav */}
-      <nav className="border-b border-border/40 bg-card/20 px-6 py-4">
-        <div className="mx-auto flex max-w-3xl items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            ← Back to Frugal
-          </Link>
-          <span className="font-heading text-sm font-medium text-foreground">
-            Refund Policy
-          </span>
-        </div>
-      </nav>
-
-      <div className="mx-auto max-w-3xl px-6 py-16 md:px-8">
-        <h1 className="mb-2 font-heading text-4xl font-bold tracking-tight text-foreground">
-          Refund Policy
-        </h1>
-        <p className="mb-12 text-sm text-muted-foreground">
-          Last updated: June 3, 2025 · Gray Matter Labs, Inc. (Delaware, USA)
+    <LegalLayout
+      title={
+        <>
+          Refund <em className="text-[#4a2a1a] italic font-light">Policy</em>
+        </>
+      }
+      subtitle="Detailed information regarding subscriptions, satisfaction guarantees, and service credits."
+      dateLabel="REFUND POLICY"
+      sections={SECTIONS}
+    >
+      <LegalSection id="eligibility" num={1} title="Refund Eligibility">
+        <p>
+          At Frugal, we strive to provide the most accurate cloud cost forecasting
+          tools. If our platform fails to meet the Service Level Agreement (SLA) or
+          if you are unsatisfied with the initial experience, the following rules apply:
         </p>
 
-        <div className="space-y-10">
-          <Section title="1. Pre-Launch (Current Status)">
-            <p>
-              Frugal is currently in pre-launch. No payments are being
-              processed at this time. Joining the waitlist is free and does not
-              create any financial obligation.
-            </p>
-            <p>
-              This refund policy will become effective when paid plans are
-              launched.
-            </p>
-          </Section>
+        <LegalList>
+          <li>
+            <strong className="text-white">14-Day Satisfaction:</strong> New users are
+            eligible for a full refund within the first 14 days of their initial
+            subscription.
+          </li>
+          <li>
+            <strong className="text-white">System Failures:</strong> If our cost guards
+            fail to alert you based on your defined thresholds, a pro-rated credit will be issued.
+          </li>
+          <li>
+            <strong className="text-white">Annual Plans:</strong> Refunds for annual plans
+            are calculated based on the remaining full months of the term.
+          </li>
+        </LegalList>
+      </LegalSection>
 
-          <Section title="2. 14-Day Money-Back Guarantee">
-            <p>
-              When Frugal launches, new subscribers will be eligible for a full
-              refund within{" "}
-              <strong className="text-foreground">14 calendar days</strong> of
-              their first paid subscription, provided:
-            </p>
-            <UL>
-              <li>
-                This is your first paid subscription to Frugal (not a plan
-                upgrade or renewal).
-              </li>
-              <li>
-                The refund request is submitted within 14 days of the initial
-                charge.
-              </li>
-              <li>
-                Your account has not violated our{" "}
-                <Link href="/terms" className="text-primary hover:underline">
-                  Terms of Service
-                </Link>
-                .
-              </li>
-            </UL>
-            <p>
-              To request a refund, email{" "}
-              <a
-                href="mailto:hello@frugal.so"
-                className="text-primary hover:underline"
-              >
-                hello@frugal.so
-              </a>{" "}
-              with the subject line &ldquo;Refund Request&rdquo; from the email
-              address associated with your account.
-            </p>
-          </Section>
+      <LegalSection id="processing" num={2} title="Refund Processing">
+        <p>
+          All refund requests must be submitted through the billing dashboard or via email to{" "}
+          <a href="mailto:billing@frugal.so" className="text-primary hover:underline">
+            billing@frugal.so
+          </a>
+          . Once approved, the funds will be returned to the original payment method.
+        </p>
 
-          <Section title="3. Subscription Renewals">
-            <p>
-              Subscription renewals (monthly or annual) are not eligible for
-              refunds. You may cancel your subscription at any time to prevent
-              future renewals. Cancellation takes effect at the end of your
-              current billing period.
-            </p>
-          </Section>
+        <div className="grid gap-6 md:grid-cols-2 mt-8">
+          <LegalCard
+            title="Credit Card"
+            icon={
+              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="20" height="14" x="2" y="5" rx="2" />
+                <line x1="2" x2="22" y1="10" y2="10" />
+              </svg>
+            }
+          >
+            Processing takes 5-10 business days depending on your bank provider.
+          </LegalCard>
 
-          <Section title="4. Cancellation">
-            <UL>
-              <li>
-                You may cancel your subscription at any time from your account
-                settings.
-              </li>
-              <li>
-                Cancellation takes effect at the end of the current billing
-                period. You retain access until then.
-              </li>
-              <li>
-                We do not offer partial or pro-rated refunds for unused days
-                within a billing period, except at our discretion.
-              </li>
-              <li>
-                If you cancel an annual plan within the first 30 days, we may
-                offer a pro-rated refund at our discretion. Contact{" "}
-                <a
-                  href="mailto:hello@frugal.so"
-                  className="text-primary hover:underline"
-                >
-                  hello@frugal.so
-                </a>
-                .
-              </li>
-            </UL>
-          </Section>
-
-          <Section title="5. Waitlist Discount Codes">
-            <p>
-              Waitlist discount codes (e.g., EARLY35) are applied as a discount
-              to the first monthly or annual invoice. If a refund is issued on
-              that first invoice, the discount code is considered used and will
-              not be reissued.
-            </p>
-          </Section>
-
-          <Section title="6. Exceptions">
-            <p>
-              We reserve the right to deny refund requests in cases of:
-            </p>
-            <UL>
-              <li>Violation of our Terms of Service</li>
-              <li>
-                Fraudulent activity or abuse of the refund policy (e.g.,
-                repeated subscribe-refund patterns)
-              </li>
-              <li>
-                Accounts that have been suspended or terminated for cause
-              </li>
-            </UL>
-          </Section>
-
-          <Section title="7. Refund Processing">
-            <p>
-              Approved refunds are processed within 5–10 business days and
-              returned to the original payment method. Processing time may vary
-              depending on your bank or card issuer.
-            </p>
-          </Section>
-
-          <Section title="8. Contact">
-            <p>
-              For refund requests or questions about this policy:
-            </p>
-            <div className="rounded-xl border border-border/50 bg-card/50 p-5 space-y-1.5">
-              <p className="font-semibold text-foreground">
-                Gray Matter Labs, Inc.
-              </p>
-              <p>Registered in Delaware, USA</p>
-              <p>
-                Email:{" "}
-                <a
-                  href="mailto:hello@frugal.so"
-                  className="text-primary hover:underline"
-                >
-                  hello@frugal.so
-                </a>
-              </p>
-              <p>Subject: Refund Request — [your account email]</p>
-            </div>
-          </Section>
+          <LegalCard
+            title="Bank Transfer"
+            icon={
+              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 21H2M3 21v-4M21 21v-4M6 17v-4M10 17v-4M14 17v-4M18 17v-4M2 7h20L12 2Z" />
+              </svg>
+            }
+          >
+            May take up to 15 business days for international settlements.
+          </LegalCard>
         </div>
-      </div>
-    </div>
+      </LegalSection>
+
+      <LegalSection id="changes" num={3} title="Subscription Changes">
+        <p>
+          Downgrading your plan mid-cycle will result in a prorated credit applied to your
+          next billing period. We do not offer cash refunds for mid-cycle plan downgrades
+          unless specifically required by regional consumer protection laws.
+        </p>
+      </LegalSection>
+    </LegalLayout>
   )
 }

@@ -89,20 +89,18 @@ export function Hero() {
         {/* Badge */}
         <div className="hero-badge mb-8 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/[0.08] px-4 py-1.5">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-          <span className="font-heading text-xs font-semibold uppercase tracking-widest text-primary">
+          <span className="font-ethnocentric text-[10px] tracking-widest text-primary">
             Coming Soon — Join the Waitlist
           </span>
         </div>
 
         {/* Headline — two lines, Gladia-style */}
         <div className="mb-6 overflow-hidden">
-          <h1 className="font-heading">
-            <span className="hero-line-1 block text-[clamp(2.8rem,7vw,5.5rem)] font-bold leading-[1.02] tracking-tight text-foreground">
+          <h1 className="font-nasalization">
+            <span className="hero-line-1 block text-[clamp(2.4rem,6vw,5rem)] leading-[1.08] tracking-tight text-foreground">
               The cost management
             </span>
-            <span
-              className="hero-line-2 block text-[clamp(2.8rem,7vw,5.5rem)] font-bold leading-[1.02] tracking-tight text-foreground"
-            >
+            <span className="hero-line-2 block text-[clamp(2.4rem,6vw,5rem)] leading-[1.08] tracking-tight text-foreground">
               backbone for AI builders.
             </span>
           </h1>

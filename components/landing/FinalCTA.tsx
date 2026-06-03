@@ -75,7 +75,7 @@ export function FinalCTA() {
           Stop worrying about runaway loops and <span className="text-red-500">surprise invoices</span>.
         </p>
         <div className="flex items-start sm:items-center flex-col sm:flex-row sm:gap-4">
-          <button className="mt-8 flex space-x-2 items-center group text-base px-4 py-2 rounded-lg bg-gradient-to-b from-blue-500 to-blue-700 text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]">
+          <button className="mt-8 flex space-x-2 items-center group text-base px-4 py-2 rounded-lg bg-gradient-to-b from-primary to-primary/80 text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]">
             <span>Buy now</span>
             <svg
               stroke="currentColor"

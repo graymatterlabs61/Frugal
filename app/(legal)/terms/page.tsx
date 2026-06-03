@@ -1,331 +1,178 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { LegalLayout, LegalSection, LegalList, LegalContact, LegalCard } from "@/components/legal"
 
 export const metadata: Metadata = {
   title: "Terms of Service | Frugal",
   description: "Terms of Service for Frugal — Gray Matter Labs, Inc.",
 }
 
-function Section({
-  title,
-  children,
-}: {
-  title: string
-  children: React.ReactNode
-}) {
-  return (
-    <section className="space-y-4">
-      <h2 className="font-heading text-xl font-semibold text-foreground">
-        {title}
-      </h2>
-      <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
-        {children}
-      </div>
-    </section>
-  )
-}
-
-function UL({ children }: { children: React.ReactNode }) {
-  return <ul className="ml-5 list-disc space-y-1.5">{children}</ul>
-}
+const SECTIONS = [
+  { id: "acceptable-usage", title: "Acceptable Usage" },
+  { id: "liability-limits", title: "Liability Limits" },
+  { id: "payment-protocol", title: "Payment Protocol" },
+  { id: "data-protection", title: "Data Protection" },
+]
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Nav */}
-      <nav className="border-b border-border/40 bg-card/20 px-6 py-4">
-        <div className="mx-auto flex max-w-3xl items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            ← Back to Frugal
-          </Link>
-          <span className="font-heading text-sm font-medium text-foreground">
-            Terms of Service
-          </span>
-        </div>
-      </nav>
-
-      <div className="mx-auto max-w-3xl px-6 py-16 md:px-8">
-        <h1 className="mb-2 font-heading text-4xl font-bold tracking-tight text-foreground">
-          Terms of Service
-        </h1>
-        <p className="mb-12 text-sm text-muted-foreground">
-          Last updated: June 3, 2025 · Gray Matter Labs, Inc. (Delaware, USA)
+    <LegalLayout
+      title={
+        <>
+          Terms <em className="text-primary italic">of</em>
+          <br />
+          Service
+        </>
+      }
+      subtitle="Governing the intersection of capital and computation."
+      dateLabel="DOCUMENT RELEASE V2.4"
+      sections={SECTIONS}
+    >
+      <LegalSection id="acceptable-usage" num={1} title="Acceptable Usage">
+        <p>
+          Frugal is designed to help organizations monitor, manage, and optimize
+          their AI API expenditures. By creating an account, you agree to the
+          following operational standards:
         </p>
 
-        <div className="space-y-10">
-          <Section title="1. Agreement to Terms">
-            <p>
-              These Terms of Service (&ldquo;Terms&rdquo;) constitute a legally
-              binding agreement between you and Gray Matter Labs, Inc.
-              (&ldquo;Company&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, or
-              &ldquo;our&rdquo;), a Delaware corporation. By accessing or using
-              Frugal (the &ldquo;Service&rdquo;), you agree to be bound by
-              these Terms. If you do not agree, do not use the Service.
-            </p>
-          </Section>
+        <LegalCard
+          title="Account Security"
+          icon={
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+            </svg>
+          }
+        >
+          You are solely responsible for maintaining the confidentiality of your
+          API keys and login credentials. Any activity conducted through your
+          account is deemed your legal responsibility.
+        </LegalCard>
 
-          <Section title="2. Description of Service">
-            <p>
-              Frugal is an AI API cost management platform that allows users to
-              monitor spend across AI providers (OpenAI, Anthropic, Replicate,
-              fal.ai, and others), configure budget rules, and receive alerts
-              when spend thresholds are reached.
-            </p>
-            <p>
-              The Service is intended for developers, engineering teams, and
-              businesses that use AI API services. You must be at least 18
-              years of age and have the authority to bind your organization (if
-              applicable) to use the Service.
-            </p>
-          </Section>
+        <LegalCard
+          title="Prohibited Use"
+          icon={
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+            </svg>
+          }
+        >
+          You may not use Frugal for any unlawful purpose, including but not
+          limited to, attempting to circumvent provider-imposed API limits or
+          reverse engineering the Frugal platform.
+        </LegalCard>
 
-          <Section title="3. Accounts and Registration">
-            <UL>
-              <li>
-                You are responsible for maintaining the confidentiality of your
-                account credentials.
-              </li>
-              <li>
-                You are responsible for all activities that occur under your
-                account.
-              </li>
-              <li>
-                You must provide accurate and complete information when creating
-                an account.
-              </li>
-              <li>
-                You must notify us immediately of any unauthorized use of your
-                account.
-              </li>
-              <li>
-                One account per person or organization; shared credentials
-                between organizations are prohibited.
-              </li>
-            </UL>
-          </Section>
+        <LegalCard
+          title="Notice on Termination"
+          icon={
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+          }
+        >
+          Frugal reserves the right to suspend or terminate access immediately if
+          usage patterns suggest abuse or non-compliance with regional data laws,
+          specifically the Digital Personal Data Protection (DPDP) Act 2023.
+        </LegalCard>
+      </LegalSection>
 
-          <Section title="4. Acceptable Use">
-            <p>You agree not to:</p>
-            <UL>
-              <li>
-                Use the Service for any unlawful purpose or in violation of any
-                applicable law or regulation.
-              </li>
-              <li>
-                Attempt to gain unauthorized access to any part of the Service
-                or its infrastructure.
-              </li>
-              <li>
-                Reverse engineer, decompile, or attempt to extract the source
-                code of the Service.
-              </li>
-              <li>
-                Use the Service to store or transmit malicious code, viruses,
-                or harmful data.
-              </li>
-              <li>
-                Resell, sublicense, or redistribute the Service without our
-                written consent.
-              </li>
-              <li>
-                Use the Service in a manner that imposes an unreasonable or
-                disproportionate load on our infrastructure.
-              </li>
-              <li>
-                Submit third-party API keys that you do not own or have
-                permission to use.
-              </li>
-            </UL>
-          </Section>
+      <LegalSection id="liability-limits" num={2} title="Liability Limits">
+        <p>
+          To the maximum extent permitted by law, Frugal and Gray Matter Labs
+          shall not be held liable for any indirect, incidental, special, or
+          consequential damages resulting from the use of our services.
+        </p>
 
-          <Section title="5. API Keys and Third-Party Services">
-            <p>
-              By connecting API keys to Frugal, you represent and warrant that
-              you own those keys or have authorization from the key owner to
-              use them with our Service.
-            </p>
-            <p>
-              We store API keys encrypted with AES-256. You understand that
-              connecting API keys grants Frugal read-only access to usage and
-              billing data from the respective provider. We will not use your
-              keys to make API calls other than reading usage data.
-            </p>
-            <p>
-              You remain solely responsible for your use of third-party AI
-              APIs and any costs incurred with those providers.
-            </p>
-          </Section>
+        <div className="grid gap-6 md:grid-cols-2 mt-6">
+          <LegalCard
+            title="Service Uptime"
+            icon={
+              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+            }
+          >
+            We do not guarantee 100% uptime. While we strive for excellence, we
+            are not liable for costs incurred due to system downtime or API sync
+            delays.
+          </LegalCard>
 
-          <Section title="6. Subscription and Payment">
-            <p>
-              Frugal is currently in pre-launch. Paid plans will be available
-              at launch. When subscription services become available:
-            </p>
-            <UL>
-              <li>
-                Subscriptions are billed monthly or annually in advance.
-              </li>
-              <li>
-                All fees are non-refundable except as specified in our{" "}
-                <Link href="/refund" className="text-primary hover:underline">
-                  Refund Policy
-                </Link>
-                .
-              </li>
-              <li>
-                We may change subscription pricing with 30 days&apos; advance
-                notice.
-              </li>
-              <li>
-                Failure to pay may result in suspension or termination of
-                access.
-              </li>
-              <li>
-                Waitlist discount codes (e.g., EARLY35) are valid for one use
-                per account, on the first paid plan only, and cannot be
-                combined with other offers.
-              </li>
-            </UL>
-          </Section>
-
-          <Section title="7. Intellectual Property">
-            <p>
-              The Service, including all content, features, functionality,
-              trademarks, and underlying software, is owned by Gray Matter
-              Labs, Inc. and protected by intellectual property laws.
-            </p>
-            <p>
-              You retain ownership of all data you submit to the Service. You
-              grant us a limited, non-exclusive license to process your data as
-              necessary to provide the Service.
-            </p>
-            <p>
-              You may not use our name, logo, or trademarks without prior
-              written consent.
-            </p>
-          </Section>
-
-          <Section title="8. Disclaimer of Warranties">
-            <p>
-              THE SERVICE IS PROVIDED &ldquo;AS IS&rdquo; AND &ldquo;AS
-              AVAILABLE&rdquo; WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR
-              IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-              PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
-            </p>
-            <p>
-              We do not warrant that the Service will be uninterrupted,
-              error-free, or accurate at all times. Spend data is retrieved
-              from third-party providers and may be subject to delays,
-              inaccuracies, or outages beyond our control. Frugal is a
-              monitoring and alerting tool — you remain responsible for
-              managing your own AI API costs.
-            </p>
-          </Section>
-
-          <Section title="9. Limitation of Liability">
-            <p>
-              TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, GRAY MATTER
-              LABS, INC. SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL,
-              SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF
-              PROFITS, DATA, GOODWILL, OR OTHER INTANGIBLE LOSSES, ARISING FROM
-              YOUR USE OF OR INABILITY TO USE THE SERVICE.
-            </p>
-            <p>
-              OUR TOTAL LIABILITY TO YOU FOR ANY CLAIM ARISING FROM OR RELATED
-              TO THESE TERMS OR THE SERVICE SHALL NOT EXCEED THE GREATER OF (A)
-              $100 USD OR (B) THE AMOUNTS PAID BY YOU TO US IN THE 12 MONTHS
-              PRECEDING THE CLAIM.
-            </p>
-          </Section>
-
-          <Section title="10. Indemnification">
-            <p>
-              You agree to indemnify, defend, and hold harmless Gray Matter
-              Labs, Inc. and its officers, directors, employees, and agents
-              from and against any claims, liabilities, damages, losses, and
-              expenses arising from your use of the Service, your violation of
-              these Terms, or your violation of any third-party rights.
-            </p>
-          </Section>
-
-          <Section title="11. Termination">
-            <p>
-              We may suspend or terminate your account at any time for
-              violation of these Terms, non-payment, or any other reason with
-              or without notice.
-            </p>
-            <p>
-              You may cancel your account at any time. Upon termination, your
-              right to use the Service ceases. We will delete your data in
-              accordance with our Privacy Policy.
-            </p>
-          </Section>
-
-          <Section title="12. Governing Law and Dispute Resolution">
-            <p>
-              These Terms are governed by the laws of the State of Delaware,
-              United States, without regard to its conflict of law provisions.
-            </p>
-            <p>
-              Before initiating any formal legal proceeding, you agree to first
-              contact us at{" "}
-              <a
-                href="mailto:legal@frugal.so"
-                className="text-primary hover:underline"
-              >
-                legal@frugal.so
-              </a>{" "}
-              and attempt to resolve the dispute informally for 30 days.
-            </p>
-            <p>
-              Any dispute that cannot be resolved informally shall be resolved
-              by binding arbitration in Delaware in accordance with the American
-              Arbitration Association&apos;s Commercial Arbitration Rules. You
-              waive the right to participate in class action lawsuits or
-              class-wide arbitration.
-            </p>
-          </Section>
-
-          <Section title="13. Changes to Terms">
-            <p>
-              We may update these Terms from time to time. We will notify you
-              of material changes by email or prominent notice on the Service.
-              Continued use of the Service after changes become effective
-              constitutes your acceptance.
-            </p>
-          </Section>
-
-          <Section title="14. Contact">
-            <div className="rounded-xl border border-border/50 bg-card/50 p-5 space-y-1.5">
-              <p className="font-semibold text-foreground">
-                Gray Matter Labs, Inc.
-              </p>
-              <p>Registered in Delaware, USA</p>
-              <p>
-                Legal:{" "}
-                <a
-                  href="mailto:legal@frugal.so"
-                  className="text-primary hover:underline"
-                >
-                  legal@frugal.so
-                </a>
-              </p>
-              <p>
-                General:{" "}
-                <a
-                  href="mailto:hello@frugal.so"
-                  className="text-primary hover:underline"
-                >
-                  hello@frugal.so
-                </a>
-              </p>
-            </div>
-          </Section>
+          <LegalCard
+            title="Third-Party APIs"
+            icon={
+              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
+            }
+          >
+            Frugal acts as a middleware. Any billing disputes with third-party
+            providers must be resolved directly with said providers.
+          </LegalCard>
         </div>
-      </div>
-    </div>
+      </LegalSection>
+
+      <LegalSection id="payment-protocol" num={3} title="Payment Protocol">
+        <p>
+          Frugal offers various subscription tiers for individual developers and
+          large-scale enterprises. Our billing is handled through verified
+          processors including Stripe and Lemon Squeezy.
+        </p>
+
+        <LegalList>
+          <li>
+            <strong className="text-white">7-Day Refund Window:</strong> We
+            offer a no-questions-asked 7-day refund window for all new SaaS
+            subscriptions to build trust and reduce disputes.
+          </li>
+          <li>
+            <strong className="text-white">Global Tax Compliance:</strong> GST
+            of 18% is applicable to Indian business customers. Export of services
+            to overseas customers is zero-rated under GST regulations.
+          </li>
+        </LegalList>
+      </LegalSection>
+
+      <LegalSection id="data-protection" num={4} title="Data Protection">
+        <p>
+          Frugal processes sensitive personal data, including email addresses and
+          API keys. We adhere strictly to the Digital Personal Data Protection
+          (DPDP) Act 2023 and GDPR mandates.
+        </p>
+
+        <LegalCard
+          title="Global Compliance Commitments"
+          icon={
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              <path d="M2 12h20" />
+            </svg>
+          }
+        >
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="flex items-center gap-2">
+              <svg className="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              Explicit consent-based collection
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              Essential-only data processing
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              Right to erasure and data purging
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              Valid DPAs with all processors
+            </div>
+          </div>
+        </LegalCard>
+      </LegalSection>
+    </LegalLayout>
   )
 }

@@ -7,7 +7,7 @@ export function PricingTeaser() {
 
   return (
     <section id="pricing" className="mx-auto w-full max-w-7xl px-4 py-10 md:py-16 lg:py-32">
-      <h2 className="mx-auto max-w-2xl text-center text-xl font-medium tracking-tight text-neutral-900 md:text-4xl lg:text-7xl dark:text-white">
+      <h2 className="mx-auto max-w-2xl text-center text-xl font-medium tracking-tight text-neutral-900 md:text-4xl lg:text-5xl dark:text-white font-nasalization">
         Pick a pricing that fits your needs
       </h2>
       <p className="mx-auto mt-8 max-w-md text-center text-base text-neutral-500 md:text-xl dark:text-neutral-400">

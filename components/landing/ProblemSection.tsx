@@ -52,12 +52,12 @@ export function ProblemSection() {
       <div className="mx-auto max-w-5xl">
         {/* Centered headline — Gladia style */}
         <div className="mb-14 text-center">
-          <p className="prob-eyebrow mb-3 font-heading text-xs font-semibold uppercase tracking-widest text-primary">
+          <p className="prob-eyebrow mb-3 font-ethnocentric text-[10px] tracking-widest text-primary">
             The problem
           </p>
           <h2 className="prob-h2 mx-auto max-w-3xl font-heading text-4xl font-bold leading-[1.1] tracking-tight text-foreground md:text-5xl">
             Most AI cost overruns start with{" "}
-            <span className="text-foreground italic font-serif tracking-normal font-normal">no visibility</span>
+            <span className="font-playfair italic tracking-normal font-normal">no visibility</span>
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-muted-foreground">
             Providers give you API keys. They don&apos;t give you budgets,
@@ -88,7 +88,7 @@ export function ProblemSection() {
                 <p className="text-xs text-muted-foreground">
                   Total AI spend this month
                 </p>
-                <p className="mt-1 font-mono text-3xl font-bold text-foreground">
+                <p className="mt-1 font-nasalization text-3xl text-foreground">
                   $234.50
                 </p>
               </div>
@@ -141,12 +141,12 @@ export function ProblemSection() {
               className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10"
               style={{ boxShadow: "0 0 20px oklch(0.62 0.27 288 / 0.2)" }}
             >
-              <span className="font-heading text-sm font-bold text-primary">5m</span>
+              <span className="font-ethnocentric text-xs text-primary">5m</span>
             </div>
             <p className="font-heading text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Polling interval
             </p>
-            <p className="mt-1 font-heading text-2xl font-bold text-foreground">
+            <p className="mt-1 font-nasalization text-2xl text-foreground">
               Sub-5 minute
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -160,12 +160,12 @@ export function ProblemSection() {
               className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10"
               style={{ boxShadow: "0 0 20px oklch(0.62 0.27 288 / 0.2)" }}
             >
-              <span className="font-heading text-[10px] font-bold text-primary">AES</span>
+              <span className="font-ethnocentric text-[9px] text-primary">AES</span>
             </div>
             <p className="font-heading text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Encryption
             </p>
-            <p className="mt-1 font-heading text-2xl font-bold text-foreground">
+            <p className="mt-1 font-nasalization text-2xl text-foreground">
               AES-256
             </p>
             <p className="mt-2 text-sm text-muted-foreground">

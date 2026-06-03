@@ -1,4 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+@font-face {
+  font-family: 'Playwrite IN';
+  src: url('/font/Playwrite_IN/PlaywriteIN-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('/font/Playfair_Display/PlayfairDisplay-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('/font/Playfair_Display/PlayfairDisplay-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ethnocentric';
+  src: url('/font/ethnocentric/Ethnocentric-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nasalization';
+  src: url('/font/nasalization/Nasalization Rg.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -60,8 +100,12 @@
 }
 
 @theme inline {
-  --font-serif: var(--font-serif);
+  --font-serif: "Instrument Serif", serif;
   --font-heading: var(--font-heading);
+  --font-playwrite: 'Playwrite IN', cursive;
+  --font-playfair: 'Playfair Display', serif;
+  --font-ethnocentric: 'Ethnocentric', monospace;
+  --font-nasalization: 'Nasalization', sans-serif;
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -216,4 +260,68 @@
   100% {
     transform: translate(0, 0) scale(1);
   }
+}
+
+/* ── UI Entrance Animations ─────────────────────────────── */
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in-scale {
+  0% { opacity: 0; transform: scale(0.96) translateY(12px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes grow-up {
+  0% { transform: scaleY(0); transform-origin: bottom; }
+  100% { transform: scaleY(1); transform-origin: bottom; }
+}
+@keyframes float-in {
+  0% { opacity: 0; transform: translateY(30px) rotate(4deg); }
+  100% { opacity: 1; transform: translateY(0) rotate(0); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+.animate-fade-in-scale {
+  animation: fade-in-scale 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+.animate-grow-up {
+  animation: grow-up 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform: scaleY(0);
+  transform-origin: bottom;
+}
+.animate-float-in {
+  animation: float-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+/* ── Footer link hover animation ───────────────────────── */
+.footer-link {
+  position: relative;
+  display: inline-block;
+  color: oklch(0.56 0.05 268);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.footer-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #FF500B;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footer-link:hover {
+  color: oklch(0.97 0 0);
+  transform: translateX(4px);
+}
+
+.footer-link:hover::after {
+  width: 100%;
 }
