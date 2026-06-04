@@ -45,85 +45,106 @@ Frugal is an AI API cost management SaaS. Developers building on OpenAI, Anthrop
 **Goal**: Replace all mock/hardcoded data in dashboard, project detail, and alerts pages with live queries against usage_records and alert_log. Every number the user sees reflects their actual connected API usage.
 **Depends on**: Phase 2
 **Requirements**: F-07, F-08, F-10, F-18
+**PRD**: prds/dashboard-real-data.md
 **Success Criteria**:
   1. Dashboard stats (monthly spend, active projects, connection count, alert count) show real data from DB
-  2. SpendChart renders real daily spend from usage_records for last 7 days
-  3. Top Projects section shows real projects with real spend + budget (if budget_rule exists)
+  2. SpendChart renders real daily spend from usage_records — stacked bar per provider
+  3. Top 3 projects by spend this month shown with "View all" link
   4. Recent Alerts section pulls from real alert_log rows
   5. Alerts page (/alerts) shows real alert_log data with correct status/severity
-  6. Project detail page loads real project data, real connections, real usage chart, real alert history
-  7. "Last updated X minutes ago" timestamp reflects actual last_polled_at
+  6. Project detail page loads real project data, real connections with last_polled_at, real alert history
+  7. Date range toggle (7d/30d/90d) controls chart window; calendar month/rolling-30 toggle on spend card
+  8. worker.ts .eq("is_active") bug fixed
 **Plans**: TBD
 
-Plans:
-- [ ] 03-01: Dashboard page — real stats, spend chart, top projects, recent alerts
-- [ ] 03-02: Alerts page + project detail page — real data, real connections tab, real alerts tab
+Sub-phases (4):
+- [ ] 03-01: DB query layer — lib/queries/dashboard.ts with all aggregation functions
+- [ ] 03-02: Dashboard page — real stats, stacked SpendChart, top projects, recent alerts, empty state CTA
+- [ ] 03-03: Alerts page — real alert_log data, empty state
+- [ ] 03-04: Project detail page — server component for stats, real connections tab, real alerts tab, worker bug fix
 
 ### Phase 4: Budget Rules API + UI
 **Goal**: Full CRUD REST API for budget_rules. Wire project detail "Budget Rules" tab to real DB — create, list, delete rules persist. Tier enforcement: Free users cannot create rules; Plus gets alert+block; Pro gets throttle.
 **Depends on**: Phase 3
 **Requirements**: F-11, F-12, F-13, F-14, F-21
+**PRD**: prds/budget-rules-api-ui.md
 **Success Criteria**:
-  1. POST /api/budget-rules creates rule in DB, returns rule object
+  1. POST /api/budget-rules creates rule in DB, validated by Zod, tier-checked
   2. GET /api/budget-rules?projectId=X lists rules for project
   3. DELETE /api/budget-rules/[id] removes rule
-  4. Project detail Budget Rules tab creates/shows/deletes real rules
-  5. Free-tier users see upgrade prompt instead of rule creation
-  6. Budget checker uses real rules from DB and fires real alerts
+  4. Project detail Budget Rules tab creates/shows/deletes real rules — persists on refresh
+  5. Free-tier users see "Upgrade to Plus" prompt instead of rule creation
+  6. Plus users: alert + block only; Pro users: throttle also available
+  7. budgetChecker.ts columns aligned with migration 003 schema
 **Plans**: TBD
 
-Plans:
-- [ ] 04-01: Budget rules API (GET/POST/DELETE) + tier enforcement
-- [ ] 04-02: Wire project detail rules tab to real API
+Sub-phases (5):
+- [ ] 04-01: Migration 003 — add user_id, rename period→window, threshold_pct, RLS policy
+- [ ] 04-02: lib/tier.ts — plan feature gates, limit functions
+- [ ] 04-03: /api/budget-rules route.ts (GET/POST) + /api/budget-rules/[id] (DELETE) with Zod
+- [ ] 04-04: Wire project detail Budget Rules tab to real API + tier-gated UI
+- [ ] 04-05: budgetChecker.ts column alignment + deduplication verification
 
 ### Phase 5: Stripe Billing
 **Goal**: Stripe checkout for Plus/Pro plans, webhook handler to update users.plan, billing history pulled from Stripe invoices, customer portal for cancellation/plan change.
 **Depends on**: Phase 4
 **Requirements**: F-20, F-21
+**PRD**: prds/stripe-billing.md
 **Success Criteria**:
-  1. Clicking "Upgrade Plan" launches Stripe Checkout
-  2. Successful checkout updates users.plan in DB via webhook
-  3. Billing history table shows real Stripe invoices
-  4. Cancelled subscription reverts users.plan to 'free'
-  5. Tier limits enforced in all API routes based on users.plan
+  1. "Upgrade Plan" button launches Stripe Checkout, payment completes
+  2. Webhook updates users.plan within seconds of successful checkout
+  3. Subscription cancellation reverts plan to 'free' via webhook
+  4. Billing page shows real Stripe invoice history
+  5. Customer portal accessible for self-serve plan management
 **Plans**: TBD
 
-Plans:
-- [ ] 05-01: Stripe products/prices, checkout session API, webhook handler
-- [ ] 05-02: Billing page — real invoices from Stripe, customer portal link
+Sub-phases (5):
+- [ ] 05-01: npm install stripe + lib/stripe.ts (singleton, PRICE_MAP, getPlanFromPriceId)
+- [ ] 05-02: POST /api/stripe/checkout (create session) + POST /api/stripe/portal (portal session)
+- [ ] 05-03: POST /api/stripe/webhook — verify signature, handle 3 events, update users.plan
+- [ ] 05-04: Billing page server component — real Stripe invoices, wire upgrade/portal buttons
+- [ ] 05-05: Tier enforcement in POST /api/connections + POST /api/projects (uses lib/tier.ts)
 
 ### Phase 6: Email Alerts + Slack
 **Goal**: Resend email templates for budget alerts (real RESEND_API_KEY, real sends). Slack webhook URL stored per project in settings. alertService.ts delivers both channels. End-to-end test: connect key → poll → budget rule triggers → email + Slack fires.
 **Depends on**: Phase 5
 **Requirements**: F-15, F-16, F-17
+**PRD**: prds/email-alerts-slack.md
 **Success Criteria**:
   1. Budget alert fires real email via Resend with correct project/spend/limit data
-  2. Slack webhook URL configurable per project in settings
-  3. Alert fires to Slack when budget threshold crossed
-  4. Alert deduplication: same rule doesn't fire twice in 1-hour window
-  5. alert_log records delivery_status for each channel
+  2. Slack webhook URL configurable per project, stored in DB
+  3. Alert fires to Slack when threshold crossed on project with webhook configured
+  4. Same rule doesn't fire twice within 1-hour deduplication window
+  5. alert_log.delivery_status records channel outcomes
 **Plans**: TBD
 
-Plans:
-- [ ] 06-01: Resend email template + real delivery
-- [ ] 06-02: Slack webhook project settings + alert delivery
+Sub-phases (5):
+- [ ] 06-01: Migration 004 — projects.slack_webhook_url + alert_log.delivery_status jsonb
+- [ ] 06-02: alertService.ts real Resend email delivery
+- [ ] 06-03: lib/polling/emailTemplates.ts — HTML alert email template
+- [ ] 06-04: Slack webhook delivery in alertService.ts + deduplication verification
+- [ ] 06-05: Project detail Notifications UI — Slack webhook input + PATCH /api/projects/[id]
 
 ### Phase 7: Settings + QStash Cron + Polish
 **Goal**: Account settings (name/email update), security settings (password change), integration settings (Slack webhook URL per project). QStash 5-minute cron schedule configured and live. All tier limits enforced (connection limits, project limits, history window). Launch-ready.
 **Depends on**: Phase 6
 **Requirements**: F-01, F-21, all V1 features
+**PRD**: prds/settings-qstash-polish.md
 **Success Criteria**:
   1. User can update display name and email in account settings
   2. User can change password in security settings
   3. QStash cron fires POST /api/poll every 5 minutes in production
-  4. Free tier: 1 connection max, 1 project max, 7-day history enforced server-side
-  5. Plus tier: 3 connections, 5 projects, 90-day history
-  6. All "coming soon" toasts replaced with real functionality or removed
+  4. Free: 1 connection max, 1 project max, 7-day history enforced server-side
+  5. Plus: 3 connections, 5 projects, 90-day history
+  6. All "coming soon" toasts replaced or removed — no dead buttons
 **Plans**: TBD
 
-Plans:
-- [ ] 07-01: Account + security settings (real Supabase updates)
-- [ ] 07-02: QStash cron setup + tier enforcement in all API routes + final polish
+Sub-phases (5):
+- [ ] 07-01: Account settings — name + email update via supabase.auth.updateUser
+- [ ] 07-02: Security settings — password change via supabase.auth.updateUser
+- [ ] 07-03: Tier enforcement — clamp history window in query layer, show limit counters in UI
+- [ ] 07-04: QStash cron documentation + POLL_SECRET env var setup
+- [ ] 07-05: UI polish — invoice download, remove dead buttons, .env.example, launch checklist
 
 ## Progress
 
@@ -131,8 +152,8 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation | - | Complete | 2026-06-03 |
 | 2. Core APIs + Polling Worker | - | Complete | 2026-06-05 |
-| 3. Dashboard Real Data | 0/2 | Not started | - |
-| 4. Budget Rules API + UI | 0/2 | Not started | - |
-| 5. Stripe Billing | 0/2 | Not started | - |
-| 6. Email Alerts + Slack | 0/2 | Not started | - |
-| 7. Settings + QStash + Polish | 0/2 | Not started | - |
+| 3. Dashboard Real Data | 0/4 | Not started | - |
+| 4. Budget Rules API + UI | 0/5 | Not started | - |
+| 5. Stripe Billing | 0/5 | Not started | - |
+| 6. Email Alerts + Slack | 0/5 | Not started | - |
+| 7. Settings + QStash + Polish | 0/5 | Not started | - |
