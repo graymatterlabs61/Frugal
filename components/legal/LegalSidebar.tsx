@@ -16,29 +16,39 @@ const NAVIGATION = [
   { href: "/terms", label: "Terms of Service" },
 ]
 
-export function LegalSidebar({ sections }: { sections?: LegalSectionItem[] }) {
+const COMPANY_NAVIGATION = [
+  { href: "/about", label: "About Us" },
+  { href: "/contact", label: "Contact" },
+]
+
+type SidebarProps = {
+  sections?: LegalSectionItem[]
+  variant?: "legal" | "company"
+}
+
+export function LegalSidebar({ sections, variant = "legal" }: SidebarProps) {
   const pathname = usePathname()
+
+  const navLabel = variant === "company" ? "Company" : "Legal Center"
+  const navItems = variant === "company" ? COMPANY_NAVIGATION : NAVIGATION
+  const logoSub = variant === "company" ? "Gray Matter Labs" : "Legal Provider"
 
   return (
     <aside className="sticky top-16 flex h-fit w-full flex-col gap-10 md:w-64 shrink-0">
       <Link href="/" className="flex items-center gap-3 mb-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-          <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-          </svg>
-        </div>
+        <img src="/logo.svg" alt="Frugal" className="h-10 w-10 object-contain drop-shadow-[0_0_8px_#FF500B66]" />
         <div className="flex flex-col">
-          <span className="font-heading text-lg font-bold tracking-tight leading-none text-foreground">Frugal.</span>
-          <span className="text-[10px] uppercase tracking-widest text-muted-foreground/60 mt-0.5">Legal Provider</span>
+          <span className="font-ethnocentric text-base font-bold tracking-tight leading-none text-foreground">Frugal</span>
+          <span className="text-[10px] uppercase tracking-widest text-muted-foreground/60 mt-0.5">{logoSub}</span>
         </div>
       </Link>
 
       <div>
         <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground/50">
-          Legal Center
+          {navLabel}
         </h3>
         <nav className="flex flex-col gap-1">
-          {NAVIGATION.map((item) => {
+          {navItems.map((item) => {
             const isActive = pathname === item.href
             return (
               <Link

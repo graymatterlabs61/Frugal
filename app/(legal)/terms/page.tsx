@@ -4,7 +4,9 @@ import { LegalLayout, LegalSection, LegalList, LegalContact, LegalCard } from "@
 
 export const metadata: Metadata = {
   title: "Terms of Service | Frugal",
-  description: "Terms of Service for Frugal — Gray Matter Labs, Inc.",
+  description:
+    "Read Frugal's Terms of Service. Understand your rights and obligations when using Frugal AI API cost management.",
+  alternates: { canonical: "https://frugal.so/terms" },
 }
 
 const SECTIONS = [

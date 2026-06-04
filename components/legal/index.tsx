@@ -8,6 +8,7 @@ type LegalLayoutProps = {
   subtitle?: React.ReactNode
   dateLabel?: string
   sections?: LegalSectionItem[]
+  variant?: "legal" | "company"
   children: React.ReactNode
 }
 
@@ -16,12 +17,13 @@ export function LegalLayout({
   subtitle,
   dateLabel = "UPDATE MAR. 2024",
   sections,
+  variant = "legal",
   children,
 }: LegalLayoutProps) {
   return (
     <div className="min-h-screen bg-background text-foreground flex justify-center py-12 md:py-20 px-6 md:px-12">
       <div className="flex flex-col md:flex-row gap-12 md:gap-24 w-full max-w-[1300px]">
-        <LegalSidebar sections={sections} />
+        <LegalSidebar sections={sections} variant={variant} />
         
         <main className="flex-1 min-w-0 flex justify-center md:justify-start">
           <div className="w-full max-w-[850px] rounded-[2.5rem] bg-[#110a08] border border-[#2a1a14] p-8 md:p-16 lg:p-24 shadow-2xl relative overflow-hidden">

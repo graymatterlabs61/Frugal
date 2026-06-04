@@ -54,9 +54,9 @@ export function VideoHero() {
 
             {/* Headline */}
             <div className="flex flex-col gap-4 lg:max-w-lg xl:max-w-2xl shrink-0">
-              <p className="text-white text-3xl sm:text-4xl xl:text-5xl font-medium leading-tight drop-shadow-lg">
-                The cost management backbone for <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontWeight: 400 }}>AI builders</span>
-              </p>
+              <h1 className="text-white text-3xl sm:text-4xl xl:text-5xl font-medium leading-tight drop-shadow-lg">
+                AI API cost management & <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontWeight: 400 }}>OpenAI cost monitoring tool</span>
+              </h1>
               <p className="text-white/90 text-base sm:text-lg drop-shadow-md">
                 Frugal monitors your OpenAI, Anthropic, Replicate, and fal.ai spend in real time. Set budget limits and protect your runway from surprise invoices.
               </p>

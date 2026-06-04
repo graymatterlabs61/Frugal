@@ -12,7 +12,8 @@ import {
 export const metadata: Metadata = {
   title: "Privacy Policy | Frugal",
   description:
-    "How Gray Matter Labs, Inc. collects, uses, and protects your personal information.",
+    "How Gray Matter Labs, Inc. collects, uses, and protects your personal information when you use Frugal AI API cost management.",
+  alternates: { canonical: "https://frugal.so/privacy" },
 }
 
 const SECTIONS = [

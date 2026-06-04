@@ -22,15 +22,23 @@ export const metadata: Metadata = {
   description: siteDescription,
   keywords: [
     "AI API cost management",
-    "OpenAI budget",
+    "OpenAI cost monitoring tool",
+    "how to monitor openai api costs",
+    "set budget limit anthropic api",
+    "track replicate ai spend",
+    "prevent openai overspend",
+    "llm api cost calculator",
+    "llm spend management software",
+    "OpenAI budget limits",
     "Anthropic cost tracking",
-    "AI spend monitoring",
     "API budget alerts",
     "AI cost control",
-    "Replicate cost",
-    "fal.ai monitoring",
     "AI billing alerts",
-    "developer tools",
+    "developer tools for AI",
+    "AI API usage tracking",
+    "AI infrastructure costs",
+    "LLM cost monitoring",
+    "AI spend dashboard",
   ],
   authors: [{ name: "Nilesh Kumar", url: "https://x.com/neilkumaroff" }],
   creator: "Nilesh Kumar",
@@ -67,17 +75,59 @@ export const metadata: Metadata = {
     title: siteTitle,
     description: siteDescription,
     creator: "@neilkumaroff",
-    images: [`${siteUrl}/og.png`],
+    images: [`${siteUrl}/twitter.png`],
   },
   icons: {
     icon: [
       { url: "/favicon.ico" },
-      { url: "/icon-16.png", sizes: "16x16", type: "image/png" },
-      { url: "/icon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
     ],
-    apple: "/apple-icon.png",
+    apple: "/apple-touch-icon.png",
   },
+  manifest: "/site.webmanifest",
   category: "technology",
+}
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
+      name: "Frugal",
+      url: siteUrl,
+      logo: `${siteUrl}/logo.svg`,
+      contactPoint: {
+        "@type": "ContactPoint",
+        email: "support@frugal.so",
+        contactType: "customer support",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      url: siteUrl,
+      name: "Frugal",
+      description: siteDescription,
+      publisher: { "@id": `${siteUrl}/#organization` },
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: "Frugal",
+      description: siteDescription,
+      url: siteUrl,
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+        description: "Free tier available. Paid plans for Pro and Enterprise.",
+      },
+      publisher: { "@id": `${siteUrl}/#organization` },
+    },
+  ],
 }
 
 export default function RootLayout({
@@ -93,6 +143,12 @@ export default function RootLayout({
         oxanium.variable
       )}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </head>
       <body>
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
       </body>

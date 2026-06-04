@@ -8,28 +8,28 @@ const faqs = [
   },
   {
     col: 1,
-    question: "Which AI providers do you support?",
-    answer: "Currently we support OpenAI, Anthropic, Replicate, and fal.ai. We're constantly adding more providers to our platform."
+    question: "What is the best tool for monitoring LLM API costs?",
+    answer: "Frugal provides a unified comparison table against native dashboards, letting you view real-time spend across OpenAI, Anthropic, Replicate, and fal.ai in one place."
   },
   {
     col: 1,
-    question: "Are my API keys secure?",
-    answer: "Absolutely. All API keys are encrypted using AES-256 with a server-side secret before storage, and are never exposed to the client."
+    question: "How do I set a hard budget limit on the OpenAI API?",
+    answer: "1. Connect your OpenAI API key to Frugal. 2. Navigate to Budget Rules. 3. Create a new rule with a hard limit amount. 4. Set the action to disable the key when the limit is reached."
   },
   {
     col: 2,
-    question: "How does the polling work?",
-    answer: "We pull usage data from provider APIs on a 5-minute cron schedule. This means your dashboard is near real-time with up to a 5-minute enforcement lag."
+    question: "How to get alerts before OpenAI API overspend?",
+    answer: "1. Go to the Alerts tab in Frugal. 2. Set up an alert for your OpenAI provider. 3. Configure thresholds (e.g. 80% of budget). 4. Choose email or Slack notifications."
   },
   {
     col: 2,
-    question: "What happens if I hit a budget limit?",
-    answer: "When you hit a budget limit, Frugal automatically triggers an alert via email and Slack, and can enforce rules to prevent further API usage depending on your configuration."
+    question: "How much does the Anthropic Claude 3 API cost compared to OpenAI?",
+    answer: "Frugal offers a real-time comparison table of your usage so you can directly compare your effective cost-per-token across Anthropic Claude 3 models and OpenAI GPT-4 models based on your actual prompts."
   },
   {
     col: 2,
-    question: "Can I export my usage data?",
-    answer: "Yes, you can export your usage data history directly from the dashboard for your own accounting and analysis purposes."
+    question: "What happens when you exceed your AI API budget?",
+    answer: "When you exceed your AI API budget, requests will return a 429 status code if Frugal is configured to disable your keys, preventing any surprise overspend."
   },
   {
     col: 3,

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import React from "react";
 
 export function Footer() {
   return (
@@ -21,7 +20,7 @@ export function Footer() {
                 height="30"
                 src="/logo.svg"
               />
-              <span className="font-ethnocentric text-base md:text-lg lg:text-xl tracking-tight text-foreground hidden sm:block dark:text-white">
+              <span className="font-ethnocentric text-base md:text-lg lg:text-xl tracking-tight text-foreground block dark:text-white">
                 Frugal
               </span>
             </Link>
@@ -46,10 +45,10 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-16 grid grid-cols-2 items-start gap-12 sm:mt-0 lg:grid-cols-3 lg:gap-20">
+        <div className="mt-16 grid grid-cols-2 items-start gap-10 sm:mt-0 lg:grid-cols-4 lg:gap-16">
           <div className="flex w-full flex-col justify-center space-y-6">
             <p className="font-semibold text-foreground/60 text-xs uppercase tracking-widest mb-1">
-              Pages
+              Product
             </p>
             <ul className="list-none space-y-4">
               <li className="list-none">
@@ -73,6 +72,33 @@ export function Footer() {
               <li className="list-none">
                 <Link className="footer-link" href="#waitlist">
                   Waitlist
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div className="flex flex-col justify-center space-y-4">
+            <p className="font-semibold text-foreground/60 text-xs uppercase tracking-widest mb-1">
+              Company
+            </p>
+            <ul className="list-none space-y-4">
+              <li className="list-none">
+                <Link className="footer-link" href="/about">
+                  About Us
+                </Link>
+              </li>
+              <li className="list-none">
+                <Link className="footer-link" href="/contact">
+                  Contact
+                </Link>
+              </li>
+              <li className="list-none">
+                <Link className="footer-link" href="/signup">
+                  Sign Up
+                </Link>
+              </li>
+              <li className="list-none">
+                <Link className="footer-link" href="/login">
+                  Login
                 </Link>
               </li>
             </ul>
@@ -106,23 +132,18 @@ export function Footer() {
           </div>
           <div className="flex flex-col justify-center space-y-4">
             <p className="font-semibold text-foreground/60 text-xs uppercase tracking-widest mb-1">
-              Register
+              Support
             </p>
             <ul className="list-none space-y-4">
               <li className="list-none">
-                <Link className="footer-link" href="/signup">
-                  Sign Up
-                </Link>
+                <a className="footer-link" href="mailto:support@frugal.so">
+                  support@frugal.so
+                </a>
               </li>
               <li className="list-none">
-                <Link className="footer-link" href="/login">
-                  Login
-                </Link>
-              </li>
-              <li className="list-none">
-                <Link className="footer-link" href="/forgot-password">
-                  Forgot Password
-                </Link>
+                <a className="footer-link" href="mailto:feedback@frugal.so">
+                  Send Feedback
+                </a>
               </li>
             </ul>
           </div>
