@@ -5,6 +5,7 @@ import { ArrowUpRight, Plus, Zap, TrendingUp } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { SpendChart } from "@/components/dashboard/SpendChart";
 import { RangeToggle } from "@/components/dashboard/RangeToggle";
+import { BurnRateGauge } from "@/components/dashboard/BurnRateGauge";
 import {
   getDashboardStats,
   getDailySpend,
@@ -68,13 +69,6 @@ export default async function DashboardPage({
   }, 0);
   const burnRateDaily = last7.length > 0 ? last7Sum / 7 : 0;
   const projectedMonthly = burnRateDaily * 30;
-
-  // SVG ring — circumference of r=50 ≈ 314
-  const C = 314;
-  const ringFill =
-    projectedMonthly > 0
-      ? Math.min(C, (stats.monthlySpend / projectedMonthly) * C)
-      : 0;
 
   return (
     <div className="space-y-5">
@@ -329,41 +323,13 @@ export default async function DashboardPage({
         <div className="lg:col-span-2 glass-panel rounded-3xl p-5 flex flex-col">
           <h3 className="font-semibold mb-4">Burn Rate</h3>
 
-          {/* SVG donut ring */}
-          <div className="flex-1 flex flex-col items-center justify-center gap-2 py-2">
-            <div className="relative w-36 h-36 flex items-center justify-center">
-              <svg
-                viewBox="0 0 120 120"
-                className="absolute inset-0 w-full h-full -rotate-90"
-              >
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="50"
-                  fill="none"
-                  stroke="rgba(255,255,255,0.06)"
-                  strokeWidth="10"
-                />
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="50"
-                  fill="none"
-                  stroke="#FF500B"
-                  strokeWidth="10"
-                  strokeLinecap="round"
-                  strokeDasharray={`${ringFill} ${C}`}
-                  className="transition-all duration-700"
-                />
-              </svg>
-              <div className="text-center">
-                <p className="text-2xl font-bold font-mono leading-tight">
-                  ${burnRateDaily.toFixed(2)}
-                </p>
-                <p className="text-[10px] text-muted-foreground">/day avg</p>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground">
+          <div className="flex-1 flex flex-col items-center justify-center py-2">
+            <BurnRateGauge
+              spent={stats.monthlySpend}
+              projected={projectedMonthly}
+              dailyRate={burnRateDaily}
+            />
+            <p className="text-xs text-muted-foreground mt-3">
               7-day rolling average
             </p>
           </div>
