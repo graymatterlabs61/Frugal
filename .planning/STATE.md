@@ -9,11 +9,11 @@
 ## Current Position
 
 Phase: 3 of 7 (Dashboard Real Data)
-Plan: 1 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-06-05 — Completed 03-01: lib/queries/dashboard.ts with 7 typed async functions for all dashboard data needs.
+Last activity: 2026-06-05 — Completed 03-03: alerts/page.tsx rewritten as async server component with real alert_log data.
 
-Progress: [███░░░░░░░] 25%
+Progress: [████░░░░░░] 38%
 
 ## Performance Metrics
 
@@ -37,6 +37,12 @@ Progress: [███░░░░░░░] 25%
 
 None yet.
 
+### Decisions (03-03)
+
+- Provider badge column removed from alerts page: alert_log has no direct provider column — omitting avoids multi-hop join for display-only data
+- Empty state placed inside Alert History card (stats cards still show 0) — no special header zero-state needed
+- Absolute datetime format used for alert timestamps (full history log, not live feed)
+
 ### Decisions (03-01)
 
 - Supabase !inner join returns api_connections as array shape in SDK inferred types — use extractProvider() helper to normalize
@@ -54,5 +60,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-05
-Stopped at: Completed 03-01-PLAN.md — lib/queries/dashboard.ts built with 7 typed async query functions
+Stopped at: Completed 03-03-PLAN.md — alerts/page.tsx rewritten as async server component with real alert_log data
 Resume file: None

@@ -58,9 +58,9 @@ Frugal is an AI API cost management SaaS. Developers building on OpenAI, Anthrop
 **Plans**: TBD
 
 Sub-phases (4):
-- [ ] 03-01: DB query layer — lib/queries/dashboard.ts with all aggregation functions
+- [x] 03-01: DB query layer — lib/queries/dashboard.ts with all aggregation functions
 - [ ] 03-02: Dashboard page — real stats, stacked SpendChart, top projects, recent alerts, empty state CTA
-- [ ] 03-03: Alerts page — real alert_log data, empty state
+- [x] 03-03: Alerts page — real alert_log data, empty state
 - [ ] 03-04: Project detail page — server component for stats, real connections tab, real alerts tab, worker bug fix
 
 ### Phase 4: Budget Rules API + UI
@@ -152,7 +152,7 @@ Sub-phases (5):
 |-------|----------------|--------|-----------|
 | 1. Foundation | - | Complete | 2026-06-03 |
 | 2. Core APIs + Polling Worker | - | Complete | 2026-06-05 |
-| 3. Dashboard Real Data | 0/4 | Not started | - |
+| 3. Dashboard Real Data | 2/4 | In progress | - |
 | 4. Budget Rules API + UI | 0/5 | Not started | - |
 | 5. Stripe Billing | 0/5 | Not started | - |
 | 6. Email Alerts + Slack | 0/5 | Not started | - |
