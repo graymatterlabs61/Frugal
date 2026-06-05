@@ -9,11 +9,11 @@
 ## Current Position
 
 Phase: 3 of 7 (Dashboard Real Data)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-06-05 — Polling worker, budget checker, alert service, poll API route built. All dashboard/alerts pages still show mock data.
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-06-05 — Completed 03-01: lib/queries/dashboard.ts with 7 typed async functions for all dashboard data needs.
 
-Progress: [██░░░░░░░░] 20%
+Progress: [███░░░░░░░] 25%
 
 ## Performance Metrics
 
@@ -37,6 +37,13 @@ Progress: [██░░░░░░░░] 20%
 
 None yet.
 
+### Decisions (03-01)
+
+- Supabase !inner join returns api_connections as array shape in SDK inferred types — use extractProvider() helper to normalize
+- getDashboardStats uses in-JS reduce for monthly spend sum (no DB SUM RPC needed)
+- getProjectStats fetches connection IDs first, filters usage_records via second query (no project_id on usage_records table)
+- Budget limit lookup in getTopProjects uses single .in() query across all project IDs — no N+1
+
 ### Blockers/Concerns
 
 - RESEND_API_KEY not yet set — email alerts won't fire until Phase 6
@@ -47,5 +54,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-05
-Stopped at: Phase 2 complete — polling worker built, all dashboard pages still mock
+Stopped at: Completed 03-01-PLAN.md — lib/queries/dashboard.ts built with 7 typed async query functions
 Resume file: None
