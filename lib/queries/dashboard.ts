@@ -356,3 +356,258 @@ export async function getTopProjects(
     budgetLimit: budgetMap.get(p.id) ?? null,
   }));
 }
+
+// ---------------------------------------------------------------------------
+// getRecentAlerts
+// ---------------------------------------------------------------------------
+
+interface AlertLogRow {
+  id: string;
+  fired_at: string;
+  action_taken: string;
+  spend_at_trigger: number;
+  limit_usd: number;
+  percent_used: number;
+  status: string;
+}
+
+function mapAlertLogRow(
+  row: AlertLogRow,
+): RecentAlert {
+  const type = computeAlertType(row.action_taken ?? "");
+  const severity = computeSeverity(row.percent_used ?? 0);
+  const message = computeAlertMessage(
+    row.spend_at_trigger ?? 0,
+    row.percent_used ?? 0,
+    row.limit_usd ?? 0,
+    type,
+  );
+  return {
+    id: row.id,
+    firedAt: row.fired_at,
+    message,
+    type,
+    severity,
+    status: row.status as RecentAlert["status"],
+  };
+}
+
+export async function getRecentAlerts(
+  supabase: SupabaseClient,
+  userId: string,
+  limit = 5,
+): Promise<RecentAlert[]> {
+  const { data, error } = await supabase
+    .from("alert_log")
+    .select("id, fired_at, action_taken, spend_at_trigger, limit_usd, percent_used, status")
+    .eq("user_id", userId)
+    .order("fired_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("[getRecentAlerts] query error:", error.message);
+    return [];
+  }
+
+  return (data ?? []).map((row) => mapAlertLogRow(row as AlertLogRow));
+}
+
+// ---------------------------------------------------------------------------
+// getProjectStats
+// ---------------------------------------------------------------------------
+
+export async function getProjectStats(
+  supabase: SupabaseClient,
+  userId: string,
+  projectId: string,
+): Promise<ProjectStats | null> {
+  const calMonthStart = getCalMonthStart();
+  const sevenDaysAgo = daysAgoUTC(7);
+
+  // Fetch the project row
+  const { data: projectData, error: projectError } = await supabase
+    .from("projects")
+    .select("id, name, description, status")
+    .eq("id", projectId)
+    .eq("user_id", userId)
+    .single();
+
+  if (projectError || !projectData) {
+    if (projectError?.code !== "PGRST116") {
+      console.error("[getProjectStats] project query error:", projectError?.message);
+    }
+    return null;
+  }
+
+  // Fetch connections for this project to filter usage_records by connection_id
+  const { data: connections, error: connError } = await supabase
+    .from("api_connections")
+    .select("id")
+    .eq("project_id", projectId)
+    .eq("user_id", userId);
+
+  if (connError) {
+    console.error("[getProjectStats] connections query error:", connError.message);
+  }
+
+  const connectionIds = (connections ?? []).map((c: { id: string }) => c.id);
+
+  let monthlySpend = 0;
+  let burnRateDaily = 0;
+
+  if (connectionIds.length > 0) {
+    // Monthly spend: usage_records in current calendar month for these connections
+    const { data: monthlyData, error: monthlyError } = await supabase
+      .from("usage_records")
+      .select("cost_usd")
+      .in("connection_id", connectionIds)
+      .eq("user_id", userId)
+      .gte("date", calMonthStart);
+
+    if (monthlyError) {
+      console.error("[getProjectStats] monthly spend error:", monthlyError.message);
+    }
+
+    monthlySpend =
+      (monthlyData ?? []).reduce((sum, r) => sum + (r.cost_usd ?? 0), 0);
+
+    // Burn rate: last 7 days divided by 7
+    const { data: weekData, error: weekError } = await supabase
+      .from("usage_records")
+      .select("cost_usd")
+      .in("connection_id", connectionIds)
+      .eq("user_id", userId)
+      .gte("date", sevenDaysAgo);
+
+    if (weekError) {
+      console.error("[getProjectStats] burn rate error:", weekError.message);
+    }
+
+    const weekTotal =
+      (weekData ?? []).reduce((sum, r) => sum + (r.cost_usd ?? 0), 0);
+    burnRateDaily = weekTotal / 7;
+  }
+
+  const projectedMonthly = burnRateDaily * 30;
+
+  // Lowest budget limit for this project
+  const { data: budgetData, error: budgetError } = await supabase
+    .from("budget_rules")
+    .select("limit_usd")
+    .eq("project_id", projectId)
+    .order("limit_usd", { ascending: true })
+    .limit(1);
+
+  if (budgetError) {
+    console.error("[getProjectStats] budget_rules error:", budgetError.message);
+  }
+
+  const budgetLimit =
+    budgetData && budgetData.length > 0 ? (budgetData[0].limit_usd as number) : null;
+
+  // MAX last_polled_at from active connections
+  const { data: activeConns, error: activeConnError } = await supabase
+    .from("api_connections")
+    .select("last_polled_at")
+    .eq("project_id", projectId)
+    .eq("status", "active");
+
+  if (activeConnError) {
+    console.error("[getProjectStats] active connections error:", activeConnError.message);
+  }
+
+  let lastUpdatedAt: string | null = null;
+  if (activeConns && activeConns.length > 0) {
+    const timestamps = activeConns
+      .map((c: { last_polled_at: string | null }) => c.last_polled_at)
+      .filter((t): t is string => t !== null);
+    if (timestamps.length > 0) {
+      lastUpdatedAt = timestamps.sort().at(-1) ?? null;
+    }
+  }
+
+  return {
+    id: projectData.id as string,
+    name: projectData.name as string,
+    description: (projectData.description as string | null) ?? null,
+    status: projectData.status as string,
+    monthlySpend,
+    burnRateDaily,
+    projectedMonthly,
+    budgetLimit,
+    lastUpdatedAt,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// getProjectConnections
+// ---------------------------------------------------------------------------
+
+export async function getProjectConnections(
+  supabase: SupabaseClient,
+  userId: string,
+  projectId: string,
+): Promise<ProjectConnection[]> {
+  const { data, error } = await supabase
+    .from("api_connections")
+    .select("id, provider, api_key_suffix, status, last_polled_at")
+    .eq("project_id", projectId)
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error("[getProjectConnections] query error:", error.message);
+    return [];
+  }
+
+  return (data ?? []).map((row) => ({
+    id: row.id as string,
+    provider: row.provider as string,
+    apiKeySuffix: (row.api_key_suffix as string) ?? "",
+    status: row.status as string,
+    lastPolledAt: (row.last_polled_at as string | null) ?? null,
+  }));
+}
+
+// ---------------------------------------------------------------------------
+// getProjectAlerts
+// ---------------------------------------------------------------------------
+
+function mapProjectAlertRow(row: AlertLogRow): ProjectAlert {
+  const type = computeAlertType(row.action_taken ?? "");
+  const severity = computeSeverity(row.percent_used ?? 0);
+  const message = computeAlertMessage(
+    row.spend_at_trigger ?? 0,
+    row.percent_used ?? 0,
+    row.limit_usd ?? 0,
+    type,
+  );
+  return {
+    id: row.id,
+    firedAt: row.fired_at,
+    severity,
+    message,
+    status: row.status as ProjectAlert["status"],
+  };
+}
+
+export async function getProjectAlerts(
+  supabase: SupabaseClient,
+  userId: string,
+  projectId: string,
+  limit = 20,
+): Promise<ProjectAlert[]> {
+  const { data, error } = await supabase
+    .from("alert_log")
+    .select("id, fired_at, action_taken, spend_at_trigger, limit_usd, percent_used, status")
+    .eq("project_id", projectId)
+    .eq("user_id", userId)
+    .order("fired_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("[getProjectAlerts] query error:", error.message);
+    return [];
+  }
+
+  return (data ?? []).map((row) => mapProjectAlertRow(row as AlertLogRow));
+}
