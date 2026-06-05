@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { TrendingUp, TrendingDown, FolderOpen, Bell, Zap } from "lucide-react";
+import { ArrowUpRight, Plus, Zap, TrendingUp } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { SpendChart } from "@/components/dashboard/SpendChart";
 import { RangeToggle } from "@/components/dashboard/RangeToggle";
@@ -12,38 +12,10 @@ import {
   getRecentAlerts,
 } from "@/lib/queries/dashboard";
 
-interface StatCardProps {
-  label: string;
-  value: string;
-  sub: string;
-  trend?: "up" | "down" | "neutral";
-  urgent?: boolean;
-}
-
-function StatCard({ label, value, sub, trend, urgent }: StatCardProps) {
-  return (
-    <div className="border border-border rounded-2xl p-5 bg-card">
-      <p className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground mb-3">
-        {label}
-      </p>
-      <p
-        className={`text-3xl font-bold font-mono mb-1 ${urgent ? "text-destructive" : ""}`}
-      >
-        {value}
-      </p>
-      <div className="flex items-center gap-1.5">
-        {trend === "up" && <TrendingUp className="w-3 h-3 text-emerald-500" />}
-        {trend === "down" && <TrendingDown className="w-3 h-3 text-destructive" />}
-        <p className="text-xs text-muted-foreground">{sub}</p>
-      </div>
-    </div>
-  );
-}
-
-const severityStyles = {
-  warning: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
-  critical: "bg-destructive/10 text-destructive border-destructive/20",
-  info: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+const severityStyles: Record<string, string> = {
+  warning: "bg-yellow-500/15 text-yellow-400 border-yellow-500/25",
+  critical: "bg-red-500/15 text-red-400 border-red-500/25",
+  info: "bg-emerald-500/15 text-emerald-400 border-emerald-500/25",
 };
 
 function formatRelativeTime(iso: string): string {
@@ -65,7 +37,6 @@ export default async function DashboardPage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   if (!user) redirect("/login");
 
   const params = await searchParams;
@@ -85,159 +56,263 @@ export default async function DashboardPage({
     getRecentAlerts(supabase, user.id, 5),
   ]);
 
+  // 7-day rolling burn rate
+  const last7 = spendData.slice(-7);
+  const last7Sum = last7.reduce((acc, row) => {
+    return (
+      acc +
+      Object.entries(row)
+        .filter(([k]) => k !== "date")
+        .reduce((s, [, v]) => s + (typeof v === "number" ? v : 0), 0)
+    );
+  }, 0);
+  const burnRateDaily = last7.length > 0 ? last7Sum / 7 : 0;
+  const projectedMonthly = burnRateDaily * 30;
+
+  // SVG ring — circumference of r=50 ≈ 314
+  const C = 314;
+  const ringFill =
+    projectedMonthly > 0
+      ? Math.min(C, (stats.monthlySpend / projectedMonthly) * C)
+      : 0;
+
   return (
-    <div className="space-y-6">
-      {/* Greeting */}
-      <div>
-        <h2 className="text-2xl font-bold">Good to see you, {name} 👋</h2>
-        <p className="text-muted-foreground text-sm mt-1">
-          Here&apos;s your AI API cost overview for{" "}
-          {new Date().toLocaleString("en-US", { month: "long", year: "numeric" })}.
-        </p>
+    <div className="space-y-5">
+      {/* ── Header ───────────────────────────────────────── */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Hey {name} — AI spend for{" "}
+            {new Date().toLocaleString("en-US", {
+              month: "long",
+              year: "numeric",
+            })}
+            .
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            href="/connections"
+            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold glass-panel hover:border-white/20 transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            Add Connection
+          </Link>
+          <Link
+            href="/projects"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-all shadow-[0_4px_20px_rgba(255,80,11,0.35)]"
+          >
+            <Plus className="w-4 h-4" />
+            New Project
+          </Link>
+        </div>
       </div>
 
-      {/* Stats row */}
+      {/* ── Stat cards ───────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          label="Monthly Spend"
-          value={`$${stats.monthlySpend.toFixed(2)}`}
-          sub="Calendar month to date"
-          trend="neutral"
-        />
-        <StatCard
-          label="Active Projects"
-          value={String(stats.activeProjects)}
-          sub={`${stats.connectionCount} connection${stats.connectionCount !== 1 ? "s" : ""} total`}
-          trend="neutral"
-        />
-        <StatCard
-          label="API Connections"
-          value={String(stats.connectionCount)}
-          sub="Across all projects"
-          trend="neutral"
-        />
-        <StatCard
-          label="Budget Alerts"
-          value={String(stats.alertCount)}
-          sub="This month"
-          urgent={stats.alertCount > 0}
-        />
-      </div>
+        {/* Accent card */}
+        <div className="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-br from-[#FF500B] to-[#b83b08] text-white shadow-[0_8px_32px_rgba(255,80,11,0.3)]">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.18),_transparent_65%)]" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-white/65">
+                Monthly Spend
+              </p>
+              <Link href="/projects">
+                <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </div>
+              </Link>
+            </div>
+            <p className="text-4xl font-bold font-mono">
+              ${stats.monthlySpend.toFixed(2)}
+            </p>
+            <div className="flex items-center gap-1.5 mt-2.5">
+              <TrendingUp className="w-3 h-3 text-white/70" />
+              <span className="text-[11px] text-white/70">
+                Calendar month to date
+              </span>
+            </div>
+          </div>
+        </div>
 
-      {/* Spend chart */}
-      <div className="border border-border rounded-2xl bg-card p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="font-semibold">Spend Over Time</h3>
-            <p className="text-sm text-muted-foreground">
-              Last {days} days · All providers
+        {/* Glass cards */}
+        {(
+          [
+            {
+              label: "Active Projects",
+              value: stats.activeProjects,
+              sub: `${stats.connectionCount} connection${stats.connectionCount !== 1 ? "s" : ""}`,
+              href: "/projects",
+            },
+            {
+              label: "API Connections",
+              value: stats.connectionCount,
+              sub: "Across all projects",
+              href: "/connections",
+            },
+            {
+              label: "Budget Alerts",
+              value: stats.alertCount,
+              sub: stats.alertCount > 0 ? "Needs attention" : "All clear",
+              href: "/alerts",
+              urgent: stats.alertCount > 0,
+            },
+          ] as const
+        ).map((card) => (
+          <div key={card.label} className="glass-panel rounded-3xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                {card.label}
+              </p>
+              <Link href={card.href}>
+                <div className="w-7 h-7 rounded-full border border-border flex items-center justify-center hover:border-white/30 transition-colors">
+                  <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground" />
+                </div>
+              </Link>
+            </div>
+            <p
+              className={`text-4xl font-bold font-mono ${"urgent" in card && card.urgent ? "text-destructive" : ""}`}
+            >
+              {card.value}
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-2.5">
+              {card.sub}
             </p>
           </div>
-          <Suspense fallback={null}>
-            <RangeToggle />
-          </Suspense>
-        </div>
-        <SpendChart data={spendData} days={days} />
+        ))}
       </div>
 
-      {/* Bottom two columns */}
-      <div className="grid lg:grid-cols-2 gap-4">
-        {/* Top projects */}
-        <div className="border border-border rounded-2xl bg-card p-5">
-          <div className="flex items-center justify-between mb-4">
+      {/* ── Middle row: Spend chart + Top Projects ────────── */}
+      <div className="grid lg:grid-cols-5 gap-4">
+        {/* Chart — 3/5 */}
+        <div className="lg:col-span-3 glass-panel rounded-3xl p-5">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h3 className="font-semibold">Spend Analytics</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Last {days} days · all providers
+              </p>
+            </div>
+            <Suspense fallback={null}>
+              <RangeToggle />
+            </Suspense>
+          </div>
+          <SpendChart data={spendData} days={days} />
+        </div>
+
+        {/* Top Projects — 2/5 */}
+        <div className="lg:col-span-2 glass-panel rounded-3xl p-5 flex flex-col">
+          <div className="flex items-center justify-between mb-5">
             <h3 className="font-semibold">Top Projects</h3>
             <Link
               href="/projects"
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border border-border hover:border-white/25 hover:bg-white/5 transition-all"
             >
-              <FolderOpen className="w-4 h-4" />
-              View all
+              <Plus className="w-3 h-3" />
+              New
             </Link>
           </div>
+
           {topProjects.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-4 text-center">
-              No project spend yet.
-            </p>
+            <div className="flex-1 flex items-center justify-center">
+              <p className="text-sm text-muted-foreground">
+                No project spend yet.
+              </p>
+            </div>
           ) : (
-            <div className="space-y-4">
+            <div className="flex flex-col gap-4 flex-1">
               {topProjects.map((p) => {
                 const pct =
                   p.budgetLimit !== null
-                    ? Math.round((p.monthlySpend / p.budgetLimit) * 100)
+                    ? Math.min(
+                        100,
+                        Math.round((p.monthlySpend / p.budgetLimit) * 100),
+                      )
                     : null;
                 return (
-                  <div key={p.id}>
+                  <Link key={p.id} href={`/projects/${p.id}`} className="block group">
                     <div className="flex items-center justify-between text-sm mb-1.5">
-                      <Link
-                        href={`/projects/${p.id}`}
-                        className="font-semibold hover:text-primary transition-colors"
-                      >
+                      <span className="font-semibold group-hover:text-primary transition-colors truncate max-w-[120px]">
                         {p.name}
-                      </Link>
-                      <span className="font-mono font-semibold">
+                      </span>
+                      <span className="font-mono text-xs font-semibold shrink-0">
                         ${p.monthlySpend.toFixed(2)}
                         {p.budgetLimit !== null && (
                           <span className="text-muted-foreground font-normal">
-                            {" "}/ ${p.budgetLimit}
+                            {" "}
+                            / ${p.budgetLimit}
                           </span>
                         )}
                       </span>
                     </div>
-                    {pct !== null ? (
-                      <>
-                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all ${pct >= 100 ? "bg-destructive" : pct >= 80 ? "bg-yellow-500" : "bg-primary"}`}
-                            style={{ width: `${Math.min(100, pct)}%` }}
-                          />
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {pct}% of budget used
-                        </p>
-                      </>
-                    ) : (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        No budget set
-                      </p>
-                    )}
-                  </div>
+                    <div className="h-1.5 rounded-full bg-white/6 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all ${
+                          pct !== null && pct >= 100
+                            ? "bg-destructive"
+                            : pct !== null && pct >= 80
+                              ? "bg-yellow-500"
+                              : "bg-primary"
+                        }`}
+                        style={{ width: pct !== null ? `${pct}%` : "0%" }}
+                      />
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                      {pct !== null ? `${pct}% of budget` : "No budget set"}
+                    </p>
+                  </Link>
                 );
               })}
+
+              <Link
+                href="/projects"
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mt-auto"
+              >
+                View all projects <ArrowUpRight className="w-3 h-3" />
+              </Link>
             </div>
           )}
         </div>
+      </div>
 
-        {/* Recent alerts */}
-        <div className="border border-border rounded-2xl bg-card p-5">
-          <div className="flex items-center justify-between mb-4">
+      {/* ── Bottom row: Alerts + Burn Rate ───────────────── */}
+      <div className="grid lg:grid-cols-5 gap-4">
+        {/* Recent Alerts — 3/5 */}
+        <div className="lg:col-span-3 glass-panel rounded-3xl p-5">
+          <div className="flex items-center justify-between mb-5">
             <h3 className="font-semibold">Recent Alerts</h3>
             <Link
               href="/alerts"
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              <Bell className="w-4 h-4" />
-              View all
+              View all <ArrowUpRight className="w-3 h-3" />
             </Link>
           </div>
+
           {recentAlerts.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-4 text-center">
-              No alerts yet.
-            </p>
+            <div className="py-10 text-center">
+              <p className="text-sm text-muted-foreground">No alerts yet.</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">
+                Fires when a budget threshold is crossed.
+              </p>
+            </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {recentAlerts.map((a) => (
                 <div
                   key={a.id}
-                  className="flex items-start gap-3 p-3 rounded-xl border border-border/50 bg-white/2"
+                  className="flex items-start gap-3 p-3 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
                 >
                   <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold font-mono uppercase tracking-wider border shrink-0 mt-0.5 ${severityStyles[a.severity]}`}
+                    className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-bold font-mono uppercase tracking-wider border shrink-0 mt-0.5 ${severityStyles[a.severity] ?? severityStyles.info}`}
                   >
                     {a.severity}
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{a.type}</p>
-                    <p className="text-xs text-muted-foreground line-clamp-2">
+                    <p className="text-xs text-muted-foreground line-clamp-1">
                       {a.message}
                     </p>
                   </div>
@@ -249,18 +324,84 @@ export default async function DashboardPage({
             </div>
           )}
         </div>
+
+        {/* Burn Rate — 2/5 */}
+        <div className="lg:col-span-2 glass-panel rounded-3xl p-5 flex flex-col">
+          <h3 className="font-semibold mb-4">Burn Rate</h3>
+
+          {/* SVG donut ring */}
+          <div className="flex-1 flex flex-col items-center justify-center gap-2 py-2">
+            <div className="relative w-36 h-36 flex items-center justify-center">
+              <svg
+                viewBox="0 0 120 120"
+                className="absolute inset-0 w-full h-full -rotate-90"
+              >
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="50"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.06)"
+                  strokeWidth="10"
+                />
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="50"
+                  fill="none"
+                  stroke="#FF500B"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                  strokeDasharray={`${ringFill} ${C}`}
+                  className="transition-all duration-700"
+                />
+              </svg>
+              <div className="text-center">
+                <p className="text-2xl font-bold font-mono leading-tight">
+                  ${burnRateDaily.toFixed(2)}
+                </p>
+                <p className="text-[10px] text-muted-foreground">/day avg</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              7-day rolling average
+            </p>
+          </div>
+
+          {/* Breakdown */}
+          <div className="space-y-2.5 pt-4 border-t border-white/6">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">This month</span>
+              <span className="font-mono font-semibold">
+                ${stats.monthlySpend.toFixed(2)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Projected</span>
+              <span className="font-mono font-semibold">
+                ${projectedMonthly.toFixed(2)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Projects</span>
+              <span className="font-mono font-semibold">
+                {stats.activeProjects}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* CTA — shown only when no connections exist */}
+      {/* ── CTA (no connections) ─────────────────────────── */}
       {stats.connectionCount === 0 && (
-        <div className="border border-dashed border-primary/30 rounded-2xl p-8 flex items-center gap-5 bg-primary/5">
-          <div className="w-12 h-12 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center shrink-0">
+        <div className="glass-panel rounded-3xl p-8 flex items-center gap-5 border-primary/20">
+          <div className="w-12 h-12 rounded-2xl bg-primary/15 border border-primary/25 flex items-center justify-center shrink-0">
             <Zap className="w-6 h-6 text-primary" />
           </div>
           <div>
             <p className="font-semibold">Connect your first API key</p>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Go to Projects → New Project to start tracking real spend data.
+              Add a provider connection to start tracking real spend.
             </p>
             <Link
               href="/projects"
