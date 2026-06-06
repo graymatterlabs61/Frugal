@@ -76,14 +76,14 @@ Sub-phases (4):
   5. Free-tier users see "Upgrade to Plus" prompt instead of rule creation
   6. Plus users: alert + block only; Pro users: throttle also available
   7. budgetChecker.ts columns aligned with migration 003 schema
-**Plans**: TBD
+**Plans**: 5 plans
 
 Sub-phases (5):
-- [ ] 04-01: Migration 003 — add user_id, rename period→window, threshold_pct, RLS policy
-- [ ] 04-02: lib/tier.ts — plan feature gates, limit functions
-- [ ] 04-03: /api/budget-rules route.ts (GET/POST) + /api/budget-rules/[id] (DELETE) with Zod
-- [ ] 04-04: Wire project detail Budget Rules tab to real API + tier-gated UI
-- [ ] 04-05: budgetChecker.ts column alignment + deduplication verification
+- [ ] 04-01-PLAN.md — Migration 004: rename budget_rules columns (period→budget_window, alert_at_percent→threshold_pct)
+- [ ] 04-02-PLAN.md — lib/tier.ts: canCreateBudgetRules, canUseBlock, canUseThrottle feature gate functions
+- [ ] 04-03-PLAN.md — /api/budget-rules route.ts (GET/POST) + /api/budget-rules/[id] (DELETE) with Zod + tier enforcement
+- [ ] 04-04-PLAN.md — Wire project detail Budget Rules tab to real API + tier-gated UI + human verify checkpoint
+- [ ] 04-05-PLAN.md — budgetChecker.ts + types.ts column alignment (budget_window, threshold_pct)
 
 ### Phase 5: Stripe Billing
 **Goal**: Stripe checkout for Plus/Pro plans, webhook handler to update users.plan, billing history pulled from Stripe invoices, customer portal for cancellation/plan change.
@@ -153,7 +153,7 @@ Sub-phases (5):
 | 1. Foundation | - | Complete | 2026-06-03 |
 | 2. Core APIs + Polling Worker | - | Complete | 2026-06-05 |
 | 3. Dashboard Real Data | 2/4 | In progress | - |
-| 4. Budget Rules API + UI | 0/5 | Not started | - |
+| 4. Budget Rules API + UI | 0/5 | Planned | - |
 | 5. Stripe Billing | 0/5 | Not started | - |
 | 6. Email Alerts + Slack | 0/5 | Not started | - |
 | 7. Settings + QStash + Polish | 0/5 | Not started | - |
