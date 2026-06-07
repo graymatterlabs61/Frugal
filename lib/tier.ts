@@ -30,3 +30,35 @@ export function canUseBlock(plan: string): boolean {
 export function canUseThrottle(plan: string): boolean {
   return plan === "pro";
 }
+
+/**
+ * Per-plan resource caps for connections and projects.
+ * Used by POST /api/connections and POST /api/projects to enforce limits.
+ *
+ * 'growth' mirrors 'starter' — kept for forward compatibility even though
+ * Phase 5 billing only sells starter and pro.
+ */
+export const PLAN_LIMITS = {
+  free:    { connections: 1, projects: 1 },
+  starter: { connections: 3, projects: 5 },
+  growth:  { connections: 3, projects: 5 },
+  pro:     { connections: Infinity, projects: Infinity },
+} as const;
+
+/**
+ * Returns the connection limit for a given plan.
+ * Falls back to free limits for unrecognized plan values.
+ */
+export function getConnectionLimit(plan: string): number {
+  const key = plan as keyof typeof PLAN_LIMITS;
+  return PLAN_LIMITS[key]?.connections ?? PLAN_LIMITS.free.connections;
+}
+
+/**
+ * Returns the project limit for a given plan.
+ * Falls back to free limits for unrecognized plan values.
+ */
+export function getProjectLimit(plan: string): number {
+  const key = plan as keyof typeof PLAN_LIMITS;
+  return PLAN_LIMITS[key]?.projects ?? PLAN_LIMITS.free.projects;
+}
