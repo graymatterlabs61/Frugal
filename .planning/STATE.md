@@ -9,9 +9,9 @@
 ## Current Position
 
 Phase: 5 of 7 (Stripe Billing)
-Plan: 2 of 5 complete in current phase
-Status: Plan 02 complete (Stripe checkout + portal routes). Plans 03–05 remaining.
-Last activity: 2026-06-07 — Completed 05-02 (POST /api/stripe/checkout, POST /api/stripe/portal).
+Plan: 3 of 5 complete in current phase
+Status: Plan 03 complete (Stripe webhook handler, Stripe CLI verified). Plans 04–05 remaining.
+Last activity: 2026-06-07 — Completed 05-03 (POST /api/stripe/webhook, Stripe event handlers).
 
 Progress: [████████░░] 70%
 
@@ -62,6 +62,13 @@ None yet.
 - PLAN_LIMITS uses Infinity for pro tier so callers do `count < limit` without special-casing unlimited
 - growth plan mirrors starter in PLAN_LIMITS for forward compatibility (Phase 5 billing only sells starter and pro)
 
+### Decisions (05-03)
+
+- Stripe webhook must use Node.js runtime — Edge runtime re-encodes raw body, breaking HMAC signature verification
+- request.text() mandatory over request.json() for same HMAC reason
+- createServiceClient() (service role) required — no user session in webhook requests, RLS blocks UPDATE
+- checkout.session.completed calls stripe.subscriptions.retrieve() because session.subscription is a string ID, not expanded
+
 ### Blockers/Concerns
 
 - RESEND_API_KEY not yet set — email alerts won't fire until Phase 6
@@ -73,5 +80,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 05-02-PLAN.md (Stripe checkout + portal routes)
+Stopped at: Completed 05-03-PLAN.md (Stripe webhook handler, Stripe CLI verified)
 Resume file: None

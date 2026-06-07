@@ -40,7 +40,7 @@ patterns-established:
 requirements-completed: [F-20]
 
 # Metrics
-duration: 1min
+duration: ~5min
 completed: 2026-06-07
 ---
 
@@ -48,16 +48,12 @@ completed: 2026-06-07
 
 **Stripe webhook handler at POST /api/stripe/webhook using Node.js runtime, raw body text, and service role client to process checkout and subscription events**
 
-## Status: PAUSED — awaiting human verification
-
-Task 1 is complete and committed. The plan is paused at the `checkpoint:human-verify` gate. See "User Verification Required" section below for setup and testing steps.
-
 ## Performance
 
-- **Duration:** ~1 min
+- **Duration:** ~5 min
 - **Started:** 2026-06-07T09:55:23Z
-- **Completed (Task 1):** 2026-06-07T09:56:16Z
-- **Tasks:** 1 of 2 complete (checkpoint gate reached)
+- **Completed:** 2026-06-07
+- **Tasks:** 2 of 2 complete
 - **Files modified:** 1
 
 ## Accomplishments
@@ -66,10 +62,14 @@ Task 1 is complete and committed. The plan is paused at the `checkpoint:human-ve
 - Set `export const runtime = "nodejs"` to prevent Edge re-encoding of request body
 - Used `request.text()` (not `request.json()`) to preserve raw body for HMAC verification
 - Used `createServiceClient()` to bypass RLS for users table UPDATE
+- Stripe CLI verification passed: valid events return 200, invalid signature returns 400
 
 ## Task Commits
 
 1. **Task 1: Create POST /api/stripe/webhook** - `f9fcd73` (feat)
+2. **Task 2: Checkpoint — Stripe CLI verification** - approved by user (200 on valid events, 400 on invalid signature)
+
+**Plan metadata:** `d00f8d6` (docs: add webhook plan summary with Stripe CLI verification steps)
 
 ## Files Created/Modified
 
@@ -86,74 +86,20 @@ Task 1 is complete and committed. The plan is paused at the `checkpoint:human-ve
 
 None — plan executed exactly as written.
 
-## User Verification Required
-
-**Task 2 (checkpoint:human-verify)** requires manual Stripe CLI testing. Follow these steps:
-
-### Step 1: Add STRIPE_WEBHOOK_SECRET to .env.local
-
-Run the Stripe CLI to get your local webhook secret:
-
-```bash
-stripe listen --forward-to localhost:3000/api/stripe/webhook --print-secret
-```
-
-Copy the `whsec_...` value it prints and add it to `.env.local`:
-
-```
-STRIPE_WEBHOOK_SECRET=whsec_...
-```
-
-### Step 2: Start the dev server (Terminal 1)
-
-```bash
-npm run dev
-```
-
-### Step 3: Start Stripe CLI listener (Terminal 2)
-
-```bash
-stripe listen --forward-to localhost:3000/api/stripe/webhook
-```
-
-### Step 4: Test checkout.session.completed (Terminal 3)
-
-```bash
-stripe trigger checkout.session.completed
-```
-
-Expected: Stripe CLI shows `200 POST /api/stripe/webhook`
-
-### Step 5: Test customer.subscription.deleted
-
-```bash
-stripe trigger customer.subscription.deleted
-```
-
-Expected: Stripe CLI shows `200 POST /api/stripe/webhook`
-
-### Step 6: Test invalid signature rejection
-
-```bash
-curl -X POST http://localhost:3000/api/stripe/webhook -H "stripe-signature: bad" -d "{}"
-```
-
-Expected: response body contains `{"error":"..."}` and HTTP status 400
-
-### Once verified
-
-Reply with "approved" to continue to the next task, or describe any errors seen so they can be debugged.
-
 ## Issues Encountered
 
-None — TypeScript compiled cleanly (4 pre-existing TS2367 errors in settings files, unrelated to this plan).
+None — TypeScript compiled cleanly (4 pre-existing TS2367 errors in settings files, unrelated to this plan). Stripe CLI tests all passed on first run.
+
+## User Setup Required
+
+STRIPE_WEBHOOK_SECRET must be set in `.env.local` for local development (obtained from `stripe listen --print-secret`) and in the Stripe Dashboard for production (Developers -> Webhooks -> Add endpoint). Production events to register: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
 
 ## Next Phase Readiness
 
-- Webhook handler is complete and committed
-- Once signature verified via Stripe CLI, plan 03 can be marked complete
-- Plan 04 (billing portal / customer portal route) can proceed after verification
+- Webhook handler complete and verified via Stripe CLI
+- Plan 04 (settings page / billing UI) can proceed
+- stripe_customer_id and plan columns will be updated correctly when real payments flow through
 
 ---
 *Phase: 05-stripe-billing*
-*Plan 03 partial completion: 2026-06-07*
+*Completed: 2026-06-07*
