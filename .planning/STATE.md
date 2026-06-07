@@ -34,6 +34,8 @@ Progress: [████████░░] 76%
 - Phase 2: api_key_suffix (last 4 chars) stored plaintext for display; encrypted key never returned
 - [Phase 05]: Limit check placed before checkProviderKey (expensive network call) and before DB insert — fast 403 gate
 - [Phase 05]: Plan read from users table per request (not JWT) to avoid stale plan values after tier changes
+- [Phase 06-05]: Zod v4 z.union([z.url(), z.literal(''), z.null()]).optional() handles all valid slack_webhook_url states in PATCH handler
+- [Phase 06-05]: PATCH /api/projects/[id] coerces empty string to null so users can clear slack_webhook_url via the UI
 
 ### Pending Todos
 
