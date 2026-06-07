@@ -8,12 +8,12 @@
 
 ## Current Position
 
-Phase: 6 of 7 (Email Alerts + Slack) — IN PROGRESS
-Plan: 4 of 5 complete
-Status: Plan 06-04 complete. budgetChecker.ts now fetches real slack_webhook_url from DB join, passes it to fireAlert(), and uses 1-hour rolling dedup window. Ready for 06-05 (final plan).
-Last activity: 2026-06-07 — 06-04 executed (budgetChecker.ts Slack URL + 1-hour dedup, ~5 min).
+Phase: 6 of 7 (Email Alerts + Slack) — COMPLETE
+Plan: 5 of 5 complete
+Status: Plan 06-05 complete. Notifications tab with Slack webhook URL input added to project detail page. PATCH /api/projects/[id] persists slack_webhook_url to DB. Human-verified end-to-end. Phase 6 fully done.
+Last activity: 2026-06-07 — 06-05 executed (Notifications tab + PATCH endpoint, human-verified, ~25 min).
 
-Progress: [████████░░] 76%
+Progress: [█████████░] 85%
 
 ## Performance Metrics
 
@@ -105,5 +105,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 06-04-PLAN.md (budgetChecker.ts — real Slack URL from DB join + 1-hour rolling dedup)
+Stopped at: Completed 06-05-PLAN.md (Notifications tab + PATCH /api/projects/[id] — human-verified). Phase 6 complete.
 Resume file: None
