@@ -9,9 +9,9 @@
 ## Current Position
 
 Phase: 6 of 7 (Email Alerts + Slack) — IN PROGRESS
-Plan: 2 of 5 complete
-Status: Plan 06-02 complete. alertService.ts updated with delivery_status tracking and RESEND_FROM_ADDRESS env var. Ready for 06-03 (Slack webhook validation API).
-Last activity: 2026-06-07 — 06-02 executed (alertService.ts delivery tracking, ~5 min).
+Plan: 3 of 5 complete
+Status: Plan 06-03 complete. buildEmailHtml extracted into emailTemplates.ts. alertService.ts updated to import from emailTemplates. Ready for 06-04 (Slack webhook validation API).
+Last activity: 2026-06-07 — 06-03 executed (emailTemplates.ts extraction, ~9 min).
 
 Progress: [████████░░] 72%
 
@@ -71,6 +71,10 @@ None yet.
 - createServiceClient() (service role) required — no user session in webhook requests, RLS blocks UPDATE
 - checkout.session.completed calls stripe.subscriptions.retrieve() because session.subscription is a string ID, not expanded
 
+### Decisions (06-03)
+
+- AlertPayload duplicated in emailTemplates.ts (not imported from alertService.ts) — avoids circular dependency; emailTemplates is imported by alertService, so re-importing from alertService would create a cycle
+
 ### Decisions (06-02)
 
 - deliveryStatus mutated in-place by sendEmail/sendSlack (passed by reference) — no return values needed, cleaner call sites
@@ -94,5 +98,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 06-02-PLAN.md (alertService.ts — delivery_status tracking + RESEND_FROM_ADDRESS)
+Stopped at: Completed 06-03-PLAN.md (emailTemplates.ts extraction — buildEmailHtml moved from alertService.ts)
 Resume file: None
