@@ -155,5 +155,5 @@ Sub-phases (5):
 | 3. Dashboard Real Data | 2/4 | In progress | - |
 | 4. Budget Rules API + UI | 0/5 | Planned | - |
 | 5. Stripe Billing | 5/5 | Complete   | 2026-06-07 |
-| 6. Email Alerts + Slack | 0/5 | Planned | - |
+| 6. Email Alerts + Slack | 1/5 | In Progress|  |
 | 7. Settings + QStash + Polish | 0/5 | Not started | - |

@@ -8,12 +8,12 @@
 
 ## Current Position
 
-Phase: 5 of 7 (Stripe Billing) — COMPLETE
-Plan: 5 of 5 complete
-Status: Phase 5 verified and complete. Gap fix: stale /billing stub replaced with redirect, upgrade link fixed to /settings/billing.
-Last activity: 2026-06-07 — Phase 5 verified (PASS after gap fix). Ready for Phase 6.
+Phase: 6 of 7 (Email Alerts + Slack) — IN PROGRESS
+Plan: 1 of 5 complete
+Status: Plan 06-01 complete. Migration 005 created (slack_webhook_url + delivery_status columns). Ready for 06-02 (alertService).
+Last activity: 2026-06-07 — 06-01 executed (migration only, ~1 min).
 
-Progress: [████████░░] 70%
+Progress: [████████░░] 72%
 
 ## Performance Metrics
 
@@ -71,6 +71,12 @@ None yet.
 - createServiceClient() (service role) required — no user session in webhook requests, RLS blocks UPDATE
 - checkout.session.completed calls stripe.subscriptions.retrieve() because session.subscription is a string ID, not expanded
 
+### Decisions (06-01)
+
+- slack_webhook_url is nullable text with no default — Slack alert delivery is opt-in per project
+- delivery_status is nullable JSONB with no default — absence means alert predates column; shape: {email:{sent,messageId?,error?}, slack:{sent,error?}}
+- No indexes on delivery_status — no query patterns require them at this stage
+
 ### Blockers/Concerns
 
 - RESEND_API_KEY not yet set — email alerts won't fire until Phase 6
@@ -82,5 +88,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 05-05-PLAN.md (plan-based resource limit enforcement on connections + projects)
+Stopped at: Completed 06-01-PLAN.md (migration 005 — slack_webhook_url + delivery_status)
 Resume file: None
