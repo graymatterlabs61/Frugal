@@ -49,6 +49,7 @@ export interface ProjectStats {
   projectedMonthly: number; // burnRateDaily * 30
   budgetLimit: number | null;
   lastUpdatedAt: string | null; // MAX(last_polled_at) from active connections
+  slackWebhookUrl: string | null;
 }
 
 export interface ProjectConnection {
@@ -427,7 +428,7 @@ export async function getProjectStats(
   // Fetch the project row
   const { data: projectData, error: projectError } = await supabase
     .from("projects")
-    .select("id, name, description, status")
+    .select("id, name, description, status, slack_webhook_url")
     .eq("id", projectId)
     .eq("user_id", userId)
     .single();
@@ -536,6 +537,7 @@ export async function getProjectStats(
     projectedMonthly,
     budgetLimit,
     lastUpdatedAt,
+    slackWebhookUrl: (projectData.slack_webhook_url as string | null) ?? null,
   };
 }
 
