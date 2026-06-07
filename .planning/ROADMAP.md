@@ -96,14 +96,14 @@ Sub-phases (5):
   3. Subscription cancellation reverts plan to 'free' via webhook
   4. Billing page shows real Stripe invoice history
   5. Customer portal accessible for self-serve plan management
-**Plans**: TBD
+**Plans**: 5 plans
 
-Sub-phases (5):
-- [ ] 05-01: npm install stripe + lib/stripe.ts (singleton, PRICE_MAP, getPlanFromPriceId)
-- [ ] 05-02: POST /api/stripe/checkout (create session) + POST /api/stripe/portal (portal session)
-- [ ] 05-03: POST /api/stripe/webhook — verify signature, handle 3 events, update users.plan
-- [ ] 05-04: Billing page server component — real Stripe invoices, wire upgrade/portal buttons
-- [ ] 05-05: Tier enforcement in POST /api/connections + POST /api/projects (uses lib/tier.ts)
+Plans:
+- [ ] 05-01-PLAN.md — lib/stripe.ts singleton + PRICE_MAP + PLAN_LIMITS in lib/tier.ts
+- [ ] 05-02-PLAN.md — POST /api/stripe/checkout + POST /api/stripe/portal
+- [ ] 05-03-PLAN.md — POST /api/stripe/webhook (signature verify + 3 event handlers)
+- [ ] 05-04-PLAN.md — Billing page server/client split with real invoices + checkout wiring
+- [ ] 05-05-PLAN.md — Tier enforcement in POST /api/connections + POST /api/projects
 
 ### Phase 6: Email Alerts + Slack
 **Goal**: Resend email templates for budget alerts (real RESEND_API_KEY, real sends). Slack webhook URL stored per project in settings. alertService.ts delivers both channels. End-to-end test: connect key → poll → budget rule triggers → email + Slack fires.
@@ -154,6 +154,6 @@ Sub-phases (5):
 | 2. Core APIs + Polling Worker | - | Complete | 2026-06-05 |
 | 3. Dashboard Real Data | 2/4 | In progress | - |
 | 4. Budget Rules API + UI | 0/5 | Planned | - |
-| 5. Stripe Billing | 0/5 | Not started | - |
+| 5. Stripe Billing | 0/5 | Planned | - |
 | 6. Email Alerts + Slack | 0/5 | Not started | - |
 | 7. Settings + QStash + Polish | 0/5 | Not started | - |
