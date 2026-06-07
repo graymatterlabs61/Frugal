@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Navbar } from "@/components/landing/Navbar";
+import { MarketingNav } from "@/components/landing/MarketingNav";
 import { Footer } from "@/components/landing/Footer";
 import { Check, ChevronDown, Building2, Users, ArrowRight, Shield } from "lucide-react";
 
@@ -205,11 +205,10 @@ function IntervalToggle({
         <button
           key={v}
           onClick={() => onChange(v)}
-          className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all capitalize ${
-            value === v
+          className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all capitalize ${value === v
               ? "bg-white/[0.12] text-foreground border border-white/[0.12] shadow-sm"
               : "text-muted-foreground hover:text-foreground"
-          }`}
+            }`}
         >
           {v}
           {v === "yearly" && (
@@ -234,15 +233,15 @@ function PlanCard({
       style={
         featured
           ? {
-              background:
-                "linear-gradient(145deg, oklch(0.97 0 0 / 0.95) 0%, oklch(0.92 0 0 / 0.9) 100%)",
-              border: "1px solid oklch(1 0 0 / 0.3)",
-            }
+            background:
+              "linear-gradient(145deg, oklch(0.97 0 0 / 0.95) 0%, oklch(0.92 0 0 / 0.9) 100%)",
+            border: "1px solid oklch(1 0 0 / 0.3)",
+          }
           : {
-              background:
-                "linear-gradient(145deg, oklch(1 0 0 / 0.06) 0%, oklch(1 0 0 / 0.02) 100%)",
-              border: "1px solid oklch(1 0 0 / 0.10)",
-            }
+            background:
+              "linear-gradient(145deg, oklch(1 0 0 / 0.06) 0%, oklch(1 0 0 / 0.02) 100%)",
+            border: "1px solid oklch(1 0 0 / 0.10)",
+          }
       }
     >
       {children}
@@ -297,12 +296,12 @@ function PricingPageInner() {
 
   return (
     <>
-      <Navbar />
+      <MarketingNav />
 
       <main className="min-h-screen">
 
         {/* ── Hero ──────────────────────────────────────────────────────── */}
-        <section className="pt-32 pb-12 px-4 text-center">
+        <section className="pt-24 pb-12 px-4 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/8 px-4 py-1.5 text-xs font-semibold text-primary mb-6">
             Simple, transparent pricing
           </div>
@@ -326,22 +325,20 @@ function PricingPageInner() {
           >
             <button
               onClick={() => setTab("personal")}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                tab === "personal"
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${tab === "personal"
                   ? "bg-foreground text-background shadow-md"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               Personal
               <span className="text-[10px] font-mono opacity-70">dev</span>
             </button>
             <button
               onClick={() => setTab("corporate")}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                tab === "corporate"
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${tab === "corporate"
                   ? "bg-foreground text-background shadow-md"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               <Building2 className="w-3.5 h-3.5" />
               Corporate
@@ -373,9 +370,8 @@ function PricingPageInner() {
                         {p.name}
                       </h3>
                       <span
-                        className={`text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border ${
-                          p.featured ? "text-background/70 bg-black/10 border-black/20" : p.badgeClass
-                        }`}
+                        className={`text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border ${p.featured ? "text-background/70 bg-black/10 border-black/20" : p.badgeClass
+                          }`}
                       >
                         {p.badge}
                       </span>
@@ -404,11 +400,10 @@ function PricingPageInner() {
 
                     <Link
                       href={p.ctaHref}
-                      className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 flex items-center justify-center transition-all ${
-                        p.featured
+                      className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 flex items-center justify-center transition-all ${p.featured
                           ? "bg-background text-foreground hover:bg-background/90"
                           : "bg-white/5 hover:bg-white/10 text-foreground border border-white/[0.08]"
-                      }`}
+                        }`}
                     >
                       {p.cta}
                     </Link>
@@ -489,9 +484,8 @@ function PricingPageInner() {
                       {p.name}
                     </h3>
                     <span
-                      className={`text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border ${
-                        p.featured ? "text-background/70 bg-black/10 border-black/20" : p.badgeClass
-                      }`}
+                      className={`text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border ${p.featured ? "text-background/70 bg-black/10 border-black/20" : p.badgeClass
+                        }`}
                     >
                       {p.badge}
                     </span>
@@ -517,11 +511,10 @@ function PricingPageInner() {
                         window.location.href = "mailto:founder@frugal.dev?subject=Corporate%20Plan%20Waitlist";
                       }
                     }}
-                    className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 flex items-center justify-center gap-1.5 transition-all ${
-                      p.featured
+                    className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 flex items-center justify-center gap-1.5 transition-all ${p.featured
                         ? "bg-background text-foreground hover:bg-background/90"
                         : "bg-white/5 hover:bg-white/10 text-foreground border border-white/[0.08]"
-                    }`}
+                      }`}
                   >
                     <Users className="w-3.5 h-3.5" />
                     Join Waitlist

@@ -1,5 +1,6 @@
 import React from "react"
 import { LegalSidebar, type LegalSectionItem } from "./LegalSidebar"
+import { MarketingNav } from "@/components/landing/MarketingNav"
 
 // ── Layout shell ─────────────────────────────────────────────
 
@@ -21,7 +22,9 @@ export function LegalLayout({
   children,
 }: LegalLayoutProps) {
   return (
-    <div className="min-h-screen bg-background text-foreground flex justify-center py-12 md:py-20 px-6 md:px-12">
+    <>
+    <MarketingNav />
+    <div className="min-h-screen bg-background text-foreground flex justify-center pt-24 pb-12 md:pb-20 px-6 md:px-12">
       <div className="flex flex-col md:flex-row gap-12 md:gap-24 w-full max-w-[1300px]">
         <LegalSidebar sections={sections} variant={variant} />
         
@@ -65,6 +68,7 @@ export function LegalLayout({
         </main>
       </div>
     </div>
+    </>
   )
 }
 
