@@ -116,14 +116,14 @@ Plans:
   3. Alert fires to Slack when threshold crossed on project with webhook configured
   4. Same rule doesn't fire twice within 1-hour deduplication window
   5. alert_log.delivery_status records channel outcomes
-**Plans**: TBD
+**Plans**: 5 plans
 
-Sub-phases (5):
-- [ ] 06-01: Migration 004 — projects.slack_webhook_url + alert_log.delivery_status jsonb
-- [ ] 06-02: alertService.ts real Resend email delivery
-- [ ] 06-03: lib/polling/emailTemplates.ts — HTML alert email template
-- [ ] 06-04: Slack webhook delivery in alertService.ts + deduplication verification
-- [ ] 06-05: Project detail Notifications UI — Slack webhook input + PATCH /api/projects/[id]
+Plans:
+- [ ] 06-01-PLAN.md — Migration 005: projects.slack_webhook_url + alert_log.delivery_status jsonb
+- [ ] 06-02-PLAN.md — alertService.ts: delivery_status tracking + RESEND_FROM_ADDRESS env var
+- [ ] 06-03-PLAN.md — lib/polling/emailTemplates.ts: extract buildEmailHtml from alertService.ts
+- [ ] 06-04-PLAN.md — budgetChecker.ts: real Slack URL from DB join + 1-hour dedup window
+- [ ] 06-05-PLAN.md — PATCH /api/projects/[id] + Notifications tab with Slack webhook input
 
 ### Phase 7: Settings + QStash Cron + Polish
 **Goal**: Account settings (name/email update), security settings (password change), integration settings (Slack webhook URL per project). QStash 5-minute cron schedule configured and live. All tier limits enforced (connection limits, project limits, history window). Launch-ready.
@@ -155,5 +155,5 @@ Sub-phases (5):
 | 3. Dashboard Real Data | 2/4 | In progress | - |
 | 4. Budget Rules API + UI | 0/5 | Planned | - |
 | 5. Stripe Billing | 5/5 | Complete   | 2026-06-07 |
-| 6. Email Alerts + Slack | 0/5 | Not started | - |
+| 6. Email Alerts + Slack | 0/5 | Planned | - |
 | 7. Settings + QStash + Polish | 0/5 | Not started | - |
