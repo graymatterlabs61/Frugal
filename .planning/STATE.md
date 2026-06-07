@@ -9,9 +9,9 @@
 ## Current Position
 
 Phase: 6 of 7 (Email Alerts + Slack) — IN PROGRESS
-Plan: 1 of 5 complete
-Status: Plan 06-01 complete. Migration 005 created (slack_webhook_url + delivery_status columns). Ready for 06-02 (alertService).
-Last activity: 2026-06-07 — 06-01 executed (migration only, ~1 min).
+Plan: 2 of 5 complete
+Status: Plan 06-02 complete. alertService.ts updated with delivery_status tracking and RESEND_FROM_ADDRESS env var. Ready for 06-03 (Slack webhook validation API).
+Last activity: 2026-06-07 — 06-02 executed (alertService.ts delivery tracking, ~5 min).
 
 Progress: [████████░░] 72%
 
@@ -71,6 +71,12 @@ None yet.
 - createServiceClient() (service role) required — no user session in webhook requests, RLS blocks UPDATE
 - checkout.session.completed calls stripe.subscriptions.retrieve() because session.subscription is a string ID, not expanded
 
+### Decisions (06-02)
+
+- deliveryStatus mutated in-place by sendEmail/sendSlack (passed by reference) — no return values needed, cleaner call sites
+- onboarding@resend.dev used as RESEND_FROM_ADDRESS fallback — allows email delivery in Resend sandbox before custom domain is verified
+- notifiedVia array preserved alongside deliveryStatus — backward-compatible channel list for alert_log.notified_via consumers
+
 ### Decisions (06-01)
 
 - slack_webhook_url is nullable text with no default — Slack alert delivery is opt-in per project
@@ -88,5 +94,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 06-01-PLAN.md (migration 005 — slack_webhook_url + delivery_status)
+Stopped at: Completed 06-02-PLAN.md (alertService.ts — delivery_status tracking + RESEND_FROM_ADDRESS)
 Resume file: None
