@@ -13,13 +13,13 @@ export async function checkBudgets(supabase: SupabaseClient): Promise<number> {
   // Get all active budget rules with project + user info
   const { data: rules, error } = await supabase
     .from("budget_rules")
-    .select("*, projects(id, name, user_id, users(id, email))")
+    .select("*, projects(id, name, user_id, slack_webhook_url, users(id, email))")
     .eq("is_active", true);
 
   if (error || !rules?.length) return 0;
 
   for (const rule of rules as (BudgetRule & {
-    projects: { id: string; name: string; user_id: string; users: { id: string; email: string } };
+    projects: { id: string; name: string; user_id: string; slack_webhook_url: string | null; users: { id: string; email: string } };
   })[]) {
     const project = rule.projects;
     if (!project) continue;
@@ -29,13 +29,14 @@ export async function checkBudgets(supabase: SupabaseClient): Promise<number> {
 
     if (percentUsed < rule.threshold_pct) continue;
 
-    // Deduplicate: skip if an active alert for this rule already exists
+    // Deduplicate: skip if an active alert for this rule fired in the last hour
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
     const { data: existing } = await supabase
       .from("alert_log")
       .select("id")
       .eq("rule_id", rule.id)
       .eq("status", "active")
-      .gte("triggered_at", getPeriodStart(rule.budget_window))
+      .gte("triggered_at", oneHourAgo)
       .limit(1);
 
     if (existing?.length) continue;
@@ -51,7 +52,7 @@ export async function checkBudgets(supabase: SupabaseClient): Promise<number> {
       limitUsd: rule.limit_usd,
       percentUsed,
       action: rule.action,
-      slackWebhookUrl: null, // future: pull from user settings
+      slackWebhookUrl: project.slack_webhook_url ?? null,
     });
 
     alertsFired++;
