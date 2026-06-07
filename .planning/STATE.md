@@ -4,16 +4,16 @@
 
 **Product:** Frugal — AI API cost management SaaS
 **Core value:** Developers see unified AI spend across all providers and get automated guardrails before costs spiral
-**Current focus:** Phase 3 — Dashboard Real Data
+**Current focus:** Phase 5 — Stripe Billing
 
 ## Current Position
 
-Phase: 3 of 7 (Dashboard Real Data)
-Plan: 4 of 4 in current phase
-Status: All plans complete — awaiting verification
-Last activity: 2026-06-05 — Completed 03-04: project detail split into server+client, worker.ts bug fixed. Completed 03-02: dashboard/page.tsx rewritten with real data.
+Phase: 5 of 7 (Stripe Billing)
+Plan: 1 of 5 complete in current phase
+Status: Plan 01 complete (Stripe foundation + PLAN_LIMITS). Plans 02–05 remaining.
+Last activity: 2026-06-07 — Completed 05-01 (stripe install, lib/stripe.ts, lib/tier.ts PLAN_LIMITS).
 
-Progress: [█████░░░░░] 50%
+Progress: [████████░░] 70%
 
 ## Performance Metrics
 
@@ -50,15 +50,22 @@ None yet.
 - getProjectStats fetches connection IDs first, filters usage_records via second query (no project_id on usage_records table)
 - Budget limit lookup in getTopProjects uses single .in() query across all project IDs — no N+1
 
+### Decisions (05-01)
+
+- stripe 22.2.0 pins apiVersion to "2026-05-27.dahlia" — plan specified "2026-04-22.dahlia" which is one release behind; must use 2026-05-27.dahlia
+- PLAN_LIMITS uses Infinity for pro tier so callers do `count < limit` without special-casing unlimited
+- growth plan mirrors starter in PLAN_LIMITS for forward compatibility (Phase 5 billing only sells starter and pro)
+
 ### Blockers/Concerns
 
 - RESEND_API_KEY not yet set — email alerts won't fire until Phase 6
 - QStash cron schedule not configured — manual poll only (dev GET endpoint exists)
 - Gemini actual usage data requires Cloud Billing API + service account (not via API key) — out of scope V1
 - Worker `.eq("is_active", true)` bug — FIXED in 03-04 (b406cec)
+- STRIPE_SECRET_KEY + 4 price ID env vars not yet set — Stripe routes will throw until configured
 
 ## Session Continuity
 
-Last session: 2026-06-05
-Stopped at: All 4 Wave 2 plans complete — ready for phase verification
+Last session: 2026-06-07
+Stopped at: Completed 05-01-PLAN.md (Stripe billing foundation)
 Resume file: None
