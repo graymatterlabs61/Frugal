@@ -9,11 +9,11 @@
 ## Current Position
 
 Phase: 6 of 7 (Email Alerts + Slack) — IN PROGRESS
-Plan: 3 of 5 complete
-Status: Plan 06-03 complete. buildEmailHtml extracted into emailTemplates.ts. alertService.ts updated to import from emailTemplates. Ready for 06-04 (Slack webhook validation API).
-Last activity: 2026-06-07 — 06-03 executed (emailTemplates.ts extraction, ~9 min).
+Plan: 4 of 5 complete
+Status: Plan 06-04 complete. budgetChecker.ts now fetches real slack_webhook_url from DB join, passes it to fireAlert(), and uses 1-hour rolling dedup window. Ready for 06-05 (final plan).
+Last activity: 2026-06-07 — 06-04 executed (budgetChecker.ts Slack URL + 1-hour dedup, ~5 min).
 
-Progress: [████████░░] 72%
+Progress: [████████░░] 76%
 
 ## Performance Metrics
 
@@ -71,6 +71,11 @@ None yet.
 - createServiceClient() (service role) required — no user session in webhook requests, RLS blocks UPDATE
 - checkout.session.completed calls stripe.subscriptions.retrieve() because session.subscription is a string ID, not expanded
 
+### Decisions (06-04)
+
+- 1-hour rolling dedup window prevents alert re-fire within 60 minutes regardless of budget period boundary (replaces midnight-reset period-based dedup)
+- getPeriodStart() preserved unchanged — still required by getProjectSpend() for spend calculation; only removed from the dedup query
+
 ### Decisions (06-03)
 
 - AlertPayload duplicated in emailTemplates.ts (not imported from alertService.ts) — avoids circular dependency; emailTemplates is imported by alertService, so re-importing from alertService would create a cycle
@@ -98,5 +103,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 06-03-PLAN.md (emailTemplates.ts extraction — buildEmailHtml moved from alertService.ts)
+Stopped at: Completed 06-04-PLAN.md (budgetChecker.ts — real Slack URL from DB join + 1-hour rolling dedup)
 Resume file: None
