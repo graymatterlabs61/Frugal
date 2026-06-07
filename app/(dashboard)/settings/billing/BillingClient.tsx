@@ -2,10 +2,11 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Check, Building2, Download, Users } from "lucide-react";
+import { Check, Building2, Download, ArrowRight } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -105,61 +106,6 @@ const PERSONAL_PLANS = [
   },
 ] as const;
 
-const CORPORATE_PLANS = [
-  {
-    id: "team",
-    name: "Team",
-    badge: "2–10 SEATS",
-    badgeClass: "text-blue-400 bg-blue-500/10 border-blue-500/30",
-    tagline: "Proxy gateway for small engineering teams",
-    price: "$79",
-    priceNote: "/month flat",
-    featured: false,
-    features: [
-      "Proxy gateway (no URL change)",
-      "Real-time request blocking",
-      "Per-employee attribution",
-      "Admin dashboard",
-      "5-min poll + request-level data",
-      "Email + Slack alerts",
-      "Community support",
-    ],
-  },
-  {
-    id: "scale",
-    name: "Scale",
-    badge: "11–20 SEATS",
-    badgeClass: "text-white bg-primary border-primary/60",
-    tagline: "SSO, compliance, and audit-ready exports",
-    price: "$149",
-    priceNote: "/month flat",
-    featured: true,
-    features: [
-      "Everything in Team",
-      "Single sign-on (SSO)",
-      "Compliance export",
-      "Per-team budget policies",
-      "Priority email · 24h support",
-    ],
-  },
-  {
-    id: "growth",
-    name: "Growth",
-    badge: "20+ SEATS",
-    badgeClass: "text-purple-400 bg-purple-500/10 border-purple-500/30",
-    tagline: "Enterprise-grade SLA for large orgs",
-    price: "Custom",
-    priceNote: "contact sales",
-    featured: false,
-    features: [
-      "Everything in Scale",
-      "99.9% uptime SLA",
-      "Dedicated onboarding",
-      "Custom contract",
-      "Slack-based support channel",
-    ],
-  },
-] as const;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -406,117 +352,37 @@ function BillingClientInner({
         )}
       </div>
 
-      {/* ── Corporate Plans ──────────────────────────────────────────────── */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-base">Corporate Plans</h3>
-              <span className="text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border text-yellow-400 bg-yellow-500/10 border-yellow-500/30">
-                Waitlist Open
-              </span>
-            </div>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              Proxy gateway with real-time blocking and per-employee attribution. Targeting Q3 2026.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid sm:grid-cols-3 gap-4">
-          {CORPORATE_PLANS.map((p) => (
-            <div
-              key={p.id}
-              className="rounded-2xl p-5 flex flex-col"
-              style={
-                p.featured
-                  ? {
-                      background:
-                        "linear-gradient(145deg, oklch(0.97 0 0 / 0.95) 0%, oklch(0.92 0 0 / 0.9) 100%)",
-                      border: "1px solid oklch(1 0 0 / 0.3)",
-                    }
-                  : glassCard
-              }
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h4 className={`font-bold text-base ${p.featured ? "text-background" : ""}`}>
-                  {p.name}
-                </h4>
-                <span
-                  className={`text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border ${
-                    p.featured
-                      ? "text-background/70 bg-black/10 border-black/20"
-                      : p.badgeClass
-                  }`}
-                >
-                  {p.badge}
-                </span>
-              </div>
-
-              <div className="mb-4">
-                <div className="flex items-baseline gap-1">
-                  <span
-                    className={`text-3xl font-bold font-mono ${p.featured ? "text-background" : ""}`}
-                  >
-                    {p.price}
-                  </span>
-                  <span
-                    className={`text-sm ${p.featured ? "text-background/60" : "text-muted-foreground"}`}
-                  >
-                    {p.priceNote}
-                  </span>
-                </div>
-                <p
-                  className={`text-xs mt-0.5 ${p.featured ? "text-background/60" : "text-muted-foreground"}`}
-                >
-                  {p.tagline}
-                </p>
-              </div>
-
-              <Button
-                variant="outline"
-                className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 ${
-                  p.featured
-                    ? "bg-background text-foreground border-background hover:bg-background/90"
-                    : "bg-white/5 hover:bg-white/10 text-foreground border border-white/[0.08]"
-                }`}
-                onClick={() => toast.info("Waitlist — coming soon")}
-              >
-                <Users className="w-3.5 h-3.5 mr-1.5" />
-                Join Waitlist
-              </Button>
-
-              <ul className="space-y-2 flex-1">
-                {p.features.map((f) => (
-                  <li
-                    key={f}
-                    className={`flex items-start gap-2 text-sm ${p.featured ? "text-background/80" : ""}`}
-                  >
-                    <Check
-                      className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${p.featured ? "text-background/60" : "text-primary"}`}
-                    />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
+      {/* ── Corporate upsell ─────────────────────────────────────────────── */}
+      <div
+        className="rounded-2xl p-5 flex flex-col sm:flex-row items-center gap-4"
+        style={{
+          background: "oklch(1 0 0 / 0.03)",
+          border: "1px dashed oklch(1 0 0 / 0.14)",
+        }}
+      >
         <div
-          className="rounded-2xl p-4 flex items-start gap-3"
-          style={{
-            background: "oklch(1 0 0 / 0.02)",
-            border: "1px dashed oklch(1 0 0 / 0.12)",
-          }}
+          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+          style={{ background: "oklch(1 0 0 / 0.06)", border: "1px solid oklch(1 0 0 / 0.10)" }}
         >
-          <Building2 className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Corporate plan uses a proxy gateway — your team&apos;s requests route through Frugal for real-time attribution and blocking.
-            Your traffic goes directly to the provider; we never store prompt or completion content.
-            SOC 2 Type II targeted Q4 2026. Questions:{" "}
-            <span className="text-foreground font-medium">founder@frugal.dev</span>
+          <Building2 className="w-4 h-4 text-muted-foreground" />
+        </div>
+        <div className="flex-1 min-w-0 text-center sm:text-left">
+          <div className="flex items-center gap-2 justify-center sm:justify-start mb-0.5">
+            <p className="font-semibold text-sm">Corporate Plans — Waitlist Open</p>
+            <span className="text-[10px] font-bold font-mono uppercase px-1.5 py-0.5 rounded border text-yellow-400 bg-yellow-500/10 border-yellow-500/30">
+              Q3 2026
+            </span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Proxy gateway · Real-time blocking · Per-employee attribution · SSO · Compliance export
           </p>
         </div>
+        <Link
+          href="/pricing?tab=corporate"
+          className="shrink-0 flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+        >
+          View plans <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
       </div>
 
       {/* ── Billing History ──────────────────────────────────────────────── */}
