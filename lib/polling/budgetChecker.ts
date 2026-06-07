@@ -24,10 +24,10 @@ export async function checkBudgets(supabase: SupabaseClient): Promise<number> {
     const project = rule.projects;
     if (!project) continue;
 
-    const spend = await getProjectSpend(supabase, project.id, rule.period);
+    const spend = await getProjectSpend(supabase, project.id, rule.budget_window);
     const percentUsed = rule.limit_usd > 0 ? (spend / rule.limit_usd) * 100 : 0;
 
-    if (percentUsed < rule.alert_at_percent) continue;
+    if (percentUsed < rule.threshold_pct) continue;
 
     // Deduplicate: skip if an active alert for this rule already exists
     const { data: existing } = await supabase
@@ -35,7 +35,7 @@ export async function checkBudgets(supabase: SupabaseClient): Promise<number> {
       .select("id")
       .eq("rule_id", rule.id)
       .eq("status", "active")
-      .gte("triggered_at", getPeriodStart(rule.period))
+      .gte("triggered_at", getPeriodStart(rule.budget_window))
       .limit(1);
 
     if (existing?.length) continue;
@@ -46,7 +46,7 @@ export async function checkBudgets(supabase: SupabaseClient): Promise<number> {
       ruleId: rule.id,
       projectName: project.name,
       userEmail: project.users.email,
-      periodLabel: rule.period === "daily" ? "Daily" : "Monthly",
+      periodLabel: rule.budget_window === "daily" ? "Daily" : "Monthly",
       spendUsd: spend,
       limitUsd: rule.limit_usd,
       percentUsed,
@@ -63,9 +63,9 @@ export async function checkBudgets(supabase: SupabaseClient): Promise<number> {
 async function getProjectSpend(
   supabase: SupabaseClient,
   projectId: string,
-  period: "daily" | "monthly",
+  budgetWindow: "daily" | "monthly",
 ): Promise<number> {
-  const start = getPeriodStart(period);
+  const start = getPeriodStart(budgetWindow);
 
   const { data } = await supabase
     .from("usage_records")
@@ -77,9 +77,9 @@ async function getProjectSpend(
   return data.reduce((sum, r) => sum + Number(r.cost_usd ?? 0), 0);
 }
 
-function getPeriodStart(period: "daily" | "monthly"): string {
+function getPeriodStart(budgetWindow: "daily" | "monthly"): string {
   const now = new Date();
-  if (period === "daily") {
+  if (budgetWindow === "daily") {
     return now.toISOString().split("T")[0];
   }
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;

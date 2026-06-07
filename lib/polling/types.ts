@@ -24,9 +24,9 @@ export interface BudgetRule {
   id: string;
   project_id: string;
   user_id: string;
-  period: "daily" | "monthly";
+  budget_window: "daily" | "monthly";
   limit_usd: number;
-  alert_at_percent: number;
+  threshold_pct: number;
   action: string;
   is_active: boolean;
 }
