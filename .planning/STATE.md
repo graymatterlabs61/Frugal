@@ -9,11 +9,11 @@
 ## Current Position
 
 Phase: 3 of 7 (Dashboard Real Data)
-Plan: 3 of 4 in current phase
-Status: In progress
-Last activity: 2026-06-05 — Completed 03-03: alerts/page.tsx rewritten as async server component with real alert_log data.
+Plan: 4 of 4 in current phase
+Status: All plans complete — awaiting verification
+Last activity: 2026-06-05 — Completed 03-04: project detail split into server+client, worker.ts bug fixed. Completed 03-02: dashboard/page.tsx rewritten with real data.
 
-Progress: [████░░░░░░] 38%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
@@ -55,10 +55,10 @@ None yet.
 - RESEND_API_KEY not yet set — email alerts won't fire until Phase 6
 - QStash cron schedule not configured — manual poll only (dev GET endpoint exists)
 - Gemini actual usage data requires Cloud Billing API + service account (not via API key) — out of scope V1
-- Worker queries `.eq("is_active", true)` but column is `status = 'active'` — minor bug to fix in Phase 3
+- Worker `.eq("is_active", true)` bug — FIXED in 03-04 (b406cec)
 
 ## Session Continuity
 
 Last session: 2026-06-05
-Stopped at: Completed 03-03-PLAN.md — alerts/page.tsx rewritten as async server component with real alert_log data
+Stopped at: All 4 Wave 2 plans complete — ready for phase verification
 Resume file: None

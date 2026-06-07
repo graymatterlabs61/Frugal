@@ -1,22 +1,57 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { ShowcaseForgotPassword } from "@/components/auth/ShowcaseForgotPassword";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { ArrowLeft, ArrowRight, ShieldCheck, Lock } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 export default function ResetPasswordPage() {
+  const router = useRouter();
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password !== confirm) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+    setLoading(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) throw error;
+      toast.success("Password updated successfully");
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to update password");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthLayout showcase={<ShowcaseForgotPassword />}>
       <div className="flex flex-col space-y-6">
         <div>
-          <h1 className="font-serif text-5xl italic mb-3">Set new password</h1>
+          <h1 className="font-playwrite text-5xl mb-3">Set new password</h1>
           <p className="text-muted-foreground text-lg max-w-xs">
             Please enter a strong password for your Frugal account.
           </p>
         </div>
 
-        <form className="space-y-6 pt-4">
+        <form className="space-y-6 pt-4" onSubmit={handleSubmit}>
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
@@ -26,10 +61,13 @@ export default function ResetPasswordPage() {
                 Min. 8 characters
               </span>
             </div>
-            <Input
-              type="password"
+            <PasswordInput
               placeholder="Enter New Password"
               className="bg-input/30 border-border/40 h-12 rounded-xl px-4 font-mono text-lg"
+              showStrength
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
 
@@ -37,21 +75,30 @@ export default function ResetPasswordPage() {
             <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
               Confirm Password
             </label>
-            <Input
-              type="password"
+            <PasswordInput
               placeholder="Confirm New Password"
               className="bg-input/30 border-border/40 h-12 rounded-xl px-4 font-mono text-lg"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
             />
           </div>
 
-          <Button type="button" className="w-full h-12 rounded-xl text-md font-semibold bg-primary hover:bg-primary/90 text-white">
-            Update Password
-            <ArrowRight className="w-4 h-4 ml-2" />
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full h-12 rounded-xl text-md font-semibold bg-primary hover:bg-primary/90 text-white"
+          >
+            {loading ? "Updating…" : "Update Password"}
+            {!loading && <ArrowRight className="w-4 h-4 ml-2" />}
           </Button>
         </form>
 
         <div className="text-center pt-2 pb-6">
-          <Link href="/login" className="inline-flex items-center text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            href="/login"
+            className="inline-flex items-center text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+          >
             <div className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mr-2">
               <ArrowLeft className="w-3 h-3" />
             </div>

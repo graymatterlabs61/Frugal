@@ -68,11 +68,22 @@ When Helicone, OpenAI, or Anthropic ships basic budget controls:
 
 3. **Founder narrative:** The DeepVid story + the $500M Claude story is a marketing asset that no competitor can replicate. The brand is built on lived experience.
 
-4. **Ship v2.0 proxy mode:** Real-time sub-second enforcement via proxy becomes the Pro feature that justifies premium pricing against free native controls.
+4. **Ship v2.0 proxy mode:** Real-time sub-second enforcement via proxy becomes the corporate/Pro feature that justifies premium pricing against free native controls. Personal plan keeps polling (no-friction advantage). Corporate plan gets real-time proxy (enforcement advantage).
 
 ---
 
-## 5. Competitive Advantages Summary
+## 5. Honest Frugal Limitations (Know These Before Sales Calls)
+
+| Limitation | Reality | Counter |
+|---|---|---|
+| 5-min polling gap | Personal plan cannot block mid-flight requests | "Use provider hard limits as floor, Frugal as early warning above that" |
+| API key custody | Users must trust Frugal with encrypted keys | "Keys only used for usage API — never for model requests. Architecture is documented." |
+| No SOC 2 yet | Enterprise buyers will ask | "Targeted Q4 2026. Personal plan architecture is open for review." |
+| Single point of polling failure | If QStash fails, alerts don't fire | "This is why provider hard limits are your backstop, not Frugal alone" |
+
+---
+
+## 6. Competitive Advantages Summary
 
 | Advantage | Frugal | Helicone | Portkey | OpenAI |
 |-----------|--------|----------|---------|--------|

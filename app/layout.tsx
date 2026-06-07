@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Oxanium } from "next/font/google"
 import "./globals.css"
 import { cn } from "@/lib/utils"
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider"
+import { Toaster } from "sonner"
 
 const oxanium = Oxanium({ subsets: ["latin"], variable: "--font-heading" })
 const fontSans = Geist({ subsets: ["latin"], variable: "--font-sans" })
@@ -63,7 +64,7 @@ export const metadata: Metadata = {
     description: siteDescription,
     images: [
       {
-        url: `${siteUrl}/og.png`,
+        url: `/og.png`,
         width: 1200,
         height: 630,
         alt: "Frugal — AI API Cost Management",
@@ -75,7 +76,7 @@ export const metadata: Metadata = {
     title: siteTitle,
     description: siteDescription,
     creator: "@neilkumaroff",
-    images: [`${siteUrl}/twitter.png`],
+    images: [`/twitter.png`],
   },
   icons: {
     icon: [
@@ -151,6 +152,7 @@ export default function RootLayout({
       </head>
       <body>
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        <Toaster theme="dark" position="bottom-right" richColors />
       </body>
     </html>
   )

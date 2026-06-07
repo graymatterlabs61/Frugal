@@ -197,7 +197,7 @@ export async function getDashboardStats(
     .from("alert_log")
     .select("id", { count: "exact", head: true })
     .eq("user_id", userId)
-    .gte("fired_at", calMonthStart + "T00:00:00Z");
+    .gte("triggered_at", calMonthStart + "T00:00:00Z");
 
   if (alertError) {
     console.error(
@@ -315,9 +315,9 @@ export async function getTopProjects(
 ): Promise<TopProject[]> {
   const { data: projectRows, error: projectError } = await supabase
     .from("project_monthly_spend")
-    .select("id, name, monthly_spend")
+    .select("project_id, project_name, spend_usd")
     .eq("user_id", userId)
-    .order("monthly_spend", { ascending: false })
+    .order("spend_usd", { ascending: false })
     .limit(3);
 
   if (projectError) {
@@ -328,7 +328,7 @@ export async function getTopProjects(
   const projects = projectRows ?? [];
   if (projects.length === 0) return [];
 
-  const projectIds = projects.map((p: { id: string }) => p.id);
+  const projectIds = projects.map((p: { project_id: string }) => p.project_id);
 
   // Fetch lowest budget limit per project in a single query
   const { data: budgetRows, error: budgetError } = await supabase
@@ -349,11 +349,11 @@ export async function getTopProjects(
     }
   }
 
-  return projects.map((p: { id: string; name: string; monthly_spend: number }) => ({
-    id: p.id,
-    name: p.name,
-    monthlySpend: p.monthly_spend ?? 0,
-    budgetLimit: budgetMap.get(p.id) ?? null,
+  return projects.map((p: { project_id: string; project_name: string; spend_usd: number }) => ({
+    id: p.project_id,
+    name: p.project_name,
+    monthlySpend: p.spend_usd ?? 0,
+    budgetLimit: budgetMap.get(p.project_id) ?? null,
   }));
 }
 
@@ -363,7 +363,7 @@ export async function getTopProjects(
 
 interface AlertLogRow {
   id: string;
-  fired_at: string;
+  triggered_at: string;
   action_taken: string;
   spend_at_trigger: number;
   limit_usd: number;
@@ -384,7 +384,7 @@ function mapAlertLogRow(
   );
   return {
     id: row.id,
-    firedAt: row.fired_at,
+    firedAt: row.triggered_at,
     message,
     type,
     severity,
@@ -399,9 +399,9 @@ export async function getRecentAlerts(
 ): Promise<RecentAlert[]> {
   const { data, error } = await supabase
     .from("alert_log")
-    .select("id, fired_at, action_taken, spend_at_trigger, limit_usd, percent_used, status")
+    .select("id, triggered_at, action_taken, spend_at_trigger, limit_usd, percent_used, status")
     .eq("user_id", userId)
-    .order("fired_at", { ascending: false })
+    .order("triggered_at", { ascending: false })
     .limit(limit);
 
   if (error) {
@@ -583,7 +583,7 @@ function mapProjectAlertRow(row: AlertLogRow): ProjectAlert {
   );
   return {
     id: row.id,
-    firedAt: row.fired_at,
+    firedAt: row.triggered_at,
     severity,
     message,
     status: row.status as ProjectAlert["status"],
@@ -598,10 +598,10 @@ export async function getProjectAlerts(
 ): Promise<ProjectAlert[]> {
   const { data, error } = await supabase
     .from("alert_log")
-    .select("id, fired_at, action_taken, spend_at_trigger, limit_usd, percent_used, status")
+    .select("id, triggered_at, action_taken, spend_at_trigger, limit_usd, percent_used, status")
     .eq("project_id", projectId)
     .eq("user_id", userId)
-    .order("fired_at", { ascending: false })
+    .order("triggered_at", { ascending: false })
     .limit(limit);
 
   if (error) {

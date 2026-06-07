@@ -94,13 +94,22 @@
 ## Objection Handling Scripts
 
 **"I just check the OpenAI dashboard manually."**
-"The OpenAI dashboard shows you what happened. Frugal stops it from happening. When was the last time your OpenAI bill surprised you? That's the gap."
+"OpenAI shows one provider. Frugal shows every provider in one view. And it fires an alert before you hit your limit — the dashboard shows you what already happened."
 
 **"I built my own token counter."**
-"Token counters track tokens. Frugal tracks dollars across every provider you use, per user, per project — and fires an alert before you hit your limit, not after. How long did building your counter take?"
+"Token counters track tokens. Frugal tracks dollars across every provider, per user, per project, with automatic alerts and guardrails. How long did building your counter take — and does it cover Anthropic too?"
 
 **"Helicone already does this."**
-"Helicone is an observability tool. It logs your requests and shows you what happened. Frugal enforces budget rules and automatically throttles before you hit them. Different job."
+"Helicone requires changing your API endpoint URL — every request routes through their proxy. Frugal polls your usage data directly. No URL change, no added latency, no single point of failure in your request path. Different architecture, different risk profile."
 
-**"It's too early for us — we're not spending much on AI APIs yet."**
-"That's the best time to set it up. The founders who lose products to API costs are always the ones who set up controls after the first bad month, not before."
+**"It's too early for us — we're not spending much yet."**
+"That's the best time to set it up. The founders who get burned are always the ones who set up controls after the first bad month, not before."
+
+**"I don't want to give a startup my API keys."**
+"Valid concern. On the personal plan, Frugal only calls your provider's usage reporting API — never your model endpoints. Your actual AI requests never touch our servers. The key is AES-256 encrypted, stored encrypted, and never returned to the UI after save. We also document exactly what API calls we make with your key. If you want to verify, the architecture page shows it."
+
+**"OpenAI already has spending limits built in."**
+"Yes — and you should keep those set. Frugal sits above that: it's the layer that covers your other providers (Anthropic, Replicate, fal.ai), gives you per-user attribution across all of them, and alerts your Slack before you hit limits — not after the invoice lands. Use both."
+
+**"What happens if Frugal goes down and my budget runs over?"**
+"This is exactly why we say: use provider native hard limits as your floor. Frugal is the early warning and automation layer above that, not the only line of defense. If our polling misses a cycle, your OpenAI project limit still holds."
