@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Check, Building2, Download } from "lucide-react";
+import { Check, Building2, Download, Users } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -36,21 +36,10 @@ interface BillingClientProps {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Plan definitions
 // ---------------------------------------------------------------------------
 
-const glassCard: React.CSSProperties = {
-  background:
-    "linear-gradient(145deg, oklch(1 0 0 / 0.06) 0%, oklch(1 0 0 / 0.02) 100%)",
-  backdropFilter: "blur(24px)",
-  WebkitBackdropFilter: "blur(24px)",
-  border: "1px solid oklch(1 0 0 / 0.10)",
-};
-
-type Interval = "monthly" | "yearly";
-type LoadingPlan = null | "plus" | "pro";
-
-const PLAN_DEFS = [
+const PERSONAL_PLANS = [
   {
     id: "free",
     name: "Free",
@@ -59,6 +48,7 @@ const PLAN_DEFS = [
     tagline: "For solo devs and side projects",
     monthly: 0,
     annual: 0,
+    annualTotal: 0,
     saving: 0,
     featured: false,
     features: [
@@ -73,11 +63,12 @@ const PLAN_DEFS = [
   {
     id: "plus",
     name: "Plus",
-    badge: "PRO",
+    badge: "POPULAR",
     badgeClass: "text-white bg-primary border-primary/60",
     tagline: "For growing products with real budgets",
     monthly: 19,
     annual: 15,
+    annualTotal: 180,
     saving: 48,
     featured: true,
     features: [
@@ -93,11 +84,12 @@ const PLAN_DEFS = [
   {
     id: "pro",
     name: "Pro",
-    badge: "ADVANCE",
+    badge: "PRO",
     badgeClass: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
     tagline: "Per-user attribution, unlimited everything",
     monthly: 49,
     annual: 39,
+    annualTotal: 468,
     saving: 120,
     featured: false,
     features: [
@@ -112,6 +104,77 @@ const PLAN_DEFS = [
     ],
   },
 ] as const;
+
+const CORPORATE_PLANS = [
+  {
+    id: "team",
+    name: "Team",
+    badge: "2–10 SEATS",
+    badgeClass: "text-blue-400 bg-blue-500/10 border-blue-500/30",
+    tagline: "Proxy gateway for small engineering teams",
+    price: "$79",
+    priceNote: "/month flat",
+    featured: false,
+    features: [
+      "Proxy gateway (no URL change)",
+      "Real-time request blocking",
+      "Per-employee attribution",
+      "Admin dashboard",
+      "5-min poll + request-level data",
+      "Email + Slack alerts",
+      "Community support",
+    ],
+  },
+  {
+    id: "scale",
+    name: "Scale",
+    badge: "11–20 SEATS",
+    badgeClass: "text-white bg-primary border-primary/60",
+    tagline: "SSO, compliance, and audit-ready exports",
+    price: "$149",
+    priceNote: "/month flat",
+    featured: true,
+    features: [
+      "Everything in Team",
+      "Single sign-on (SSO)",
+      "Compliance export",
+      "Per-team budget policies",
+      "Priority email · 24h support",
+    ],
+  },
+  {
+    id: "growth",
+    name: "Growth",
+    badge: "20+ SEATS",
+    badgeClass: "text-purple-400 bg-purple-500/10 border-purple-500/30",
+    tagline: "Enterprise-grade SLA for large orgs",
+    price: "Custom",
+    priceNote: "contact sales",
+    featured: false,
+    features: [
+      "Everything in Scale",
+      "99.9% uptime SLA",
+      "Dedicated onboarding",
+      "Custom contract",
+      "Slack-based support channel",
+    ],
+  },
+] as const;
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+const glassCard: React.CSSProperties = {
+  background:
+    "linear-gradient(145deg, oklch(1 0 0 / 0.06) 0%, oklch(1 0 0 / 0.02) 100%)",
+  backdropFilter: "blur(24px)",
+  WebkitBackdropFilter: "blur(24px)",
+  border: "1px solid oklch(1 0 0 / 0.10)",
+};
+
+type Interval = "monthly" | "yearly";
+type LoadingPlan = null | "plus" | "pro";
 
 function formatDate(unix: number): string {
   return new Date(unix * 1000).toISOString().split("T")[0];
@@ -146,14 +209,12 @@ function BillingClientInner({
   const [loading, setLoading] = useState<LoadingPlan>(null);
   const [portalLoading, setPortalLoading] = useState(false);
 
-  // Show success toast after Stripe checkout redirect
   useEffect(() => {
     if (searchParams.get("success") === "1") {
       toast.success("Plan upgraded successfully!");
     }
   }, [searchParams]);
 
-  // Derive current plan per card (UI 'plus' = DB 'starter')
   function isCurrent(planId: string): boolean {
     if (planId === "free" && currentPlan === "free") return true;
     if (planId === "plus" && currentPlan === "starter") return true;
@@ -201,47 +262,168 @@ function BillingClientInner({
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Section header + interval toggle */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h3 className="font-semibold text-base">Billing &amp; Subscription</h3>
-          <p className="text-sm text-muted-foreground mt-0.5 max-w-lg">
-            Manage your subscription, billing info, and payment history.
-          </p>
+    <div className="max-w-4xl mx-auto space-y-8">
+
+      {/* ── Personal Plans ───────────────────────────────────────────────── */}
+      <div className="space-y-4">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h3 className="font-semibold text-base">Personal Plans</h3>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Connect your API keys. No proxy, no code change. See unified spend in 2 minutes.
+            </p>
+          </div>
+          <div
+            className="flex items-center gap-1 p-1 rounded-xl shrink-0"
+            style={{
+              background: "oklch(1 0 0 / 0.05)",
+              border: "1px solid oklch(1 0 0 / 0.08)",
+            }}
+          >
+            {(["monthly", "yearly"] as const).map((v) => (
+              <button
+                key={v}
+                onClick={() => setInterval(v)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all capitalize ${
+                  interval === v
+                    ? "bg-white/[0.1] text-foreground shadow-sm border border-white/[0.1]"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {v}
+                {v === "yearly" && (
+                  <span className="ml-1.5 text-[10px] text-emerald-400 font-bold">−2mo</span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
-        <div
-          className="flex items-center gap-1 p-1 rounded-xl shrink-0"
-          style={{
-            background: "oklch(1 0 0 / 0.05)",
-            border: "1px solid oklch(1 0 0 / 0.08)",
-          }}
-        >
-          {(["monthly", "yearly"] as const).map((v) => (
-            <button
-              key={v}
-              onClick={() => setInterval(v)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all capitalize ${
-                interval === v
-                  ? "bg-white/[0.1] text-foreground shadow-sm border border-white/[0.1]"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+
+        <div className="grid sm:grid-cols-3 gap-4">
+          {PERSONAL_PLANS.map((p) => {
+            const current = isCurrent(p.id);
+            const price = interval === "yearly" && p.annual > 0 ? p.annual : p.monthly;
+            const cta = current ? "Current Plan" : "Upgrade Plan";
+
+            return (
+              <div
+                key={p.id}
+                className="rounded-2xl p-5 flex flex-col"
+                style={
+                  p.featured
+                    ? {
+                        background:
+                          "linear-gradient(145deg, oklch(0.97 0 0 / 0.95) 0%, oklch(0.92 0 0 / 0.9) 100%)",
+                        border: "1px solid oklch(1 0 0 / 0.3)",
+                      }
+                    : glassCard
+                }
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className={`font-bold text-base ${p.featured ? "text-background" : ""}`}>
+                    {p.name}
+                  </h4>
+                  <span
+                    className={`text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border ${
+                      p.featured
+                        ? "text-background/70 bg-black/10 border-black/20"
+                        : p.badgeClass
+                    }`}
+                  >
+                    {p.badge}
+                  </span>
+                </div>
+
+                <div className="mb-4">
+                  <div className="flex items-baseline gap-1">
+                    <span
+                      className={`text-3xl font-bold font-mono ${p.featured ? "text-background" : ""}`}
+                    >
+                      {price === 0 ? "$0" : `$${price}`}
+                    </span>
+                    <span
+                      className={`text-sm ${p.featured ? "text-background/60" : "text-muted-foreground"}`}
+                    >
+                      {price === 0 ? "/ forever" : "/month"}
+                    </span>
+                  </div>
+                  {interval === "yearly" && p.saving > 0 && (
+                    <p
+                      className={`text-xs mt-0.5 ${p.featured ? "text-background/60" : "text-emerald-400"}`}
+                    >
+                      Save ${p.saving}/yr · ${p.annualTotal}/yr total
+                    </p>
+                  )}
+                </div>
+
+                <Button
+                  disabled={current || loading === p.id}
+                  onClick={() => {
+                    if (!current && (p.id === "plus" || p.id === "pro")) {
+                      void handleUpgrade(p.id);
+                    }
+                  }}
+                  className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 ${
+                    p.featured
+                      ? "bg-background text-foreground hover:bg-background/90"
+                      : current
+                      ? "bg-white/5 text-muted-foreground border border-white/[0.08] cursor-default"
+                      : "bg-white/5 hover:bg-white/10 text-foreground border border-white/[0.08]"
+                  }`}
+                >
+                  {loading === p.id ? "Loading..." : cta}
+                </Button>
+
+                <ul className="space-y-2 flex-1">
+                  {p.features.map((f) => (
+                    <li
+                      key={f}
+                      className={`flex items-start gap-2 text-sm ${p.featured ? "text-background/80" : ""}`}
+                    >
+                      <Check
+                        className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${p.featured ? "text-background/60" : "text-primary"}`}
+                      />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+
+        {hasStripeCustomer && (
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              className="rounded-xl border-white/[0.1] h-9 px-4 text-sm"
+              onClick={() => void handlePortal()}
+              disabled={portalLoading}
             >
-              {v}
-            </button>
-          ))}
-        </div>
+              {portalLoading ? "Loading..." : "Manage Plan / Cancel"}
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Plan cards */}
-      <div className="grid sm:grid-cols-3 gap-4">
-        {PLAN_DEFS.map((p) => {
-          const current = isCurrent(p.id);
-          const price =
-            interval === "yearly" && p.annual > 0 ? p.annual : p.monthly;
-          const cta = current ? "Current Plan" : "Upgrade Plan";
+      {/* ── Corporate Plans ──────────────────────────────────────────────── */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-base">Corporate Plans</h3>
+              <span className="text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border text-yellow-400 bg-yellow-500/10 border-yellow-500/30">
+                Waitlist Open
+              </span>
+            </div>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Proxy gateway with real-time blocking and per-employee attribution. Targeting Q3 2026.
+            </p>
+          </div>
+        </div>
 
-          return (
+        <div className="grid sm:grid-cols-3 gap-4">
+          {CORPORATE_PLANS.map((p) => (
             <div
               key={p.id}
               className="rounded-2xl p-5 flex flex-col"
@@ -256,11 +438,9 @@ function BillingClientInner({
               }
             >
               <div className="flex items-center justify-between mb-4">
-                <h3
-                  className={`font-bold text-base ${p.featured ? "text-background" : ""}`}
-                >
+                <h4 className={`font-bold text-base ${p.featured ? "text-background" : ""}`}>
                   {p.name}
-                </h3>
+                </h4>
                 <span
                   className={`text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border ${
                     p.featured
@@ -277,39 +457,32 @@ function BillingClientInner({
                   <span
                     className={`text-3xl font-bold font-mono ${p.featured ? "text-background" : ""}`}
                   >
-                    {price === 0 ? "$0" : `$${price}`}
+                    {p.price}
                   </span>
                   <span
                     className={`text-sm ${p.featured ? "text-background/60" : "text-muted-foreground"}`}
                   >
-                    {price === 0 ? "/ forever" : "/month"}
+                    {p.priceNote}
                   </span>
                 </div>
-                {interval === "yearly" && p.saving > 0 && (
-                  <p
-                    className={`text-xs mt-0.5 ${p.featured ? "text-background/60" : "text-emerald-400"}`}
-                  >
-                    Save ${p.saving}/yr
-                  </p>
-                )}
+                <p
+                  className={`text-xs mt-0.5 ${p.featured ? "text-background/60" : "text-muted-foreground"}`}
+                >
+                  {p.tagline}
+                </p>
               </div>
 
               <Button
-                disabled={current || loading === p.id}
-                onClick={() => {
-                  if (!current && (p.id === "plus" || p.id === "pro")) {
-                    void handleUpgrade(p.id);
-                  }
-                }}
+                variant="outline"
                 className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 ${
                   p.featured
-                    ? "bg-background text-foreground hover:bg-background/90"
-                    : current
-                    ? "bg-white/5 text-muted-foreground border border-white/[0.08] cursor-default"
+                    ? "bg-background text-foreground border-background hover:bg-background/90"
                     : "bg-white/5 hover:bg-white/10 text-foreground border border-white/[0.08]"
                 }`}
+                onClick={() => toast.info("Waitlist — coming soon")}
               >
-                {loading === p.id ? "Loading..." : cta}
+                <Users className="w-3.5 h-3.5 mr-1.5" />
+                Join Waitlist
               </Button>
 
               <ul className="space-y-2 flex-1">
@@ -326,57 +499,27 @@ function BillingClientInner({
                 ))}
               </ul>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Manage Plan button — only for paid users */}
-      {hasStripeCustomer && (
-        <div className="flex justify-end">
-          <Button
-            variant="outline"
-            className="rounded-xl border-white/[0.1] h-9 px-4 text-sm"
-            onClick={() => void handlePortal()}
-            disabled={portalLoading}
-          >
-            {portalLoading ? "Loading..." : "Manage Plan / Cancel"}
-          </Button>
+          ))}
         </div>
-      )}
 
-      {/* Corporate waitlist — preserved exactly */}
-      <div
-        className="rounded-2xl p-5 flex items-center gap-4"
-        style={{
-          background: "oklch(1 0 0 / 0.02)",
-          border: "1px dashed oklch(1 0 0 / 0.12)",
-        }}
-      >
         <div
-          className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+          className="rounded-2xl p-4 flex items-start gap-3"
           style={{
-            background: "oklch(1 0 0 / 0.05)",
-            border: "1px solid oklch(1 0 0 / 0.08)",
+            background: "oklch(1 0 0 / 0.02)",
+            border: "1px dashed oklch(1 0 0 / 0.12)",
           }}
         >
-          <Building2 className="w-4 h-4 text-muted-foreground" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-sm">Corporate Plan — Waitlist Open</p>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Proxy gateway, real-time blocking, per-employee attribution. Targeting Q3 2026.
+          <Building2 className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Corporate plan uses a proxy gateway — your team&apos;s requests route through Frugal for real-time attribution and blocking.
+            Your traffic goes directly to the provider; we never store prompt or completion content.
+            SOC 2 Type II targeted Q4 2026. Questions:{" "}
+            <span className="text-foreground font-medium">founder@frugal.dev</span>
           </p>
         </div>
-        <Button
-          variant="outline"
-          className="shrink-0 rounded-xl border-white/[0.1] h-9 px-4 text-sm"
-          onClick={() => toast.info("Waitlist — coming soon")}
-        >
-          Join Waitlist
-        </Button>
       </div>
 
-      {/* Billing history */}
+      {/* ── Billing History ──────────────────────────────────────────────── */}
       <div className="rounded-2xl overflow-hidden" style={glassCard}>
         <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
           <h3 className="font-semibold text-sm">Billing History</h3>
@@ -409,7 +552,6 @@ function BillingClientInner({
           </div>
         </div>
 
-        {/* Table header */}
         <div className="px-5 py-2.5 border-b border-white/[0.04] grid grid-cols-6 gap-3 text-[11px] font-bold font-mono uppercase tracking-wider text-muted-foreground/60">
           <span className="col-span-2">Plan Name</span>
           <span>Amount</span>
@@ -434,9 +576,7 @@ function BillingClientInner({
                   key={inv.id}
                   className="px-5 py-3.5 grid grid-cols-6 gap-3 items-center hover:bg-white/[0.02] transition-colors"
                 >
-                  <span className="col-span-2 text-sm">
-                    Subscription — {month}
-                  </span>
+                  <span className="col-span-2 text-sm">Subscription — {month}</span>
                   <span className="font-mono text-sm font-semibold">
                     {formatAmount(inv.amount_paid, inv.currency)}
                   </span>
