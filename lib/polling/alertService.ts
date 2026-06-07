@@ -20,9 +20,17 @@ export async function fireAlert(
 ): Promise<void> {
   const notifiedVia: string[] = [];
 
-  await sendEmail(payload, notifiedVia);
+  const deliveryStatus: {
+    email: { sent: boolean; messageId?: string; error?: string };
+    slack: { sent: boolean; error?: string };
+  } = {
+    email: { sent: false },
+    slack: { sent: false },
+  };
+
+  await sendEmail(payload, notifiedVia, deliveryStatus);
   if (payload.slackWebhookUrl) {
-    await sendSlack(payload, notifiedVia);
+    await sendSlack(payload, notifiedVia, deliveryStatus);
   }
 
   await supabase.from("alert_log").insert({
@@ -34,10 +42,15 @@ export async function fireAlert(
     action_taken: payload.action,
     notified_via: notifiedVia,
     status: "active",
+    delivery_status: deliveryStatus,
   });
 }
 
-async function sendEmail(payload: AlertPayload, notifiedVia: string[]): Promise<void> {
+async function sendEmail(
+  payload: AlertPayload,
+  notifiedVia: string[],
+  deliveryStatus: { email: { sent: boolean; messageId?: string; error?: string } },
+): Promise<void> {
   const resendKey = process.env.RESEND_API_KEY;
   if (!resendKey) {
     console.warn("[alertService] RESEND_API_KEY not set — skipping email");
@@ -53,23 +66,30 @@ async function sendEmail(payload: AlertPayload, notifiedVia: string[]): Promise<
   try {
     const { Resend } = await import("resend");
     const resend = new Resend(resendKey);
-    const { error } = await resend.emails.send({
-      from: "Frugal <alerts@frugal.dev>",
+    const { data, error } = await resend.emails.send({
+      from: process.env.RESEND_FROM_ADDRESS ?? "Frugal <onboarding@resend.dev>",
       to: payload.userEmail,
       subject,
       html,
     });
     if (error) {
       console.error("[alertService] Resend error:", error);
+      deliveryStatus.email = { sent: false, error: String(error) };
     } else {
       notifiedVia.push("email");
+      deliveryStatus.email = { sent: true, messageId: data?.id };
     }
   } catch (err) {
     console.error("[alertService] Email send failed:", err);
+    deliveryStatus.email = { sent: false, error: String(err) };
   }
 }
 
-async function sendSlack(payload: AlertPayload, notifiedVia: string[]): Promise<void> {
+async function sendSlack(
+  payload: AlertPayload,
+  notifiedVia: string[],
+  deliveryStatus: { slack: { sent: boolean; error?: string } },
+): Promise<void> {
   if (!payload.slackWebhookUrl) return;
 
   const emoji = payload.percentUsed >= 100 ? "🚨" : "⚠️";
@@ -93,9 +113,15 @@ async function sendSlack(payload: AlertPayload, notifiedVia: string[]): Promise<
       body: JSON.stringify(message),
       signal: AbortSignal.timeout(5000),
     });
-    if (res.ok) notifiedVia.push("slack");
+    if (res.ok) {
+      notifiedVia.push("slack");
+      deliveryStatus.slack = { sent: true };
+    } else {
+      deliveryStatus.slack = { sent: false, error: `HTTP ${res.status}` };
+    }
   } catch (err) {
     console.error("[alertService] Slack send failed:", err);
+    deliveryStatus.slack = { sent: false, error: String(err) };
   }
 }
 
