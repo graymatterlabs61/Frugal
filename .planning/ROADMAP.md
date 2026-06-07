@@ -154,6 +154,6 @@ Sub-phases (5):
 | 2. Core APIs + Polling Worker | - | Complete | 2026-06-05 |
 | 3. Dashboard Real Data | 2/4 | In progress | - |
 | 4. Budget Rules API + UI | 0/5 | Planned | - |
-| 5. Stripe Billing | 0/5 | Planned | - |
+| 5. Stripe Billing | 3/5 | In Progress|  |
 | 6. Email Alerts + Slack | 0/5 | Not started | - |
 | 7. Settings + QStash + Polish | 0/5 | Not started | - |

@@ -9,9 +9,9 @@
 ## Current Position
 
 Phase: 5 of 7 (Stripe Billing)
-Plan: 1 of 5 complete in current phase
-Status: Plan 01 complete (Stripe foundation + PLAN_LIMITS). Plans 02–05 remaining.
-Last activity: 2026-06-07 — Completed 05-01 (stripe install, lib/stripe.ts, lib/tier.ts PLAN_LIMITS).
+Plan: 2 of 5 complete in current phase
+Status: Plan 02 complete (Stripe checkout + portal routes). Plans 03–05 remaining.
+Last activity: 2026-06-07 — Completed 05-02 (POST /api/stripe/checkout, POST /api/stripe/portal).
 
 Progress: [████████░░] 70%
 
@@ -50,6 +50,12 @@ None yet.
 - getProjectStats fetches connection IDs first, filters usage_records via second query (no project_id on usage_records table)
 - Budget limit lookup in getTopProjects uses single .in() query across all project IDs — no N+1
 
+### Decisions (05-02)
+
+- supabase_user_id embedded in both session.metadata and subscription_data.metadata — checkout.session.completed uses session metadata, customer.subscription.* events use subscription metadata
+- customer_creation: 'always' only when no existing stripeCustomerId — prevents duplicate customer creation for returning users
+- Portal returns 400 (not 404) when no stripe_customer_id — actionable error instructs user to upgrade first
+
 ### Decisions (05-01)
 
 - stripe 22.2.0 pins apiVersion to "2026-05-27.dahlia" — plan specified "2026-04-22.dahlia" which is one release behind; must use 2026-05-27.dahlia
@@ -67,5 +73,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 05-01-PLAN.md (Stripe billing foundation)
+Stopped at: Completed 05-02-PLAN.md (Stripe checkout + portal routes)
 Resume file: None
