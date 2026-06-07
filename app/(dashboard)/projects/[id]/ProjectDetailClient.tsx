@@ -745,7 +745,7 @@ export function ProjectDetailClient({
                 <p className="text-sm font-semibold mb-3">
                   Upgrade to Plus to create budget rules
                 </p>
-                <Link href="/billing">
+                <Link href="/settings/billing">
                   <Button className="bg-primary hover:bg-primary/90 text-white rounded-xl h-9 px-4 text-sm font-semibold">
                     Upgrade to Plus
                   </Button>
