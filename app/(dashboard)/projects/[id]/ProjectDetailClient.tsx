@@ -399,6 +399,8 @@ export function ProjectDetailClient({
   const [rulesLoading, setRulesLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [slackWebhookUrl, setSlackWebhookUrl] = useState(project.slackWebhookUrl ?? "");
+  const [slackSaving, setSlackSaving] = useState(false);
 
   useEffect(() => {
     fetch(`/api/budget-rules?projectId=${project.id}`)
@@ -425,6 +427,26 @@ export function ProjectDetailClient({
     } finally {
       setDeletingId(null);
       setConfirmDeleteId(null);
+    }
+  };
+
+  const handleSaveSlackWebhook = async () => {
+    setSlackSaving(true);
+    try {
+      const res = await fetch(`/api/projects/${project.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slack_webhook_url: slackWebhookUrl || null }),
+      });
+      if (res.ok) {
+        toast.success("Slack webhook saved");
+      } else {
+        toast.error("Failed to save webhook URL");
+      }
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setSlackSaving(false);
     }
   };
 
@@ -595,6 +617,12 @@ export function ProjectDetailClient({
             className="rounded-lg text-sm data-[state=active]:bg-card data-[state=active]:text-foreground"
           >
             Alerts
+          </TabsTrigger>
+          <TabsTrigger
+            value="notifications"
+            className="rounded-lg text-sm data-[state=active]:bg-card data-[state=active]:text-foreground"
+          >
+            Notifications
           </TabsTrigger>
         </TabsList>
 
@@ -934,6 +962,50 @@ export function ProjectDetailClient({
                 ))
               )}
             </div>
+          </div>
+        </TabsContent>
+
+        {/* Notifications */}
+        <TabsContent value="notifications" className="mt-5">
+          <div className="border border-border rounded-2xl bg-card p-5 space-y-5">
+            <div>
+              <h3 className="font-semibold mb-1">Slack Notifications</h3>
+              <p className="text-sm text-muted-foreground">
+                Paste an incoming webhook URL to receive budget alerts in Slack.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="slack-webhook" className="text-sm font-medium">
+                Slack Webhook URL
+              </Label>
+              <Input
+                id="slack-webhook"
+                type="url"
+                placeholder="https://hooks.slack.com/services/..."
+                value={slackWebhookUrl}
+                onChange={(e) => setSlackWebhookUrl(e.target.value)}
+                className="font-mono text-sm rounded-xl border-border/60 bg-background h-10"
+              />
+              <p className="text-xs text-muted-foreground">
+                Create an incoming webhook at{" "}
+                <a
+                  href="https://api.slack.com/messaging/webhooks"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline underline-offset-2"
+                >
+                  api.slack.com/messaging/webhooks
+                </a>
+                . Leave blank to disable Slack alerts.
+              </p>
+            </div>
+            <Button
+              onClick={handleSaveSlackWebhook}
+              disabled={slackSaving}
+              className="bg-primary hover:bg-primary/90 text-white rounded-xl h-10 px-6 font-semibold"
+            >
+              {slackSaving ? "Saving…" : "Save Webhook"}
+            </Button>
           </div>
         </TabsContent>
       </Tabs>
