@@ -4,14 +4,14 @@
 
 **Product:** Frugal — AI API cost management SaaS
 **Core value:** Developers see unified AI spend across all providers and get automated guardrails before costs spiral
-**Current focus:** Phase 5 — Stripe Billing
+**Current focus:** Phase 6 — Email Alerts + Slack
 
 ## Current Position
 
-Phase: 5 of 7 (Stripe Billing)
-Plan: 5 of 5 complete in current phase
-Status: Plan 05 complete (plan-based resource limit enforcement on connections + projects). Phase 5 plans all complete.
-Last activity: 2026-06-07 — Completed 05-05 (plan-based 403 gates on POST /api/connections and POST /api/projects).
+Phase: 5 of 7 (Stripe Billing) — COMPLETE
+Plan: 5 of 5 complete
+Status: Phase 5 verified and complete. Gap fix: stale /billing stub replaced with redirect, upgrade link fixed to /settings/billing.
+Last activity: 2026-06-07 — Phase 5 verified (PASS after gap fix). Ready for Phase 6.
 
 Progress: [████████░░] 70%
 
