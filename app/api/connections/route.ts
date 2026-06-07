@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { encrypt } from "@/lib/encryption";
+import { getConnectionLimit } from "@/lib/tier";
 import { validateOpenAIKey } from "@/lib/providers/openai";
 import { validateAnthropicKey } from "@/lib/providers/anthropic";
 import { validateReplicateKey } from "@/lib/providers/replicate";
@@ -100,6 +101,34 @@ export async function POST(request: Request) {
   }
 
   const { provider, apiKey, projectId, label } = parsed.data;
+
+  // Enforce per-plan connection limit
+  const { data: userData } = await supabase
+    .from("users")
+    .select("plan")
+    .eq("id", user.id)
+    .single();
+
+  const userPlan = userData?.plan ?? "free";
+  const connectionLimit = getConnectionLimit(userPlan);
+
+  const { count: connectionCount, error: countError } = await supabase
+    .from("api_connections")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
+  if (countError) {
+    return NextResponse.json({ error: countError.message }, { status: 500 });
+  }
+
+  if ((connectionCount ?? 0) >= connectionLimit) {
+    return NextResponse.json(
+      {
+        error: `Connection limit reached. Your ${userPlan} plan allows ${connectionLimit} connection${connectionLimit === 1 ? "" : "s"}. Upgrade your plan to add more.`,
+      },
+      { status: 403 }
+    );
+  }
 
   const isValid = await checkProviderKey(provider, apiKey);
   if (!isValid) {

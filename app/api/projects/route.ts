@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getProjectLimit } from "@/lib/tier";
 
 const createProjectSchema = z.object({
   name: z.string().min(1).max(64),
@@ -59,6 +60,34 @@ export async function POST(request: Request) {
   }
 
   const { name, description, color } = parsed.data;
+
+  // Enforce per-plan project limit
+  const { data: userData } = await supabase
+    .from("users")
+    .select("plan")
+    .eq("id", user.id)
+    .single();
+
+  const userPlan = userData?.plan ?? "free";
+  const projectLimit = getProjectLimit(userPlan);
+
+  const { count: projectCount, error: countError } = await supabase
+    .from("projects")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
+  if (countError) {
+    return NextResponse.json({ error: countError.message }, { status: 500 });
+  }
+
+  if ((projectCount ?? 0) >= projectLimit) {
+    return NextResponse.json(
+      {
+        error: `Project limit reached. Your ${userPlan} plan allows ${projectLimit} project${projectLimit === 1 ? "" : "s"}. Upgrade your plan to add more.`,
+      },
+      { status: 403 }
+    );
+  }
 
   const { data, error } = await supabase
     .from("projects")
