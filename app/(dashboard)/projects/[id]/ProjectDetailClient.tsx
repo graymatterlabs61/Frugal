@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -8,22 +8,18 @@ import {
   Trash,
   Bell,
   PlugsConnected,
-  ShieldWarning,
+  Shield,
+  Lightning,
   CheckCircle,
   Warning,
   XCircle,
-  Lock,
 } from "@phosphor-icons/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +28,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { canCreateBudgetRules, canUseThrottle } from "@/lib/tier";
 import type {
   ProjectStats,
   ProjectConnection,
@@ -46,14 +43,16 @@ interface ProjectDetailClientProps {
   project: ProjectStats;
   connections: ProjectConnection[];
   alerts: ProjectAlert[];
+  userPlan: string;
 }
 
 interface BudgetRule {
   id: string;
-  limitUsd: number;
-  window: "daily" | "monthly";
+  limit_usd: number;
+  budget_window: "daily" | "monthly";
   action: "alert" | "block" | "throttle";
-  thresholdPct: number;
+  threshold_pct: number;
+  created_at: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -127,14 +126,14 @@ const actionConfig: Record<
     color: "text-destructive",
     bg: "bg-destructive/10",
     border: "border-destructive/20",
-    icon: Lock,
+    icon: Shield,
   },
   throttle: {
     label: "Throttle",
-    color: "text-orange-400",
-    bg: "bg-orange-500/10",
-    border: "border-orange-500/20",
-    icon: ShieldWarning,
+    color: "text-blue-400",
+    bg: "bg-blue-500/10",
+    border: "border-blue-500/20",
+    icon: Lightning,
   },
 };
 
@@ -142,7 +141,6 @@ const actionConfig: Record<
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Format a last_polled_at ISO timestamp as relative time. */
 function formatRelativeTime(isoTimestamp: string | null): string {
   if (!isoTimestamp) return "Never polled";
   const diffMs = Date.now() - new Date(isoTimestamp).getTime();
@@ -156,45 +154,78 @@ function formatRelativeTime(isoTimestamp: string | null): string {
   return `${diffDays}d ago`;
 }
 
-/** Map DB project status to display status key. */
 function mapStatus(dbStatus: string): "healthy" | "warning" | "critical" {
   if (dbStatus === "warning") return "warning";
   if (dbStatus === "critical") return "critical";
-  return "healthy"; // 'active' and anything else → healthy
+  return "healthy";
 }
 
 // ---------------------------------------------------------------------------
-// AddRuleDialog (Budget Rules tab — mock, Phase 4)
+// AddRuleDialog
 // ---------------------------------------------------------------------------
 
-function AddRuleDialog({ onAdd }: { onAdd: (r: BudgetRule) => void }) {
+function AddRuleDialog({
+  project,
+  userPlan,
+  onAdd,
+}: {
+  project: ProjectStats;
+  userPlan: string;
+  onAdd: (r: BudgetRule) => void;
+}) {
   const [open, setOpen] = useState(false);
-  const [limitUsd, setLimitUsd] = useState("");
-  const [ruleWindow, setRuleWindow] = useState<"daily" | "monthly">("monthly");
-  const [action, setAction] = useState<"alert" | "block" | "throttle">("alert");
   const [thresholdPct, setThresholdPct] = useState("80");
+  const [action, setAction] = useState<"alert" | "block" | "throttle">("alert");
+  const [limitUsd, setLimitUsd] = useState("");
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const needsLimitField = project.budgetLimit === null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const limit = parseFloat(limitUsd);
-    if (!limitUsd || isNaN(limit) || limit <= 0) {
-      toast.error("Enter a valid budget limit");
+    setFormError(null);
+
+    const threshold = parseInt(thresholdPct);
+    if (isNaN(threshold) || threshold < 1 || threshold > 100) {
+      setFormError("Threshold must be between 1 and 100.");
       return;
     }
+
+    const limitValue = needsLimitField ? parseFloat(limitUsd) : undefined;
+    if (needsLimitField && (!limitUsd || isNaN(limitValue!) || limitValue! <= 0)) {
+      setFormError("Set a monthly budget limit on this project first.");
+      return;
+    }
+
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    onAdd({
-      id: Date.now().toString(),
-      limitUsd: limit,
-      window: ruleWindow,
-      action,
-      thresholdPct: parseInt(thresholdPct),
-    });
-    toast.success("Budget rule created");
-    setOpen(false);
-    setLimitUsd("");
-    setLoading(false);
+    try {
+      const res = await fetch("/api/budget-rules", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId: project.id,
+          thresholdPct: threshold,
+          action,
+          ...(limitValue !== undefined && { limitUsd: limitValue }),
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setFormError(json.error ?? "Failed to create rule.");
+        return;
+      }
+      onAdd(json.rule);
+      toast.success("Budget rule created");
+      setOpen(false);
+      setThresholdPct("80");
+      setAction("alert");
+      setLimitUsd("");
+    } catch {
+      setFormError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -212,10 +243,25 @@ function AddRuleDialog({ onAdd }: { onAdd: (r: BudgetRule) => void }) {
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+              Alert at (% of budget)
+            </label>
+            <Input
+              type="number"
+              value={thresholdPct}
+              onChange={(e) => setThresholdPct(e.target.value)}
+              placeholder="80"
+              min="1"
+              max="100"
+              className="bg-input/30 border-border/40 h-10 rounded-xl font-mono"
+            />
+          </div>
+
+          {needsLimitField && (
             <div className="space-y-1.5">
               <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
-                Budget Limit ($)
+                Monthly Budget ($)
               </label>
               <Input
                 type="number"
@@ -227,73 +273,94 @@ function AddRuleDialog({ onAdd }: { onAdd: (r: BudgetRule) => void }) {
                 className="bg-input/30 border-border/40 h-10 rounded-xl font-mono"
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
-                Trigger At
-              </label>
-              <Select value={thresholdPct} onValueChange={setThresholdPct}>
-                <SelectTrigger className="bg-input/30 border-border/40 h-10 rounded-xl">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border rounded-xl">
-                  {["60", "70", "80", "90", "100"].map((v) => (
-                    <SelectItem key={v} value={v}>
-                      {v}% of limit
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+          )}
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
-              Window
-            </label>
-            <Select
-              value={ruleWindow}
-              onValueChange={(v) => setRuleWindow(v as "daily" | "monthly")}
-            >
-              <SelectTrigger className="bg-input/30 border-border/40 h-10 rounded-xl">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-card border-border rounded-xl">
-                <SelectItem value="daily">
-                  Daily — resets midnight UTC
-                </SelectItem>
-                <SelectItem value="monthly">
-                  Monthly — resets 1st of month
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
               Action
             </label>
-            <Select
+            <RadioGroup
               value={action}
-              onValueChange={(v) =>
-                setAction(v as "alert" | "block" | "throttle")
-              }
+              onValueChange={(v) => setAction(v as "alert" | "block" | "throttle")}
+              className="space-y-2"
             >
-              <SelectTrigger className="bg-input/30 border-border/40 h-10 rounded-xl">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-card border-border rounded-xl">
-                <SelectItem value="alert">
-                  Alert — send notification, polling continues
-                </SelectItem>
-                <SelectItem value="block">
-                  Block — flag connection, skip at next poll
-                </SelectItem>
-                <SelectItem value="throttle">
-                  Throttle — downgrade model (Pro only)
-                </SelectItem>
-              </SelectContent>
-            </Select>
+              <Label
+                htmlFor="action-alert"
+                className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
+                  action === "alert"
+                    ? "border-primary bg-primary/5"
+                    : "border-border/40 bg-input/20"
+                }`}
+              >
+                <RadioGroupItem value="alert" id="action-alert" className="mt-0.5" />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <Bell size={14} className="text-yellow-400" />
+                    Alert
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Send email/Slack notification when threshold is crossed
+                  </p>
+                </div>
+              </Label>
+
+              <Label
+                htmlFor="action-block"
+                className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
+                  action === "block"
+                    ? "border-primary bg-primary/5"
+                    : "border-border/40 bg-input/20"
+                }`}
+              >
+                <RadioGroupItem value="block" id="action-block" className="mt-0.5" />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <Shield size={14} className="text-destructive" weight="fill" />
+                    Block
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Record a block event and fire notification
+                  </p>
+                </div>
+              </Label>
+
+              <Label
+                htmlFor="action-throttle"
+                className={`flex items-start gap-3 p-3 rounded-xl border transition-colors ${
+                  canUseThrottle(userPlan)
+                    ? "cursor-pointer"
+                    : "opacity-50 cursor-not-allowed"
+                } ${
+                  action === "throttle"
+                    ? "border-primary bg-primary/5"
+                    : "border-border/40 bg-input/20"
+                }`}
+              >
+                <RadioGroupItem
+                  value="throttle"
+                  id="action-throttle"
+                  className="mt-0.5"
+                  disabled={!canUseThrottle(userPlan)}
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <Lightning size={14} className="text-blue-400" weight="fill" />
+                    Throttle
+                    <Badge className="text-[9px] font-bold px-1.5 py-0 bg-blue-500/20 text-blue-400 border-blue-500/30 rounded-md">
+                      Pro
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Slow down requests at threshold (Pro only)
+                  </p>
+                </div>
+              </Label>
+            </RadioGroup>
           </div>
+
+          {formError && (
+            <p className="text-xs text-destructive">{formError}</p>
+          )}
 
           <div className="flex gap-3 pt-2">
             <Button
@@ -326,28 +393,53 @@ export function ProjectDetailClient({
   project,
   connections,
   alerts,
+  userPlan,
 }: ProjectDetailClientProps) {
   const [rules, setRules] = useState<BudgetRule[]>([]);
+  const [rulesLoading, setRulesLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  // Derive display values from real data
+  useEffect(() => {
+    fetch(`/api/budget-rules?projectId=${project.id}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setRules(data.rules ?? []);
+        setRulesLoading(false);
+      })
+      .catch(() => setRulesLoading(false));
+  }, [project.id]);
+
+  const handleDeleteRule = async (ruleId: string) => {
+    setDeletingId(ruleId);
+    try {
+      const res = await fetch(`/api/budget-rules/${ruleId}`, { method: "DELETE" });
+      if (res.ok) {
+        setRules((prev) => prev.filter((r) => r.id !== ruleId));
+        toast.success("Rule deleted");
+      } else {
+        toast.error("Failed to delete rule");
+      }
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setDeletingId(null);
+      setConfirmDeleteId(null);
+    }
+  };
+
   const displayStatus = mapStatus(project.status);
-  const statusStyle =
-    statusStyles[displayStatus] ?? statusStyles.healthy;
+  const statusStyle = statusStyles[displayStatus] ?? statusStyles.healthy;
 
-  // Budget Used card
   const hasBudget = project.budgetLimit !== null;
   const budgetPct = hasBudget
     ? Math.round((project.monthlySpend / project.budgetLimit!) * 100)
     : null;
 
-  // Days until limit (shown if < 14 days away)
   let daysUntilLimit: number | null = null;
-  if (
-    hasBudget &&
-    project.burnRateDaily > 0 &&
-    project.budgetLimit !== null
-  ) {
-    const remaining = (project.budgetLimit - project.monthlySpend) / project.burnRateDaily;
+  if (hasBudget && project.burnRateDaily > 0 && project.budgetLimit !== null) {
+    const remaining =
+      (project.budgetLimit - project.monthlySpend) / project.burnRateDaily;
     if (remaining < 14) {
       daysUntilLimit = Math.max(0, Math.round(remaining));
     }
@@ -380,7 +472,6 @@ export function ProjectDetailClient({
               </p>
             )}
           </div>
-          {/* Connection count badge instead of single provider (project can have multiple) */}
           <span className="text-xs font-semibold px-2.5 py-1 rounded-md shrink-0 bg-white/5 text-muted-foreground">
             {connections.length} connection
             {connections.length !== 1 ? "s" : ""}
@@ -388,9 +479,8 @@ export function ProjectDetailClient({
         </div>
       </div>
 
-      {/* Summary stat cards — real data */}
+      {/* Summary stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Spend This Month */}
         <div className="border border-border rounded-2xl p-4 bg-card">
           <p className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground mb-2">
             Spend This Month
@@ -400,13 +490,10 @@ export function ProjectDetailClient({
           </p>
           <p className="text-xs text-muted-foreground mt-1">
             of{" "}
-            {hasBudget
-              ? `$${project.budgetLimit} budget`
-              : "No budget set"}
+            {hasBudget ? `$${project.budgetLimit} budget` : "No budget set"}
           </p>
         </div>
 
-        {/* Budget Used */}
         <div className="border border-border rounded-2xl p-4 bg-card">
           <p className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground mb-2">
             Budget Used
@@ -444,7 +531,6 @@ export function ProjectDetailClient({
           )}
         </div>
 
-        {/* Burn Rate */}
         <div className="border border-border rounded-2xl p-4 bg-card">
           <p className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground mb-2">
             Burn Rate
@@ -455,14 +541,14 @@ export function ProjectDetailClient({
           <p className="text-xs text-muted-foreground mt-1">per day avg</p>
         </div>
 
-        {/* Projected / Month */}
         <div className="border border-border rounded-2xl p-4 bg-card">
           <p className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground mb-2">
             Projected / Month
           </p>
           <p
             className={`text-2xl font-bold font-mono ${
-              hasBudget && project.projectedMonthly > (project.budgetLimit ?? Infinity)
+              hasBudget &&
+              project.projectedMonthly > (project.budgetLimit ?? Infinity)
                 ? "text-destructive"
                 : "text-foreground"
             }`}
@@ -519,7 +605,6 @@ export function ProjectDetailClient({
               <h3 className="font-semibold">Spend Over Time</h3>
               <p className="text-sm text-muted-foreground">Last 7 days</p>
             </div>
-            {/* TODO Phase 3 follow-up: project-scoped chart data */}
             <div className="flex items-center justify-center h-[200px] text-sm text-muted-foreground">
               Chart data coming soon
             </div>
@@ -527,7 +612,6 @@ export function ProjectDetailClient({
 
           <div className="border border-border rounded-2xl bg-card p-5">
             <h3 className="font-semibold mb-4">Model Breakdown</h3>
-            {/* Mock data — Phase 4 */}
             <div className="space-y-4">
               {modelBreakdown.map((m) => {
                 const modelPct =
@@ -561,7 +645,7 @@ export function ProjectDetailClient({
           </div>
         </TabsContent>
 
-        {/* Connections — real data */}
+        {/* Connections */}
         <TabsContent value="connections" className="mt-5">
           <div className="border border-border rounded-2xl bg-card overflow-hidden">
             <div className="px-5 py-4 border-b border-border flex items-center justify-between">
@@ -587,8 +671,7 @@ export function ProjectDetailClient({
               ) : (
                 connections.map((conn) => {
                   const cs =
-                    connStatusConfig[conn.status] ??
-                    connStatusConfig.invalid;
+                    connStatusConfig[conn.status] ?? connStatusConfig.invalid;
                   const CsIcon = cs.icon;
                   const providerInitials = conn.provider
                     .slice(0, 2)
@@ -617,8 +700,7 @@ export function ProjectDetailClient({
                           </span>
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                          Last polled{" "}
-                          {formatRelativeTime(conn.lastPolledAt)}
+                          Last polled {formatRelativeTime(conn.lastPolledAt)}
                         </p>
                       </div>
                       <button
@@ -639,92 +721,164 @@ export function ProjectDetailClient({
           </div>
         </TabsContent>
 
-        {/* Budget Rules — mock, Phase 4 */}
+        {/* Budget Rules */}
         <TabsContent value="rules" className="mt-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Rules trigger within 5 minutes of threshold crossing.
-            </p>
-            <AddRuleDialog onAdd={(r) => setRules((prev) => [...prev, r])} />
-          </div>
-
-          {rules.length === 0 ? (
-            <div className="border border-dashed border-border/50 rounded-2xl p-10 text-center">
-              <p className="text-muted-foreground text-sm">
-                No budget rules yet.
-              </p>
-              <p className="text-xs text-muted-foreground/60 mt-1">
-                Add a rule to auto-alert or block when spend exceeds a
-                threshold.
-              </p>
+          {!canCreateBudgetRules(userPlan) ? (
+            <div className="relative">
+              <div className="blur-sm pointer-events-none select-none space-y-3 opacity-60">
+                {[1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="border border-border rounded-2xl p-4 bg-card flex items-center gap-4"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-yellow-500/10 flex items-center justify-center shrink-0">
+                      <Bell size={16} className="text-yellow-400" weight="fill" />
+                    </div>
+                    <div className="flex-1 space-y-1.5">
+                      <div className="h-3 w-24 bg-white/10 rounded" />
+                      <div className="h-2.5 w-40 bg-white/5 rounded" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/60 rounded-2xl backdrop-blur-sm">
+                <p className="text-sm font-semibold mb-3">
+                  Upgrade to Plus to create budget rules
+                </p>
+                <Link href="/billing">
+                  <Button className="bg-primary hover:bg-primary/90 text-white rounded-xl h-9 px-4 text-sm font-semibold">
+                    Upgrade to Plus
+                  </Button>
+                </Link>
+              </div>
             </div>
           ) : (
-            <div className="space-y-3">
-              {rules.map((rule) => {
-                const ac = actionConfig[rule.action] ?? actionConfig.alert;
-                const ActionIcon = ac.icon;
-                return (
-                  <div
-                    key={rule.id}
-                    className="border border-border rounded-2xl p-4 bg-card flex items-center gap-4 group"
-                  >
-                    <div
-                      className={`w-9 h-9 rounded-xl ${ac.bg} flex items-center justify-center shrink-0`}
-                    >
-                      <ActionIcon
-                        size={16}
-                        className={ac.color}
-                        weight="fill"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${ac.bg} ${ac.color} ${ac.border}`}
-                        >
-                          {ac.label}
-                        </span>
-                        <span className="text-xs text-muted-foreground bg-white/5 px-2 py-0.5 rounded-md font-mono">
-                          {rule.window}
-                        </span>
-                      </div>
-                      <p className="text-sm">
-                        <span className="font-semibold">
-                          {rule.action.charAt(0).toUpperCase() +
-                            rule.action.slice(1)}
-                        </span>{" "}
-                        <span className="text-muted-foreground">when</span>{" "}
-                        <span className="font-mono font-semibold">
-                          {rule.window} spend ≥ {rule.thresholdPct}% of $
-                          {rule.limitUsd}
-                        </span>
-                      </p>
-                    </div>
-                    <button
-                      onClick={() =>
-                        setRules((prev) =>
-                          prev.filter((r) => r.id !== rule.id)
-                        )
-                      }
-                      className="opacity-0 group-hover:opacity-100 p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all"
-                    >
-                      <Trash size={14} />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+            <>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">
+                  Rules trigger within 5 minutes of threshold crossing.
+                </p>
+                <AddRuleDialog
+                  project={project}
+                  userPlan={userPlan}
+                  onAdd={(r) => setRules((prev) => [...prev, r])}
+                />
+              </div>
 
-          <div className="border border-dashed border-border/40 rounded-xl p-4 text-xs text-muted-foreground">
-            <span className="font-semibold text-foreground">Note:</span> Block
-            and Throttle actions fire at the next poll cycle — up to 5 minutes
-            after the threshold is crossed. Use provider-native spending limits
-            as a hard floor.
-          </div>
+              {rulesLoading ? (
+                <div className="space-y-3">
+                  {[1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="border border-border rounded-2xl p-4 bg-card"
+                    >
+                      <div className="h-4 w-48 bg-white/10 rounded animate-pulse" />
+                    </div>
+                  ))}
+                </div>
+              ) : rules.length === 0 ? (
+                <div className="border border-dashed border-border/50 rounded-2xl p-12 text-center">
+                  <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-4">
+                    <Bell size={20} className="text-muted-foreground" />
+                  </div>
+                  <p className="text-sm font-semibold mb-1">No rules yet.</p>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Add your first budget rule to get alerts when spend crosses
+                    a threshold.
+                  </p>
+                  <AddRuleDialog
+                    project={project}
+                    userPlan={userPlan}
+                    onAdd={(r) => setRules((prev) => [...prev, r])}
+                  />
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {rules.map((rule) => {
+                    const ac = actionConfig[rule.action] ?? actionConfig.alert;
+                    const ActionIcon = ac.icon;
+                    const isConfirming = confirmDeleteId === rule.id;
+                    const isDeleting = deletingId === rule.id;
+                    return (
+                      <div
+                        key={rule.id}
+                        className="border border-border rounded-2xl p-4 bg-card flex items-center gap-4 min-h-[64px]"
+                      >
+                        <div
+                          className={`w-9 h-9 rounded-xl ${ac.bg} flex items-center justify-center shrink-0`}
+                        >
+                          <ActionIcon
+                            size={16}
+                            className={ac.color}
+                            weight="fill"
+                          />
+                        </div>
+                        {isConfirming ? (
+                          <div className="flex-1 flex items-center justify-between">
+                            <p className="text-sm text-muted-foreground">
+                              Delete this rule?
+                            </p>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="rounded-lg h-8 px-3 border-border/40 text-xs"
+                                onClick={() => setConfirmDeleteId(null)}
+                                disabled={isDeleting}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="rounded-lg h-8 px-3 bg-destructive hover:bg-destructive/90 text-white text-xs"
+                                onClick={() => handleDeleteRule(rule.id)}
+                                disabled={isDeleting}
+                              >
+                                {isDeleting ? "Deleting…" : "Delete"}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm">
+                                <span className="font-semibold">
+                                  {rule.action.charAt(0).toUpperCase() +
+                                    rule.action.slice(1)}
+                                </span>{" "}
+                                <span className="text-muted-foreground">
+                                  when
+                                </span>{" "}
+                                <span className="font-mono font-semibold">
+                                  {rule.budget_window} spend ≥{" "}
+                                  {rule.threshold_pct}% of ${rule.limit_usd}
+                                </span>
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => setConfirmDeleteId(rule.id)}
+                              className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all"
+                            >
+                              <Trash size={14} />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              <div className="border border-dashed border-border/40 rounded-xl p-4 text-xs text-muted-foreground">
+                <span className="font-semibold text-foreground">Note:</span>{" "}
+                Block and Throttle actions fire at the next poll cycle — up to
+                5 minutes after the threshold is crossed.
+              </div>
+            </>
+          )}
         </TabsContent>
 
-        {/* Alerts — real data */}
+        {/* Alerts */}
         <TabsContent value="alerts" className="mt-5">
           <div className="border border-border rounded-2xl bg-card overflow-hidden">
             <div className="px-5 py-4 border-b border-border flex items-center gap-2">

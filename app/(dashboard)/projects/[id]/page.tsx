@@ -25,6 +25,13 @@ export default async function ProjectDetailPage({
 
   const { id } = await params;
 
+  const { data: userData } = await supabase
+    .from("users")
+    .select("plan")
+    .eq("id", user.id)
+    .single();
+  const userPlan = userData?.plan ?? "free";
+
   const [project, connections, alerts] = await Promise.all([
     getProjectStats(supabase, user.id, id),
     getProjectConnections(supabase, user.id, id),
@@ -53,6 +60,7 @@ export default async function ProjectDetailPage({
       project={project}
       connections={connections}
       alerts={alerts}
+      userPlan={userPlan}
     />
   );
 }
