@@ -9,9 +9,9 @@
 ## Current Position
 
 Phase: 5 of 7 (Stripe Billing)
-Plan: 3 of 5 complete in current phase
-Status: Plan 03 complete (Stripe webhook handler, Stripe CLI verified). Plans 04–05 remaining.
-Last activity: 2026-06-07 — Completed 05-03 (POST /api/stripe/webhook, Stripe event handlers).
+Plan: 5 of 5 complete in current phase
+Status: Plan 05 complete (plan-based resource limit enforcement on connections + projects). Phase 5 plans all complete.
+Last activity: 2026-06-07 — Completed 05-05 (plan-based 403 gates on POST /api/connections and POST /api/projects).
 
 Progress: [████████░░] 70%
 
@@ -32,6 +32,8 @@ Progress: [████████░░] 70%
 - Phase 2: fal.ai key validation is format-only (no cheap validation endpoint)
 - Phase 2: provider DB value is 'falai' (not 'fal') — must match UI provider key
 - Phase 2: api_key_suffix (last 4 chars) stored plaintext for display; encrypted key never returned
+- [Phase 05]: Limit check placed before checkProviderKey (expensive network call) and before DB insert — fast 403 gate
+- [Phase 05]: Plan read from users table per request (not JWT) to avoid stale plan values after tier changes
 
 ### Pending Todos
 
@@ -80,5 +82,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-07
-Stopped at: Completed 05-03-PLAN.md (Stripe webhook handler, Stripe CLI verified)
+Stopped at: Completed 05-05-PLAN.md (plan-based resource limit enforcement on connections + projects)
 Resume file: None

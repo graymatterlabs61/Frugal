@@ -10,7 +10,7 @@ Frugal is an AI API cost management SaaS. Developers building on OpenAI, Anthrop
 - [x] **Phase 2: Core APIs + Polling Worker** - Projects + connections CRUD, provider modules, polling worker, budget checker, alert service
 - [ ] **Phase 3: Dashboard Real Data** - Wire all dashboard pages to real usage_records and alert_log — replace every hardcoded mock
 - [ ] **Phase 4: Budget Rules API + UI** - Real CRUD API for budget_rules, wire project detail rules tab to DB, tier enforcement
-- [ ] **Phase 5: Stripe Billing** - Checkout, webhooks, plan updates, billing history from Stripe, tier enforcement in API routes
+- [x] **Phase 5: Stripe Billing** - Checkout, webhooks, plan updates, billing history from Stripe, tier enforcement in API routes (completed 2026-06-07)
 - [ ] **Phase 6: Email Alerts + Slack** - Resend email templates, Slack webhook support, alert delivery end-to-end
 - [ ] **Phase 7: Settings + QStash Cron + Polish** - Account/security/integration settings, QStash 5-min schedule, tier limits enforced everywhere, launch-ready
 
@@ -154,6 +154,6 @@ Sub-phases (5):
 | 2. Core APIs + Polling Worker | - | Complete | 2026-06-05 |
 | 3. Dashboard Real Data | 2/4 | In progress | - |
 | 4. Budget Rules API + UI | 0/5 | Planned | - |
-| 5. Stripe Billing | 3/5 | In Progress|  |
+| 5. Stripe Billing | 5/5 | Complete   | 2026-06-07 |
 | 6. Email Alerts + Slack | 0/5 | Not started | - |
 | 7. Settings + QStash + Polish | 0/5 | Not started | - |
