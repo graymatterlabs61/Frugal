@@ -8,8 +8,8 @@ Frugal is an AI API cost management SaaS. Developers building on OpenAI, Anthrop
 
 - [x] **Phase 1: Foundation** - Auth, schema, middleware, encryption, Supabase clients
 - [x] **Phase 2: Core APIs + Polling Worker** - Projects + connections CRUD, provider modules, polling worker, budget checker, alert service
-- [ ] **Phase 3: Dashboard Real Data** - Wire all dashboard pages to real usage_records and alert_log — replace every hardcoded mock
-- [ ] **Phase 4: Budget Rules API + UI** - Real CRUD API for budget_rules, wire project detail rules tab to DB, tier enforcement
+- [x] **Phase 3: Dashboard Real Data** - Wire all dashboard pages to real usage_records and alert_log — replace every hardcoded mock (completed 2026-06-06)
+- [x] **Phase 4: Budget Rules API + UI** - Real CRUD API for budget_rules, wire project detail rules tab to DB, tier enforcement (completed 2026-06-06)
 - [x] **Phase 5: Stripe Billing** - Checkout, webhooks, plan updates, billing history from Stripe, tier enforcement in API routes (completed 2026-06-07)
 - [x] **Phase 6: Email Alerts + Slack** - Resend email templates, Slack webhook support, alert delivery end-to-end (completed 2026-06-07)
 - [ ] **Phase 7: Settings + QStash Cron + Polish** - Account/security/integration settings, QStash 5-min schedule, tier limits enforced everywhere, launch-ready
@@ -59,9 +59,9 @@ Frugal is an AI API cost management SaaS. Developers building on OpenAI, Anthrop
 
 Sub-phases (4):
 - [x] 03-01: DB query layer — lib/queries/dashboard.ts with all aggregation functions
-- [ ] 03-02: Dashboard page — real stats, stacked SpendChart, top projects, recent alerts, empty state CTA
+- [x] 03-02: Dashboard page — real stats, stacked SpendChart, top projects, recent alerts, empty state CTA (a224b3b)
 - [x] 03-03: Alerts page — real alert_log data, empty state
-- [ ] 03-04: Project detail page — server component for stats, real connections tab, real alerts tab, worker bug fix
+- [x] 03-04: Project detail page — server component for stats, real connections tab, real alerts tab, worker bug fix (b406cec, 3f12ec1)
 
 ### Phase 4: Budget Rules API + UI
 **Goal**: Full CRUD REST API for budget_rules. Wire project detail "Budget Rules" tab to real DB — create, list, delete rules persist. Tier enforcement: Free users cannot create rules; Plus gets alert+block; Pro gets throttle.
@@ -79,11 +79,11 @@ Sub-phases (4):
 **Plans**: 5 plans
 
 Sub-phases (5):
-- [ ] 04-01-PLAN.md — Migration 004: rename budget_rules columns (period→budget_window, alert_at_percent→threshold_pct)
-- [ ] 04-02-PLAN.md — lib/tier.ts: canCreateBudgetRules, canUseBlock, canUseThrottle feature gate functions
-- [ ] 04-03-PLAN.md — /api/budget-rules route.ts (GET/POST) + /api/budget-rules/[id] (DELETE) with Zod + tier enforcement
-- [ ] 04-04-PLAN.md — Wire project detail Budget Rules tab to real API + tier-gated UI + human verify checkpoint
-- [ ] 04-05-PLAN.md — budgetChecker.ts + types.ts column alignment (budget_window, threshold_pct)
+- [x] 04-01-PLAN.md — Migration 004: rename budget_rules columns (period→budget_window, alert_at_percent→threshold_pct) (e1bb693)
+- [x] 04-02-PLAN.md — lib/tier.ts: canCreateBudgetRules, canUseBlock, canUseThrottle feature gate functions (6fd34cf)
+- [x] 04-03-PLAN.md — /api/budget-rules route.ts (GET/POST) + /api/budget-rules/[id] (DELETE) with Zod + tier enforcement (45f0046)
+- [x] 04-04-PLAN.md — Wire project detail Budget Rules tab to real API + tier-gated UI + human verify checkpoint (6499d4e)
+- [x] 04-05-PLAN.md — budgetChecker.ts + types.ts column alignment (budget_window, threshold_pct) (f11ef06)
 
 ### Phase 5: Stripe Billing
 **Goal**: Stripe checkout for Plus/Pro plans, webhook handler to update users.plan, billing history pulled from Stripe invoices, customer portal for cancellation/plan change.
@@ -152,8 +152,8 @@ Sub-phases (5):
 |-------|----------------|--------|-----------|
 | 1. Foundation | - | Complete | 2026-06-03 |
 | 2. Core APIs + Polling Worker | - | Complete | 2026-06-05 |
-| 3. Dashboard Real Data | 2/4 | In progress | - |
-| 4. Budget Rules API + UI | 0/5 | Planned | - |
+| 3. Dashboard Real Data | 4/4 | Complete | 2026-06-06 |
+| 4. Budget Rules API + UI | 5/5 | Complete | 2026-06-06 |
 | 5. Stripe Billing | 5/5 | Complete   | 2026-06-07 |
 | 6. Email Alerts + Slack | 5/5 | Complete   | 2026-06-07 |
 | 7. Settings + QStash + Polish | 0/5 | Not started | - |

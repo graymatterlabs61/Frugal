@@ -4,16 +4,16 @@
 
 **Product:** Frugal — AI API cost management SaaS
 **Core value:** Developers see unified AI spend across all providers and get automated guardrails before costs spiral
-**Current focus:** Phase 6 — Email Alerts + Slack
+**Current focus:** Phase 7 — Settings + QStash Cron + Polish (last remaining phase)
 
 ## Current Position
 
-Phase: 6 of 7 (Email Alerts + Slack) — COMPLETE
-Plan: 5 of 5 complete
-Status: Plan 06-05 complete. Notifications tab with Slack webhook URL input added to project detail page. PATCH /api/projects/[id] persists slack_webhook_url to DB. Human-verified end-to-end. Phase 6 fully done.
-Last activity: 2026-06-07 — 06-05 executed (Notifications tab + PATCH endpoint, human-verified, ~25 min).
+Phase: 6 of 7 complete — phases 1–6 all done (3 and 4 were complete in git but unmarked until 2026-06-10 audit)
+Plan: Phase 7 not started (0/5)
+Status: 2026-06-10 cleanup session — committed lib/email module (13 branded templates, wired into stripe webhook + auth callback + alertService), fixed TS2367 settings errors (typecheck now clean), made welcome email idempotent via user_metadata flag, added admin-key usage fetchers (OpenAI org Usage API fallback + Anthropic Admin API), created .env.example, synced ROADMAP.md to git reality.
+Last activity: 2026-06-10 — problem-fix session (see commits 35b9172..HEAD).
 
-Progress: [█████████░] 85%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
@@ -96,14 +96,15 @@ None yet.
 
 ### Blockers/Concerns
 
-- RESEND_API_KEY not yet set — email alerts won't fire until Phase 6
+- RESEND_API_KEY not yet set — emails won't send until configured (see .env.example)
 - QStash cron schedule not configured — manual poll only (dev GET endpoint exists)
 - Gemini actual usage data requires Cloud Billing API + service account (not via API key) — out of scope V1
-- Worker `.eq("is_active", true)` bug — FIXED in 03-04 (b406cec)
 - STRIPE_SECRET_KEY + 4 price ID env vars not yet set — Stripe routes will throw until configured
+- PRODUCT: real usage data only flows for OpenAI (legacy or admin key) and Anthropic (admin key, added 2026-06-10). Groq/Replicate/fal.ai = key ping only. "Unified multi-provider spend" promise needs validation with real admin keys before launch
+- PRODUCT: per-user attribution (Pro tier unlock, US-005) and block/throttle (US-008) cannot be delivered by polling architecture alone — see PRICING.md open questions 2–4; needs decision before launch marketing
 
 ## Session Continuity
 
-Last session: 2026-06-07
-Stopped at: Completed 06-05-PLAN.md (Notifications tab + PATCH /api/projects/[id] — human-verified). Phase 6 complete.
+Last session: 2026-06-10
+Stopped at: Problem-fix session complete (email module committed, TS errors fixed, welcome email idempotent, admin-key fetchers, .env.example, docs synced). Next: Phase 7.
 Resume file: None
