@@ -50,7 +50,8 @@ function Toggle({
 }
 
 export default function IntegrationPage() {
-  const plan = "Free";
+  // Hardcoded until settings are wired to real plan data in Phase 7
+  const plan = "Free" as "Free" | "Plus" | "Pro";
   const [slackEnabled, setSlackEnabled] = useState(false);
   const [slackWebhook, setSlackWebhook] = useState("");
   const [webhookEnabled, setWebhookEnabled] = useState(false);

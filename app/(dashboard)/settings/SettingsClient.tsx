@@ -147,7 +147,8 @@ export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
   const [webhookUrl, setWebhookUrl] = useState("");
   const [billingInterval, setBillingInterval] = useState<BillingInterval>("monthly");
 
-  const plan = "Free";
+  // Hardcoded until settings are wired to real plan data in Phase 7
+  const plan = "Free" as "Free" | "Plus" | "Pro";
   const initial = (name || userEmail || "U")[0].toUpperCase();
 
   const handleSaveProfile = async (e: React.FormEvent) => {
