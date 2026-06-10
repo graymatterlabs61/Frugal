@@ -10,11 +10,14 @@ export function VideoHero() {
   const [email, setEmail] = useState("")
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
+  const [discountCode, setDiscountCode] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || sending) return
     setSending(true)
+    setError(null)
 
     try {
       const res = await fetch("/api/waitlist", {
@@ -23,9 +26,11 @@ export function VideoHero() {
         body: JSON.stringify({ email }),
       })
       const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? "Something went wrong")
+      setDiscountCode(data.discountCode ?? null)
       setSent(true)
-    } catch {
-      setSent(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't join the waitlist — please try again.")
     } finally {
       setSending(false)
     }
@@ -58,7 +63,7 @@ export function VideoHero() {
                 AI API cost management & <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontWeight: 400 }}>OpenAI cost monitoring tool</span>
               </h1>
               <p className="text-white/90 text-base sm:text-lg drop-shadow-md">
-                Frugal monitors your OpenAI, Anthropic, Replicate, and fal.ai spend in real time. Set budget limits and protect your runway from surprise invoices.
+                Frugal checks your OpenAI, Anthropic, Replicate, and fal.ai spend every 5 minutes. Set budget limits and protect your runway from surprise invoices.
               </p>
             </div>
 
@@ -71,11 +76,16 @@ export function VideoHero() {
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-xl text-primary">
                       <Check size={24} />
                     </div>
-                    <h3 className="text-lg font-semibold text-foreground">You're on the list!</h3>
-                    <p className="text-sm text-muted-foreground">Keep an eye on your inbox.</p>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      Your unique 35% off discount code has been sent to your email.
-                    </p>
+                    <h3 className="text-lg font-semibold text-foreground">You&apos;re on the list!</h3>
+                    <p className="text-sm text-muted-foreground">We&apos;ll email you when Frugal launches.</p>
+                    {discountCode && (
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        35% off your first plan with code{" "}
+                        <span className="rounded-md bg-white/10 px-2 py-0.5 font-mono font-semibold text-foreground">
+                          {discountCode}
+                        </span>
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <>
@@ -116,6 +126,11 @@ export function VideoHero() {
                       >
                         {sending ? 'Joining...' : 'Join the waitlist'}
                       </button>
+                      {error && (
+                        <p role="alert" className="text-sm text-red-400">
+                          {error}
+                        </p>
+                      )}
                     </form>
                   </>
                 )}

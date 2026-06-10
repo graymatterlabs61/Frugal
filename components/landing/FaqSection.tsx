@@ -66,9 +66,9 @@ export function FaqSection() {
         Frequently asked questions
       </h2>
       <p className="max-w-lg text-left text-base text-neutral-600 dark:text-neutral-50">
-        We are here to help you with any questions you may have. If you don't find what you need, please contact us at{" "}
-        <a href="mailto:support@frugal.com" className="text-blue-500 underline">
-          support@frugal.com
+        We are here to help you with any questions you may have. If you don&apos;t find what you need, please contact us at{" "}
+        <a href="mailto:support@getfrugal.dev" className="text-blue-500 underline">
+          support@getfrugal.dev
         </a>
       </p>
       <div className="mt-10 grid w-full grid-cols-1 items-start gap-4 md:grid-cols-3">

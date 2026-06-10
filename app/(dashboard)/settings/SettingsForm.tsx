@@ -13,6 +13,31 @@ interface SettingsFormProps {
   userEmail: string;
 }
 
+function Toggle({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${checked ? "bg-primary" : "bg-white/10"}`}
+    >
+      <span
+        className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${checked ? "translate-x-4" : "translate-x-1"}`}
+      />
+    </button>
+  );
+}
+
 export function SettingsForm({ userName, userEmail }: SettingsFormProps) {
   const [name, setName] = useState(userName);
   const [saving, setSaving] = useState(false);
@@ -63,24 +88,6 @@ export function SettingsForm({ userName, userEmail }: SettingsFormProps) {
       setChangingPassword(false);
     }
   };
-
-  const Toggle = ({
-    checked,
-    onChange,
-  }: {
-    checked: boolean;
-    onChange: (v: boolean) => void;
-  }) => (
-    <button
-      type="button"
-      onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${checked ? "bg-primary" : "bg-white/10"}`}
-    >
-      <span
-        className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${checked ? "translate-x-4" : "translate-x-1"}`}
-      />
-    </button>
-  );
 
   return (
     <div className="space-y-6">
@@ -139,7 +146,7 @@ export function SettingsForm({ userName, userEmail }: SettingsFormProps) {
                 Receive budget and spend alerts via email
               </p>
             </div>
-            <Toggle checked={emailAlerts} onChange={setEmailAlerts} />
+            <Toggle checked={emailAlerts} onChange={setEmailAlerts} label="Email alerts" />
           </div>
           <div className="flex items-center justify-between">
             <div>
@@ -148,7 +155,7 @@ export function SettingsForm({ userName, userEmail }: SettingsFormProps) {
                 Send alerts to a Slack webhook URL
               </p>
             </div>
-            <Toggle checked={slackAlerts} onChange={setSlackAlerts} />
+            <Toggle checked={slackAlerts} onChange={setSlackAlerts} label="Slack notifications" />
           </div>
         </div>
       </section>

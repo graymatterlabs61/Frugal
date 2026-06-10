@@ -118,14 +118,16 @@ export function FinalCTA() {
       </div>
       <div className="border-t md:border-t-0 md:border-l border-dashed p-8 md:p-14">
         <p className="text-base text-neutral-700 dark:text-neutral-200">
-          "Frugal paid for itself in the first 10 days. We caught a runaway recursive loop that would have cost us thousands before the end of the month."
+          &ldquo;In 2025 I lost a product with 50,000 users to a surprise AI
+          bill. Frugal is the alarm system I wish I&apos;d had — so I built
+          it.&rdquo;
         </p>
         <div className="flex flex-col text-sm items-start mt-4 gap-1">
           <p className="font-bold text-neutral-800 dark:text-neutral-200">
-            Michael Scarn
+            Nilesh Kumar
           </p>
           <p className="text-neutral-500 dark:text-neutral-400">
-            Side projects builder
+            Founder, Frugal
           </p>
         </div>
       </div>

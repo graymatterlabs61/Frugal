@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Link from "next/link"
 import gsap from "gsap"
 import { Menu, X } from "lucide-react"
 
@@ -59,14 +60,14 @@ export function Navbar() {
       >
         {/* Top bar */}
         <div className="flex items-center gap-3 sm:gap-6">
-          <a href="/" className="flex-shrink-0 flex items-center gap-2.5">
+          <Link href="/" className="flex-shrink-0 flex items-center gap-2.5">
             <div className="flex h-8 items-center justify-center transition-opacity hover:opacity-80 drop-shadow-[0_0_10px_#FF500B66]">
               <img src="/logo.svg" alt="Frugal Logo" className="h-10 w-10 object-contain" />
             </div>
             <span className="font-ethnocentric text-md md:text-lg lg:text-xl tracking-tight text-foreground block">
               Frugal
             </span>
-          </a>
+          </Link>
 
           <div className="hidden sm:flex items-center gap-6">
             {NAV_LINKS.map(link => (

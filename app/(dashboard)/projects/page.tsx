@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -175,16 +175,19 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchProjects = useCallback(async () => {
-    const res = await fetch("/api/projects");
-    const json = await res.json();
-    if (res.ok) setProjects(json.projects ?? []);
-    setLoading(false);
-  }, []);
-
   useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
+    let cancelled = false;
+    (async () => {
+      const res = await fetch("/api/projects");
+      const json = await res.json();
+      if (cancelled) return;
+      if (res.ok) setProjects(json.projects ?? []);
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleCreated = (p: Project) => setProjects((prev) => [p, ...prev]);
 

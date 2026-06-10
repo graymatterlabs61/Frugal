@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
+import { createServiceClient } from "@/lib/supabase/service"
 
 const schema = z.object({
   email: z.string().email("Please provide a valid email address"),
 })
 
-// In-memory log for dev/pre-launch; replace with Supabase insert in production:
-//   await supabase.from("waitlist").insert({ email, joined_at: new Date().toISOString() })
-const seen = new Set<string>()
+const DISCOUNT_CODE = "EARLY35"
 
 export async function POST(request: Request) {
   let body: unknown
@@ -25,24 +24,37 @@ export async function POST(request: Request) {
     )
   }
 
-  const { email } = parsed.data
-  const alreadyJoined = seen.has(email)
-  seen.add(email)
+  const email = parsed.data.email.toLowerCase().trim()
 
-  // Log to server console so you can capture emails during pre-launch
-  if (!alreadyJoined) {
-    console.log(`[waitlist] +1 signup: ${email}  (total unique: ${seen.size})`)
-  }
+  try {
+    const supabase = createServiceClient()
+    const { error } = await supabase
+      .from("waitlist")
+      .insert({ email, discount_code: DISCOUNT_CODE })
 
-  return NextResponse.json(
-    {
+    // 23505 = unique_violation: already on the list, treat as success
+    const alreadyJoined = error?.code === "23505"
+    if (error && !alreadyJoined) {
+      console.error("[waitlist] insert failed:", error.message)
+      return NextResponse.json(
+        { error: "Couldn't save your signup — please try again." },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({
       success: true,
       alreadyJoined,
-      discountCode: "EARLY35",
+      discountCode: DISCOUNT_CODE,
       message: alreadyJoined
-        ? "You're already on the list! Your discount code is EARLY35."
-        : "You're on the waitlist! Use EARLY35 for 35% off your first plan at launch.",
-    },
-    { status: 200 }
-  )
+        ? `You're already on the list! Your discount code is ${DISCOUNT_CODE}.`
+        : `You're on the waitlist! Use ${DISCOUNT_CODE} for 35% off your first plan at launch.`,
+    })
+  } catch (err) {
+    console.error("[waitlist] error:", err)
+    return NextResponse.json(
+      { error: "Couldn't save your signup — please try again." },
+      { status: 500 }
+    )
+  }
 }

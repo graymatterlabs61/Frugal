@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import {
   OpenAI,
   Anthropic,
@@ -371,23 +371,26 @@ export default function ConnectionsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = useCallback(async () => {
-    const [connRes, projRes] = await Promise.all([
-      fetch("/api/connections"),
-      fetch("/api/projects"),
-    ]);
-    const [connJson, projJson] = await Promise.all([
-      connRes.json(),
-      projRes.json(),
-    ]);
-    if (connRes.ok) setConnections(connJson.connections ?? []);
-    if (projRes.ok) setProjects(projJson.projects ?? []);
-    setLoading(false);
-  }, []);
-
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    let cancelled = false;
+    (async () => {
+      const [connRes, projRes] = await Promise.all([
+        fetch("/api/connections"),
+        fetch("/api/projects"),
+      ]);
+      const [connJson, projJson] = await Promise.all([
+        connRes.json(),
+        projRes.json(),
+      ]);
+      if (cancelled) return;
+      if (connRes.ok) setConnections(connJson.connections ?? []);
+      if (projRes.ok) setProjects(projJson.projects ?? []);
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleAdd = (c: Connection) => setConnections((prev) => [c, ...prev]);
 

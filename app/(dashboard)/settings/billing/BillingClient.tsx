@@ -187,7 +187,7 @@ function BillingClientInner({
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok) throw new Error(data.error ?? "Checkout failed");
-      window.location.href = data.url!;
+      window.location.assign(data.url!);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Checkout failed");
       setLoading(null);
@@ -200,7 +200,7 @@ function BillingClientInner({
       const res = await fetch("/api/stripe/portal", { method: "POST" });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok) throw new Error(data.error ?? "Portal unavailable");
-      window.location.href = data.url!;
+      window.location.assign(data.url!);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Portal unavailable");
       setPortalLoading(false);
