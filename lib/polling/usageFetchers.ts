@@ -22,7 +22,8 @@ export async function fetchOpenAIUsage(apiKey: string, date: string): Promise<Fe
     });
 
     if (res.status === 403 || res.status === 401) {
-      return { supported: true, records: [], error: "Unauthorized — check key permissions" };
+      // Legacy endpoint rejected the key — admin keys use the org Usage API instead
+      return fetchOpenAIAdminUsage(apiKey, date);
     }
     if (!res.ok) {
       return { supported: true, records: [], error: `OpenAI usage API error: ${res.status}` };
@@ -39,6 +40,63 @@ export async function fetchOpenAIUsage(apiKey: string, date: string): Promise<Fe
         item.n_generated_tokens_total ?? 0,
       ),
     }));
+
+    return { supported: true, records };
+  } catch (err) {
+    return { supported: true, records: [], error: String(err) };
+  }
+}
+
+// Modern org Usage API — requires an Admin API key (sk-admin-…) created in the
+// OpenAI console. Standard project keys get 401 here; legacy /v1/usage is tried first.
+
+interface OpenAIAdminUsageResult {
+  model?: string | null;
+  input_tokens?: number;
+  output_tokens?: number;
+}
+
+interface OpenAIAdminUsageBucket {
+  results?: OpenAIAdminUsageResult[];
+}
+
+export async function fetchOpenAIAdminUsage(apiKey: string, date: string): Promise<FetchUsageResult> {
+  try {
+    const startTime = Math.floor(Date.parse(`${date}T00:00:00Z`) / 1000);
+    const endTime = startTime + 86_400;
+    const params = new URLSearchParams({
+      start_time: String(startTime),
+      end_time: String(endTime),
+      bucket_width: "1d",
+      group_by: "model",
+      limit: "1",
+    });
+
+    const res = await fetch(`https://api.openai.com/v1/organization/usage/completions?${params}`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      signal: AbortSignal.timeout(TIMEOUT),
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      return {
+        supported: true,
+        records: [],
+        error: "Unauthorized — standard keys need legacy usage access; org-wide data needs an Admin API key (sk-admin-…)",
+      };
+    }
+    if (!res.ok) {
+      return { supported: true, records: [], error: `OpenAI org usage API error: ${res.status}` };
+    }
+
+    const json = await res.json() as { data?: OpenAIAdminUsageBucket[] };
+    const records: ProviderUsageRecord[] = (json.data ?? [])
+      .flatMap((bucket) => bucket.results ?? [])
+      .map((item) => ({
+        model: item.model ?? "unknown",
+        tokensInput: item.input_tokens ?? 0,
+        tokensOutput: item.output_tokens ?? 0,
+        costUsd: estimateCost(item.model ?? "unknown", item.input_tokens ?? 0, item.output_tokens ?? 0),
+      }));
 
     return { supported: true, records };
   } catch (err) {
@@ -72,9 +130,25 @@ export async function fetchGeminiUsage(apiKey: string): Promise<FetchUsageResult
 }
 
 // ── Anthropic ─────────────────────────────────────────────────────────────────
-// No public usage API accessible via API key.
+// Standard keys (sk-ant-api…) have no usage endpoint — ping only.
+// Admin keys (sk-ant-admin…) can read the org Usage Report API.
 
-export async function fetchAnthropicUsage(apiKey: string): Promise<FetchUsageResult> {
+interface AnthropicUsageResult {
+  model?: string | null;
+  uncached_input_tokens?: number;
+  cache_read_input_tokens?: number;
+  output_tokens?: number;
+}
+
+interface AnthropicUsageBucket {
+  results?: AnthropicUsageResult[];
+}
+
+export async function fetchAnthropicUsage(apiKey: string, date: string): Promise<FetchUsageResult> {
+  if (apiKey.startsWith("sk-ant-admin")) {
+    return fetchAnthropicAdminUsage(apiKey, date);
+  }
+
   try {
     const res = await fetch("https://api.anthropic.com/v1/models", {
       headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
@@ -86,10 +160,55 @@ export async function fetchAnthropicUsage(apiKey: string): Promise<FetchUsageRes
     return {
       supported: false,
       records: [],
-      error: "Anthropic usage data not available via API key. Key is active.",
+      error: "Anthropic usage data requires an Admin API key (sk-ant-admin…). Key is active.",
     };
   } catch (err) {
     return { supported: false, records: [], error: String(err) };
+  }
+}
+
+export async function fetchAnthropicAdminUsage(apiKey: string, date: string): Promise<FetchUsageResult> {
+  try {
+    const params = new URLSearchParams({
+      starting_at: `${date}T00:00:00Z`,
+      ending_at: `${date}T23:59:59Z`,
+      bucket_width: "1d",
+      limit: "1",
+    });
+    params.append("group_by[]", "model");
+
+    const res = await fetch(`https://api.anthropic.com/v1/organizations/usage_report/messages?${params}`, {
+      headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
+      signal: AbortSignal.timeout(TIMEOUT),
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      return { supported: true, records: [], error: "Unauthorized — admin key lacks usage report permission" };
+    }
+    if (!res.ok) {
+      return { supported: true, records: [], error: `Anthropic usage report API error: ${res.status}` };
+    }
+
+    const json = await res.json() as { data?: AnthropicUsageBucket[] };
+    const records: ProviderUsageRecord[] = (json.data ?? [])
+      .flatMap((bucket) => bucket.results ?? [])
+      .map((item) => {
+        // Cache-read tokens count toward input at a reduced rate; fold them in
+        // for token totals — estimateCost treats them as standard input (slight overestimate)
+        const tokensInput = (item.uncached_input_tokens ?? 0) + (item.cache_read_input_tokens ?? 0);
+        const tokensOutput = item.output_tokens ?? 0;
+        const model = item.model ?? "unknown";
+        return {
+          model,
+          tokensInput,
+          tokensOutput,
+          costUsd: estimateCost(model, tokensInput, tokensOutput),
+        };
+      });
+
+    return { supported: true, records };
+  } catch (err) {
+    return { supported: true, records: [], error: String(err) };
   }
 }
 
@@ -143,7 +262,7 @@ export async function fetchUsageForProvider(
   switch (provider) {
     case "openai":    return fetchOpenAIUsage(apiKey, date);
     case "gemini":    return fetchGeminiUsage(apiKey);
-    case "anthropic": return fetchAnthropicUsage(apiKey);
+    case "anthropic": return fetchAnthropicUsage(apiKey, date);
     case "groq":      return fetchGroqUsage(apiKey);
     case "replicate": return fetchReplicateUsage(apiKey);
     default:          return healthCheckOnly();
