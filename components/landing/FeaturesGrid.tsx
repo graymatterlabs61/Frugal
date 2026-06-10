@@ -261,8 +261,8 @@ export function FeaturesGrid() {
               </div>
             </div>
             <div className="mt-4 shrink-0">
-              <h3 className="font-heading text-lg font-semibold text-foreground">Real-time spend tracking</h3>
-              <p className="mt-2 text-sm text-muted-foreground">Live data from every provider updated every 5 minutes. One dashboard, all your AI costs.</p>
+              <h3 className="font-heading text-lg font-semibold text-foreground">Always-fresh spend tracking</h3>
+              <p className="mt-2 text-sm text-muted-foreground">Data from every provider updated every 5 minutes. One dashboard, all your AI costs.</p>
             </div>
           </div>
 
@@ -275,56 +275,32 @@ export function FeaturesGrid() {
                   <div className="group relative w-56 shrink-0 rounded-xl">
                     <div className="absolute inset-0 h-full w-full rounded-[inherit] bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:5px_5px] bg-fixed shadow-sm ring-1 ring-border [--pattern-fg:var(--color-white)]/5 opacity-20"></div>
                     <div className="relative flex h-full flex-col rounded-xl bg-background/50 p-4 shadow-sm ring-1 ring-border">
-                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">Frugal saved us from a $4,000 runaway inference job on our very first weekend. Essential tooling.</p>
-                      <div className="flex items-center gap-2">
-                        <img alt="Bill Gates" className="size-5 rounded-full object-cover" src="https://assets.aceternity.com/avatars/1.webp" />
-                        <div>
-                          <p className="text-[10px] font-medium text-foreground">Bill Gates</p>
-                          <p className="text-[8px] text-muted-foreground">CEO of Microsoft</p>
-                        </div>
-                      </div>
+                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">A retry loop on staging hammers the API all weekend. The 80% budget alert fires Saturday morning — not on the invoice.</p>
+                      <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-primary">Runaway retry loop</p>
                     </div>
                   </div>
                   {/* Item 2 */}
                   <div className="group relative w-56 shrink-0 rounded-xl">
                     <div className="absolute inset-0 h-full w-full rounded-[inherit] bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:5px_5px] bg-fixed shadow-sm ring-1 ring-border [--pattern-fg:var(--color-white)]/5 opacity-20"></div>
                     <div className="relative flex h-full flex-col rounded-xl bg-background/50 p-4 shadow-sm ring-1 ring-border">
-                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">We manage API budgets for 15+ clients. Frugal lets us guarantee we never overspend their allocated limits.</p>
-                      <div className="flex items-center gap-2">
-                        <img alt="Sarah Chen" className="size-5 rounded-full object-cover" src="https://assets.aceternity.com/avatars/2.webp" />
-                        <div>
-                          <p className="text-[10px] font-medium text-foreground">Sarah Chen</p>
-                          <p className="text-[8px] text-muted-foreground">CTO at TechFlow</p>
-                        </div>
-                      </div>
+                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">A prompt tweak doubles output tokens overnight. The spend chart shows the jump the same morning, per project, per provider.</p>
+                      <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-primary">Silent prompt regression</p>
                     </div>
                   </div>
                   {/* Item 3 */}
                   <div className="group relative w-56 shrink-0 rounded-xl">
                     <div className="absolute inset-0 h-full w-full rounded-[inherit] bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:5px_5px] bg-fixed shadow-sm ring-1 ring-border [--pattern-fg:var(--color-white)]/5 opacity-20"></div>
                     <div className="relative flex h-full flex-col rounded-xl bg-background/50 p-4 shadow-sm ring-1 ring-border">
-                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">The 5-minute polling means we never have to wait till the end of the month to realize a prompt change ruined our margins.</p>
-                      <div className="flex items-center gap-2">
-                        <img alt="Marcus Johnson" className="size-5 rounded-full object-cover" src="https://assets.aceternity.com/avatars/3.webp" />
-                        <div>
-                          <p className="text-[10px] font-medium text-foreground">Marcus Johnson</p>
-                          <p className="text-[8px] text-muted-foreground">Lead Developer at Stripe</p>
-                        </div>
-                      </div>
+                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">A forgotten cron job keeps calling an expensive model every minute. Daily spend triples — the alert lands in Slack within five minutes of the threshold.</p>
+                      <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-primary">Zombie cron job</p>
                     </div>
                   </div>
                   {/* Item 4 */}
                   <div className="group relative w-56 shrink-0 rounded-xl">
                     <div className="absolute inset-0 h-full w-full rounded-[inherit] bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:5px_5px] bg-fixed shadow-sm ring-1 ring-border [--pattern-fg:var(--color-white)]/5 opacity-20"></div>
                     <div className="relative flex h-full flex-col rounded-xl bg-background/50 p-4 shadow-sm ring-1 ring-border">
-                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">Our team productivity increased by 40% after switching to Frugal. The Slack alerts are excellent.</p>
-                      <div className="flex items-center gap-2">
-                        <img alt="Emily Rodriguez" className="size-5 rounded-full object-cover" src="https://assets.aceternity.com/avatars/4.webp" />
-                        <div>
-                          <p className="text-[10px] font-medium text-foreground">Emily Rodriguez</p>
-                          <p className="text-[8px] text-muted-foreground">Product Manager at Vercel</p>
-                        </div>
-                      </div>
+                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">A demo link goes viral and traffic spikes 20x. The daily limit holds the line while you decide what to do — before the month-end surprise.</p>
+                      <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-primary">Viral traffic spike</p>
                     </div>
                   </div>
                   
@@ -333,64 +309,40 @@ export function FeaturesGrid() {
                   <div className="group relative w-56 shrink-0 rounded-xl">
                     <div className="absolute inset-0 h-full w-full rounded-[inherit] bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:5px_5px] bg-fixed shadow-sm ring-1 ring-border [--pattern-fg:var(--color-white)]/5 opacity-20"></div>
                     <div className="relative flex h-full flex-col rounded-xl bg-background/50 p-4 shadow-sm ring-1 ring-border">
-                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">Frugal saved us from a $4,000 runaway inference job on our very first weekend. Essential tooling.</p>
-                      <div className="flex items-center gap-2">
-                        <img alt="Bill Gates" className="size-5 rounded-full object-cover" src="https://assets.aceternity.com/avatars/1.webp" />
-                        <div>
-                          <p className="text-[10px] font-medium text-foreground">Bill Gates</p>
-                          <p className="text-[8px] text-muted-foreground">CEO of Microsoft</p>
-                        </div>
-                      </div>
+                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">A retry loop on staging hammers the API all weekend. The 80% budget alert fires Saturday morning — not on the invoice.</p>
+                      <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-primary">Runaway retry loop</p>
                     </div>
                   </div>
                   {/* Item 2 (Dup) */}
                   <div className="group relative w-56 shrink-0 rounded-xl">
                     <div className="absolute inset-0 h-full w-full rounded-[inherit] bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:5px_5px] bg-fixed shadow-sm ring-1 ring-border [--pattern-fg:var(--color-white)]/5 opacity-20"></div>
                     <div className="relative flex h-full flex-col rounded-xl bg-background/50 p-4 shadow-sm ring-1 ring-border">
-                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">We manage API budgets for 15+ clients. Frugal lets us guarantee we never overspend their allocated limits.</p>
-                      <div className="flex items-center gap-2">
-                        <img alt="Sarah Chen" className="size-5 rounded-full object-cover" src="https://assets.aceternity.com/avatars/2.webp" />
-                        <div>
-                          <p className="text-[10px] font-medium text-foreground">Sarah Chen</p>
-                          <p className="text-[8px] text-muted-foreground">CTO at TechFlow</p>
-                        </div>
-                      </div>
+                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">A prompt tweak doubles output tokens overnight. The spend chart shows the jump the same morning, per project, per provider.</p>
+                      <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-primary">Silent prompt regression</p>
                     </div>
                   </div>
                   {/* Item 3 (Dup) */}
                   <div className="group relative w-56 shrink-0 rounded-xl">
                     <div className="absolute inset-0 h-full w-full rounded-[inherit] bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:5px_5px] bg-fixed shadow-sm ring-1 ring-border [--pattern-fg:var(--color-white)]/5 opacity-20"></div>
                     <div className="relative flex h-full flex-col rounded-xl bg-background/50 p-4 shadow-sm ring-1 ring-border">
-                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">The 5-minute polling means we never have to wait till the end of the month to realize a prompt change ruined our margins.</p>
-                      <div className="flex items-center gap-2">
-                        <img alt="Marcus Johnson" className="size-5 rounded-full object-cover" src="https://assets.aceternity.com/avatars/3.webp" />
-                        <div>
-                          <p className="text-[10px] font-medium text-foreground">Marcus Johnson</p>
-                          <p className="text-[8px] text-muted-foreground">Lead Developer at Stripe</p>
-                        </div>
-                      </div>
+                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">A forgotten cron job keeps calling an expensive model every minute. Daily spend triples — the alert lands in Slack within five minutes of the threshold.</p>
+                      <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-primary">Zombie cron job</p>
                     </div>
                   </div>
                   {/* Item 4 (Dup) */}
                   <div className="group relative w-56 shrink-0 rounded-xl">
                     <div className="absolute inset-0 h-full w-full rounded-[inherit] bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:5px_5px] bg-fixed shadow-sm ring-1 ring-border [--pattern-fg:var(--color-white)]/5 opacity-20"></div>
                     <div className="relative flex h-full flex-col rounded-xl bg-background/50 p-4 shadow-sm ring-1 ring-border">
-                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">Our team productivity increased by 40% after switching to Frugal. The Slack alerts are excellent.</p>
-                      <div className="flex items-center gap-2">
-                        <img alt="Emily Rodriguez" className="size-5 rounded-full object-cover" src="https://assets.aceternity.com/avatars/4.webp" />
-                        <div>
-                          <p className="text-[10px] font-medium text-foreground">Emily Rodriguez</p>
-                          <p className="text-[8px] text-muted-foreground">Product Manager at Vercel</p>
-                        </div>
-                      </div>
+                      <p className="mb-3 flex-1 text-xs leading-relaxed text-foreground">A demo link goes viral and traffic spikes 20x. The daily limit holds the line while you decide what to do — before the month-end surprise.</p>
+                      <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-primary">Viral traffic spike</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div className="mt-4 shrink-0">
-              <h3 className="font-heading text-lg font-semibold text-foreground">Loved by developers</h3>
-              <p className="mt-2 text-sm text-muted-foreground">Trusted by thousands of developers and teams worldwide.</p>
+              <h3 className="font-heading text-lg font-semibold text-foreground">Built for the bills you didn&apos;t see coming</h3>
+              <p className="mt-2 text-sm text-muted-foreground">The exact failure modes that produce surprise AI invoices — caught early instead of explained later.</p>
             </div>
           </div>
         </div>

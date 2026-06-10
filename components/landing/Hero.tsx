@@ -9,12 +9,15 @@ export function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
   const [email, setEmail] = useState("")
   const [submitted, setSubmitted] = useState(false)
+  const [discountCode, setDiscountCode] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!email || loading) return
     setLoading(true)
+    setError(null)
     try {
       const res = await fetch("/api/waitlist", {
         method: "POST",
@@ -22,9 +25,11 @@ export function Hero() {
         body: JSON.stringify({ email }),
       })
       const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? "Something went wrong")
+      setDiscountCode(data.discountCode ?? null)
       setSubmitted(true)
-    } catch {
-      setSubmitted(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't join the waitlist — please try again.")
     } finally {
       setLoading(false)
     }
@@ -108,9 +113,9 @@ export function Hero() {
 
         {/* Subhead */}
         <p className="hero-sub mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
-          Frugal monitors your OpenAI, Anthropic, Replicate, and fal.ai spend in
-          real time. Set budget limits, get alerts before limits hit, and protect
-          your runway from surprise invoices.
+          Frugal checks your OpenAI, Anthropic, Replicate, and fal.ai spend
+          every 5 minutes. Set budget limits, get alerts before limits hit, and
+          protect your runway from surprise invoices.
         </p>
 
         {/* CTAs */}
@@ -119,14 +124,20 @@ export function Hero() {
             <div className="inline-flex flex-col items-center gap-3">
               <div className="rounded-2xl border border-green-500/30 bg-green-500/[0.07] px-8 py-5 text-center">
                 <p className="mb-1 font-semibold text-green-300">
-                  ✓ You&apos;re on the list!
+                  You&apos;re on the list!
                 </p>
                 <p className="mb-3 text-sm text-muted-foreground">
-                  Keep an eye on your inbox.
+                  We&apos;ll email you when Frugal launches.
                 </p>
-                <p className="mt-3 text-sm text-muted-foreground">
-                  Your unique 35% off discount code has been sent to your email.
-                </p>
+                {discountCode && (
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    35% off your first plan with code{" "}
+                    <span className="rounded-md bg-white/10 px-2 py-0.5 font-mono font-semibold text-foreground">
+                      {discountCode}
+                    </span>
+                    {" "}— save it somewhere safe.
+                  </p>
+                )}
               </div>
             </div>
           ) : (
@@ -153,6 +164,11 @@ export function Hero() {
                 <ArrowRightIcon size={16} />
               </Button>
             </form>
+          )}
+          {error && (
+            <p role="alert" className="mt-3 text-sm text-red-400">
+              {error}
+            </p>
           )}
         </div>
 

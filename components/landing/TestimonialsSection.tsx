@@ -1,3 +1,7 @@
+// DO NOT ENABLE until real customer quotes exist. Every testimonial below is
+// fabricated and several use real brand logos (Shopify, GitHub, Spotify) —
+// rendering this section as-is would be a legal and credibility hazard.
+// Currently commented out in app/page.tsx; keep it that way.
 import React from "react";
 import Marquee from "react-fast-marquee";
 
