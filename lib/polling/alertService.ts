@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { buildEmailHtml } from "./emailTemplates";
+import { sendBudgetAlert } from "@/lib/email";
 
 interface AlertPayload {
   userId: string;
@@ -29,7 +29,22 @@ export async function fireAlert(
     slack: { sent: false },
   };
 
-  await sendEmail(payload, notifiedVia, deliveryStatus);
+  const emailResult = await sendBudgetAlert(payload.userEmail, {
+    projectName: payload.projectName,
+    periodLabel: payload.periodLabel,
+    spendUsd: payload.spendUsd,
+    limitUsd: payload.limitUsd,
+    percentUsed: payload.percentUsed,
+  });
+
+  if (emailResult.success) {
+    notifiedVia.push("email");
+    deliveryStatus.email = { sent: true, messageId: emailResult.messageId };
+  } else {
+    console.error("[alertService] Email failed:", emailResult.error);
+    deliveryStatus.email = { sent: false, error: emailResult.error };
+  }
+
   if (payload.slackWebhookUrl) {
     await sendSlack(payload, notifiedVia, deliveryStatus);
   }
@@ -45,45 +60,6 @@ export async function fireAlert(
     status: "active",
     delivery_status: deliveryStatus,
   });
-}
-
-async function sendEmail(
-  payload: AlertPayload,
-  notifiedVia: string[],
-  deliveryStatus: { email: { sent: boolean; messageId?: string; error?: string } },
-): Promise<void> {
-  const resendKey = process.env.RESEND_API_KEY;
-  if (!resendKey) {
-    console.warn("[alertService] RESEND_API_KEY not set — skipping email");
-    return;
-  }
-
-  const subject = payload.percentUsed >= 100
-    ? `🚨 Budget limit hit: ${payload.projectName}`
-    : `⚠️ Budget alert: ${payload.projectName} at ${payload.percentUsed.toFixed(0)}%`;
-
-  const html = buildEmailHtml(payload);
-
-  try {
-    const { Resend } = await import("resend");
-    const resend = new Resend(resendKey);
-    const { data, error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_ADDRESS ?? "Frugal <onboarding@resend.dev>",
-      to: payload.userEmail,
-      subject,
-      html,
-    });
-    if (error) {
-      console.error("[alertService] Resend error:", error);
-      deliveryStatus.email = { sent: false, error: String(error) };
-    } else {
-      notifiedVia.push("email");
-      deliveryStatus.email = { sent: true, messageId: data?.id };
-    }
-  } catch (err) {
-    console.error("[alertService] Email send failed:", err);
-    deliveryStatus.email = { sent: false, error: String(err) };
-  }
 }
 
 async function sendSlack(

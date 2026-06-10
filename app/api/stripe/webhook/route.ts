@@ -1,5 +1,6 @@
 import { stripe, getPlanFromPriceId } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase/service";
+import { sendSubscriptionUpgraded, sendSubscriptionCancelled } from "@/lib/email";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -47,13 +48,27 @@ export async function POST(request: Request) {
         const supabaseUserId = session.metadata?.supabase_user_id;
         if (!supabaseUserId) break;
 
-        await supabase
+        const { data: updatedUser } = await supabase
           .from("users")
           .update({
             plan,
             stripe_customer_id: session.customer as string,
           })
-          .eq("id", supabaseUserId);
+          .eq("id", supabaseUserId)
+          .select("email, full_name")
+          .single();
+
+        if (updatedUser?.email) {
+          const itemPeriodEnd = subscription.items.data[0]?.current_period_end;
+          const periodEnd = itemPeriodEnd
+            ? new Date(itemPeriodEnd * 1000).toISOString()
+            : undefined;
+          sendSubscriptionUpgraded(updatedUser.email, {
+            userName: updatedUser.full_name ?? updatedUser.email,
+            plan,
+            periodEnd,
+          }).catch((err) => console.error("[webhook] upgrade email failed:", err));
+        }
         break;
       }
 
@@ -73,10 +88,24 @@ export async function POST(request: Request) {
 
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
-        await supabase
+        const itemPeriodEnd = subscription.items.data[0]?.current_period_end;
+        const periodEnd = itemPeriodEnd
+          ? new Date(itemPeriodEnd * 1000).toISOString()
+          : new Date().toISOString();
+
+        const { data: cancelledUser } = await supabase
           .from("users")
           .update({ plan: "free" })
-          .eq("stripe_customer_id", subscription.customer as string);
+          .eq("stripe_customer_id", subscription.customer as string)
+          .select("email, full_name")
+          .single();
+
+        if (cancelledUser?.email) {
+          sendSubscriptionCancelled(cancelledUser.email, {
+            userName: cancelledUser.full_name ?? cancelledUser.email,
+            periodEnd,
+          }).catch((err) => console.error("[webhook] cancellation email failed:", err));
+        }
         break;
       }
 
