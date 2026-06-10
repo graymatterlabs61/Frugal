@@ -10,6 +10,7 @@ export function Hero() {
   const [email, setEmail] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [discountCode, setDiscountCode] = useState<string | null>(null)
+  const [emailSent, setEmailSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -27,6 +28,7 @@ export function Hero() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? "Something went wrong")
       setDiscountCode(data.discountCode ?? null)
+      setEmailSent(data.emailSent === true)
       setSubmitted(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't join the waitlist — please try again.")
@@ -135,7 +137,9 @@ export function Hero() {
                     <span className="rounded-md bg-white/10 px-2 py-0.5 font-mono font-semibold text-foreground">
                       {discountCode}
                     </span>
-                    {" "}— save it somewhere safe.
+                    {emailSent
+                      ? " — also sent to your inbox."
+                      : " — save it somewhere safe."}
                   </p>
                 )}
               </div>

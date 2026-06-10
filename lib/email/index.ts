@@ -13,6 +13,7 @@ import {
   type SubscriptionUpgradedPayload,
   type SubscriptionCancelledPayload,
 } from "./templates/subscriptionChanged";
+import { waitlistWelcomeSubject, waitlistWelcomeHtml, type WaitlistWelcomePayload } from "./templates/waitlistWelcome";
 import { announcementSubject, announcementHtml, type AnnouncementPayload } from "./templates/marketing/announcement";
 import { offerSubject, offerHtml, type OfferPayload } from "./templates/marketing/offer";
 import { reengagementSubject, reengagementHtml, type ReengagementPayload } from "./templates/marketing/reengagement";
@@ -29,6 +30,7 @@ export type {
   ConnectionFailedPayload,
   SubscriptionUpgradedPayload,
   SubscriptionCancelledPayload,
+  WaitlistWelcomePayload,
   AnnouncementPayload,
   OfferPayload,
   ReengagementPayload,
@@ -92,6 +94,9 @@ export const sendSubscriptionCancelled = (to: string, p: SubscriptionCancelledPa
   send({ from: FROM.billing, to, subject: subscriptionCancelledSubject(), html: subscriptionCancelledHtml(p) });
 
 // ── Marketing ────────────────────────────────────────────────────────────────
+export const sendWaitlistWelcome = (to: string, p: WaitlistWelcomePayload) =>
+  send({ from: FROM.marketing, to, subject: waitlistWelcomeSubject(), html: waitlistWelcomeHtml(p) });
+
 export const sendAnnouncement = (to: string, p: AnnouncementPayload) =>
   send({ from: FROM.marketing, to, subject: announcementSubject(p), html: announcementHtml(p) });
 
