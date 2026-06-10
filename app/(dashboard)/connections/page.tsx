@@ -26,6 +26,17 @@ import {
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -66,6 +77,8 @@ interface ProviderMeta {
   label: string;
   hint: string;
   bg: string;
+  // Shown under the key input — how to mint the least-privileged key for this provider
+  keyAdvice?: string;
   // renderIcon: renders the badge icon (Color or Mono with brand color)
   renderIcon: () => React.ReactNode;
   // renderOption: compact version for the dropdown
@@ -76,6 +89,8 @@ const providerMeta: Record<string, ProviderMeta> = {
   openai: {
     label: "OpenAI",
     hint: "sk-…",
+    keyAdvice:
+      "Best practice: create a dedicated read-only Admin key (scope: api.usage.read) in the OpenAI console. It can read usage data but can never call models or spend money — don't paste your production key.",
     bg: "bg-[#10a37f]/10",
     renderIcon: () => <OpenAI size={22} color="#10a37f" />,
     renderOption: () => <OpenAI size={16} color="#10a37f" />,
@@ -83,6 +98,8 @@ const providerMeta: Record<string, ProviderMeta> = {
   anthropic: {
     label: "Anthropic",
     hint: "sk-ant-…",
+    keyAdvice:
+      "Usage data requires an Admin key (sk-ant-admin…) from the Anthropic console. Note: Anthropic admin keys can manage your organization — create one dedicated to Frugal and rotate it periodically. A standard key works for connection-health checks only.",
     bg: "bg-[#d97706]/10",
     renderIcon: () => <Anthropic size={22} color="#d97706" />,
     renderOption: () => <Anthropic size={16} color="#d97706" />,
@@ -303,6 +320,11 @@ function AddConnectionDialog({
             <p className="text-xs text-muted-foreground">
               AES-256 encrypted before storage. Never logged or returned after save.
             </p>
+            {selectedMeta?.keyAdvice && (
+              <p className="rounded-xl border border-primary/20 bg-primary/[0.06] px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+                {selectedMeta.keyAdvice}
+              </p>
+            )}
           </div>
 
           {projects.length > 0 && (
@@ -540,13 +562,38 @@ export default function ConnectionsPage() {
                   </div>
 
                   {/* Delete */}
-                  <button
-                    onClick={() => handleDelete(conn.id)}
-                    className="opacity-0 group-hover:opacity-100 p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all"
-                    title="Remove connection"
-                  >
-                    <Trash size={15} />
-                  </button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        aria-label={`Remove ${meta?.label ?? conn.provider} connection`}
+                        className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all"
+                        title="Remove connection"
+                      >
+                        <Trash size={15} />
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="bg-card border-border rounded-2xl">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Remove {meta?.label ?? conn.provider} connection?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Polling stops immediately and the encrypted key is deleted
+                          from Frugal. Usage history already collected is kept. This
+                          cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(conn.id)}
+                          className="rounded-xl bg-destructive text-white hover:bg-destructive/90"
+                        >
+                          Remove connection
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               );
             })}
@@ -565,6 +612,11 @@ export default function ConnectionsPage() {
             API keys are AES-256 encrypted before storage. Only the last 4 characters
             are stored in plaintext for display. Keys are never logged, returned after
             save, or used to make model requests — only to read usage data.
+          </p>
+          <p className="text-xs text-muted-foreground mt-2 max-w-lg">
+            Tip: where your provider supports it (OpenAI does), connect a dedicated
+            read-only usage key instead of a production key — then a leak anywhere
+            can read stats, never spend money.
           </p>
         </div>
       </div>

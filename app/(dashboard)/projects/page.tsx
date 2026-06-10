@@ -4,6 +4,17 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -191,9 +202,7 @@ export default function ProjectsPage() {
 
   const handleCreated = (p: Project) => setProjects((prev) => [p, ...prev]);
 
-  const handleDelete = async (id: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDelete = async (id: string) => {
     const res = await fetch(`/api/projects/${id}`, { method: "DELETE" });
     if (res.ok) {
       setProjects((prev) => prev.filter((p) => p.id !== id));
@@ -259,25 +268,47 @@ export default function ProjectsPage() {
                   </div>
                 </Link>
 
-                <button
-                  onClick={(e) => handleDelete(project.id, e)}
-                  className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all z-10"
-                  title="Delete project"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
-                  </svg>
-                </button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button
+                      aria-label={`Delete project ${project.name}`}
+                      className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all z-10"
+                      title="Delete project"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+                      </svg>
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-card border-border rounded-2xl">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete “{project.name}”?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Budget rules for this project are removed and its connections
+                        become unassigned. This cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleDelete(project.id)}
+                        className="rounded-xl bg-destructive text-white hover:bg-destructive/90"
+                      >
+                        Delete project
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             );
           })}
