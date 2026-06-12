@@ -1,0 +1,14 @@
+# Frugal
+> Frugal is a multi-provider AI cost dashboard with automated guardrails. Developers connect AI provider accounts (OpenAI, Anthropic, Replicate, fal.ai); Frugal polls usage every 5 minutes, shows unified spend per project, and fires email/Slack alerts before budget limits are hit. It is an early-warning and visibility product, providing honest enforcement without proxies.
+
+## Main sections
+- `Home -> https://getfrugal.dev/`: Overview of Frugal's AI cost management, automated guardrails, and key features.
+- `Pricing -> https://getfrugal.dev/pricing`: Subscription plans, limits, and honest insights into what Frugal provides.
+- `About -> https://getfrugal.dev/about`: Information about the team and mission behind Frugal.
+- `Contact -> https://getfrugal.dev/contact`: Support and contact information.
+
+## Key facts
+- Frugal provides unified spend dashboards across OpenAI, Anthropic, Replicate, and fal.ai.
+- It polls usage directly from providers every 5 minutes—there is no middleman proxy to slow down your requests.
+- Frugal sets up automated alerts via email and Slack before budget limits are hit.
+- Built specifically for solo developers and small teams spending $200–$5,000/month on AI APIs.

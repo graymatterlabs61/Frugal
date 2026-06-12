@@ -12,7 +12,7 @@ Frugal is an AI API cost management SaaS. Developers building on OpenAI, Anthrop
 - [x] **Phase 4: Budget Rules API + UI** - Real CRUD API for budget_rules, wire project detail rules tab to DB, tier enforcement (completed 2026-06-06)
 - [x] **Phase 5: Stripe Billing** - Checkout, webhooks, plan updates, billing history from Stripe, tier enforcement in API routes (completed 2026-06-07)
 - [x] **Phase 6: Email Alerts + Slack** - Resend email templates, Slack webhook support, alert delivery end-to-end (completed 2026-06-07)
-- [ ] **Phase 7: Settings + QStash Cron + Polish** - Account/security/integration settings, QStash 5-min schedule, tier limits enforced everywhere, launch-ready
+- [x] **Phase 7: Settings + QStash Cron + Polish** - Account/security/integration settings, QStash 5-min schedule, tier limits enforced everywhere, launch-ready (completed 2026-06-11)
 
 ## Phase Details
 
@@ -140,11 +140,11 @@ Plans:
 **Plans**: TBD
 
 Sub-phases (5):
-- [ ] 07-01: Account settings — name + email update via supabase.auth.updateUser
-- [ ] 07-02: Security settings — password change via supabase.auth.updateUser
-- [ ] 07-03: Tier enforcement — clamp history window in query layer, show limit counters in UI
-- [ ] 07-04: QStash cron documentation + POLL_SECRET env var setup
-- [ ] 07-05: UI polish — invoice download, remove dead buttons, .env.example, launch checklist
+- [x] 07-01: Account settings — name + email update via supabase.auth.updateUser; real plan from users table
+- [x] 07-02: Security settings — password change via supabase.auth.updateUser (was already functional)
+- [x] 07-03: Tier enforcement — history clamped in dashboard by plan, connection/project limit counters + gate
+- [x] 07-04: QStash cron documentation — doc/QSTASH_SETUP.md + .env.example schedule comment
+- [x] 07-05: UI polish — TS error fixed (ProjectDetailClient), ESLint warnings cleared, unused statusStyles removed
 
 ## Progress
 
@@ -156,4 +156,4 @@ Sub-phases (5):
 | 4. Budget Rules API + UI | 5/5 | Complete | 2026-06-06 |
 | 5. Stripe Billing | 5/5 | Complete   | 2026-06-07 |
 | 6. Email Alerts + Slack | 5/5 | Complete   | 2026-06-07 |
-| 7. Settings + QStash + Polish | 0/5 | Not started | - |
+| 7. Settings + QStash + Polish | 5/5 | Complete | 2026-06-11 |
