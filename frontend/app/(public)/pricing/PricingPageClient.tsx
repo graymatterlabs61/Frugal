@@ -7,6 +7,7 @@ import { MarketingNav } from "@/components/landing/MarketingNav";
 import { Footer } from "@/components/landing/Footer";
 import { Check, ChevronDown, Building2, Users, ArrowRight, Shield } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic/magic-card";
+import { ShineBorder } from "@/components/ui/magic/shine-border";
 import type { PersonalPlan, CorporatePlan, Faq } from "@/lib/queries/public";
 
 // ---------------------------------------------------------------------------
@@ -56,26 +57,34 @@ function PlanCard({
   featured: boolean;
   children: React.ReactNode;
 }) {
-  const cardStyle = featured
-    ? {
-        background: "linear-gradient(145deg, oklch(0.97 0 0 / 0.95) 0%, oklch(0.92 0 0 / 0.9) 100%)",
-        border: "1px solid oklch(1 0 0 / 0.3)",
-      }
-    : {
-        background: "linear-gradient(145deg, oklch(1 0 0 / 0.06) 0%, oklch(1 0 0 / 0.02) 100%)",
-        border: "1px solid oklch(1 0 0 / 0.10)",
-      };
+  if (featured) {
+    return (
+      <div
+        className="rounded-2xl p-5 flex flex-col relative overflow-hidden"
+        style={{
+          background: "linear-gradient(145deg, oklch(0.97 0 0 / 0.95) 0%, oklch(0.92 0 0 / 0.9) 100%)",
+        }}
+      >
+        <ShineBorder
+          shineColor={["#FF500B", "#ff8c5a", "#ffffff"]}
+          borderWidth={2}
+          duration={8}
+        />
+        {children}
+      </div>
+    );
+  }
 
   return (
-    <div style={cardStyle} className="rounded-2xl">
+    <div style={{ border: "1px solid oklch(1 0 0 / 0.10)" }} className="rounded-2xl">
       <MagicCard
         mode="orb"
         className="rounded-2xl p-5 flex flex-col cursor-default"
-        glowFrom={featured ? "#FF500B" : "#6366f1"}
-        glowTo={featured ? "#b83b08" : "#8b5cf6"}
+        glowFrom="#6366f1"
+        glowTo="#8b5cf6"
         glowSize={120}
         glowBlur={40}
-        glowOpacity={featured ? 0.35 : 0.2}
+        glowOpacity={0.2}
       >
         {children}
       </MagicCard>
