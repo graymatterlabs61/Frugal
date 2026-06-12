@@ -51,7 +51,7 @@ const glassCard: React.CSSProperties = {
 type Interval = "monthly" | "yearly";
 type LoadingPlan = null | "plus" | "pro";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "https://frugal-66tx.onrender.com";
 
 const PLAN_NAMES: Record<string, string> = {
   free: "Free",

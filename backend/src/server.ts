@@ -1,6 +1,5 @@
-// Sentry MUST be the first import — instruments all require/import calls
+// Sentry MUST be imported via the --import CLI flag in Node.js >= 18.19.0 for ESM support
 import "./instrument.js";
-
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";

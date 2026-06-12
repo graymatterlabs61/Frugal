@@ -1,5 +1,5 @@
 const BACKEND_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+  process.env.NEXT_PUBLIC_BACKEND_URL ?? "https://frugal-66tx.onrender.com";
 
 export class ApiError extends Error {
   constructor(

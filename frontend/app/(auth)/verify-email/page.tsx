@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, ArrowLeft, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "https://frugal-66tx.onrender.com";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();

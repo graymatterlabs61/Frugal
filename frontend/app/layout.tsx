@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider"
 import { Toaster } from "sonner"
 import { CookieConsent } from "@/components/ui/cookie-consent"
+import { Analytics } from "@vercel/analytics/next"
 
 const oxanium = Oxanium({ subsets: ["latin"], variable: "--font-heading" })
 const fontSans = Geist({ subsets: ["latin"], variable: "--font-sans" })
@@ -174,6 +175,7 @@ export default function RootLayout({
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
         <CookieConsent />
         <Toaster theme="dark" position="bottom-right" richColors />
+        <Analytics />
       </body>
     </html>
   )
