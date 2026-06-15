@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, Check } from "lucide-react"
+import { ArrowRight, Check, ShieldCheck } from "lucide-react"
 import { ShimmerButton } from "@/components/ui/magic/shimmer-button"
 
 const VIDEO_URL = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260602_150901_c45b90ec-18d7-42ff-90e2-b95d7109e330.mp4"
@@ -29,6 +29,13 @@ export function VideoHero() {
 
         <div className="relative z-10 flex flex-col min-h-[calc(100vh-24px)] sm:min-h-[calc(100vh-32px)] md:min-h-[calc(100vh-48px)] lg:h-full p-4 sm:p-6 md:p-8 gap-6">
 
+          <div className="flex items-center justify-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-md">
+              <ShieldCheck size={14} className="text-emerald-400" />
+              Bank-grade security: AES-256 encrypted keys. SOC 2 Type II target Q4 2026.
+            </span>
+          </div>
+
           <div className="flex-1 min-h-[2rem]" />
 
           {/* Bottom row */}
@@ -40,16 +47,21 @@ export function VideoHero() {
                 AI API cost management
               </p>
               <h1 className="text-white text-4xl sm:text-5xl xl:text-6xl font-semibold leading-[1.05] tracking-tight drop-shadow-lg">
-                Know your AI spend{" "}
+                Stop getting surprised{" "}
                 <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic", fontWeight: 400 }}>
-                  before the invoice
+                  by AI bills
                 </span>
               </h1>
               <p className="text-white/90 text-base sm:text-lg max-w-lg drop-shadow-md">
-                Frugal checks your OpenAI, Anthropic, Replicate, and fal.ai usage
-                every 5 minutes, tracks burn rate per project, and alerts you
-                before budgets blow up.
+                Frugal polls OpenAI, Anthropic, Replicate, and 7 more providers
+                every 5 minutes — and alerts you before your budget blows up.
+                No proxy. No code changes.
               </p>
+              
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-xs font-medium uppercase tracking-wider text-white/50">Connecting to:</span>
+                <span className="text-sm font-medium text-white/80">OpenAI, Anthropic, Replicate, and fal.ai</span>
+              </div>
             </div>
 
             {/* CTA card */}
@@ -78,6 +90,10 @@ export function VideoHero() {
                     <ArrowRight size={16} />
                   </ShimmerButton>
                 </Link>
+
+                <p className="text-center text-xs text-white/60 font-medium">
+                  Your AI costs are running right now. Connect in 2 minutes.
+                </p>
 
                 <a
                   href="#how-it-works"

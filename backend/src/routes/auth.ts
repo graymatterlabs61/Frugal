@@ -15,5 +15,6 @@ router.post(
 );
 router.post("/google", authRateLimit, asyncErrorWrapper(authController.googleAuth.bind(authController)));
 router.get("/me", requireAuth, asyncErrorWrapper(authController.me.bind(authController)));
+router.patch("/me", requireAuth, asyncErrorWrapper(authController.updateProfile.bind(authController)));
 
 export default router;

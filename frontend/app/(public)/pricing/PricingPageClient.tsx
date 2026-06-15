@@ -34,11 +34,10 @@ function IntervalToggle({
         <button
           key={v}
           onClick={() => onChange(v)}
-          className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all capitalize ${
-            value === v
-              ? "bg-white/[0.12] text-foreground border border-white/[0.12] shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
+          className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all capitalize ${value === v
+            ? "bg-white/[0.12] text-foreground border border-white/[0.12] shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+            }`}
         >
           {v}
           {v === "yearly" && (
@@ -60,15 +59,9 @@ function PlanCard({
   if (featured) {
     return (
       <div
-        className="rounded-2xl p-5 flex flex-col relative overflow-hidden"
-        style={{
-          background: "linear-gradient(145deg, oklch(0.97 0 0 / 0.95) 0%, oklch(0.92 0 0 / 0.9) 100%)",
-        }}
-      >
+        className="rounded-2xl p-5 flex flex-col relative overflow-hidden h-full glass-panel backdrop-blur-xl bg-primary/10 border border-primary/20 shadow-xl shadow-primary/10">
         <ShineBorder
           shineColor={["#FF500B", "#ff8c5a", "#ffffff"]}
-          borderWidth={2}
-          duration={8}
         />
         {children}
       </div>
@@ -76,10 +69,10 @@ function PlanCard({
   }
 
   return (
-    <div style={{ border: "1px solid oklch(1 0 0 / 0.10)" }} className="rounded-2xl">
+    <div style={{ border: "1px solid oklch(1 0 0 / 0.10)" }} className="rounded-2xl h-full">
       <MagicCard
         mode="orb"
-        className="rounded-2xl p-5 flex flex-col cursor-default"
+        className="rounded-2xl p-5 flex flex-col cursor-default h-full"
         glowFrom="#6366f1"
         glowTo="#8b5cf6"
         glowSize={120}
@@ -114,9 +107,8 @@ function FaqItem({
       >
         <span className="text-sm font-semibold text-foreground">{q}</span>
         <ChevronDown
-          className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${
-            open ? "rotate-180" : ""
-          }`}
+          className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""
+            }`}
         />
       </button>
       {open && (
@@ -183,22 +175,20 @@ function PricingPageInner({
           >
             <button
               onClick={() => setTab("personal")}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                tab === "personal"
-                  ? "bg-foreground text-background shadow-md"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${tab === "personal"
+                ? "bg-foreground text-foreground shadow-md"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               Personal
               <span className="text-[10px] font-mono opacity-70">dev</span>
             </button>
             <button
               onClick={() => setTab("corporate")}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                tab === "corporate"
-                  ? "bg-foreground text-background shadow-md"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${tab === "corporate"
+                ? "bg-foreground text-foreground shadow-md"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               <Building2 className="w-3.5 h-3.5" />
               Corporate
@@ -232,16 +222,15 @@ function PricingPageInner({
                   <PlanCard key={p.id} featured={p.featured}>
                     <div className="flex items-center justify-between mb-4">
                       <h3
-                        className={`font-bold text-base ${p.featured ? "text-background" : ""}`}
+                        className={`font-bold text-base ${p.featured ? "text-foreground" : ""}`}
                       >
                         {p.name}
                       </h3>
                       <span
-                        className={`text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border ${
-                          p.featured
-                            ? "text-background/70 bg-black/10 border-black/20"
-                            : p.badgeClass
-                        }`}
+                        className={`text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border ${p.featured
+                          ? "text-primary bg-primary/10 border-primary/20"
+                          : p.badgeClass
+                          }`}
                       >
                         {p.badge}
                       </span>
@@ -250,34 +239,30 @@ function PricingPageInner({
                     <div className="mb-4">
                       <div className="flex items-baseline gap-1">
                         <span
-                          className={`text-3xl font-bold font-mono ${
-                            p.featured ? "text-background" : ""
-                          }`}
+                          className={`text-3xl font-bold font-mono ${p.featured ? "text-foreground" : ""
+                            }`}
                         >
                           {price === 0 ? "$0" : `$${price}`}
                         </span>
                         <span
-                          className={`text-sm ${
-                            p.featured ? "text-background/60" : "text-muted-foreground"
-                          }`}
+                          className={`text-sm ${p.featured ? "text-foreground/70" : "text-muted-foreground"
+                            }`}
                         >
                           {price === 0 ? "/ forever" : "/month"}
                         </span>
                       </div>
                       {personalInterval === "yearly" && p.yearlySaving > 0 && (
                         <p
-                          className={`text-xs mt-0.5 ${
-                            p.featured ? "text-background/60" : "text-emerald-400"
-                          }`}
+                          className={`text-xs mt-0.5 ${p.featured ? "text-foreground/70" : "text-emerald-400"
+                            }`}
                         >
                           Save ${p.yearlySaving}/yr · ${p.yearlyTotal}/yr total
                         </p>
                       )}
                       {personalInterval === "monthly" && p.yearlyPrice > 0 && (
                         <p
-                          className={`text-xs mt-0.5 ${
-                            p.featured ? "text-background/50" : "text-muted-foreground/60"
-                          }`}
+                          className={`text-xs mt-0.5 ${p.featured ? "text-foreground/60" : "text-muted-foreground/60"
+                            }`}
                         >
                           ${p.yearlyPrice}/mo on yearly
                         </p>
@@ -286,11 +271,10 @@ function PricingPageInner({
 
                     <Link
                       href={p.ctaHref}
-                      className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 flex items-center justify-center transition-all ${
-                        p.featured
-                          ? "bg-background text-foreground hover:bg-background/90"
-                          : "bg-white/5 hover:bg-white/10 text-foreground border border-white/[0.08]"
-                      }`}
+                      className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 flex items-center justify-center transition-all ${p.featured
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20"
+                        : "bg-white/5 hover:bg-white/10 text-foreground border border-white/[0.08]"
+                        }`}
                     >
                       {p.ctaLabel}
                     </Link>
@@ -299,14 +283,12 @@ function PricingPageInner({
                       {p.features.map((f) => (
                         <li
                           key={f}
-                          className={`flex items-start gap-2 text-sm ${
-                            p.featured ? "text-background/80" : ""
-                          }`}
+                          className={`flex items-start gap-2 text-sm ${p.featured ? "text-foreground/90" : ""
+                            }`}
                         >
                           <Check
-                            className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${
-                              p.featured ? "text-background/60" : "text-primary"
-                            }`}
+                            className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${p.featured ? "text-primary" : "text-primary"
+                              }`}
                           />
                           {f}
                         </li>
@@ -388,16 +370,15 @@ function PricingPageInner({
                 <PlanCard key={p.id} featured={p.featured}>
                   <div className="flex items-center justify-between mb-4">
                     <h3
-                      className={`font-bold text-base ${p.featured ? "text-background" : ""}`}
+                      className={`font-bold text-base ${p.featured ? "text-foreground" : ""}`}
                     >
                       {p.name}
                     </h3>
                     <span
-                      className={`text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border ${
-                        p.featured
-                          ? "text-background/70 bg-black/10 border-black/20"
-                          : p.badgeClass
-                      }`}
+                      className={`text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border ${p.featured
+                        ? "text-primary bg-primary/10 border-primary/20"
+                        : p.badgeClass
+                        }`}
                     >
                       {p.badge}
                     </span>
@@ -406,28 +387,25 @@ function PricingPageInner({
                   <div className="mb-4">
                     <div className="flex items-baseline gap-1">
                       <span
-                        className={`text-3xl font-bold font-mono ${
-                          p.featured ? "text-background" : ""
-                        }`}
+                        className={`text-3xl font-bold font-mono ${p.featured ? "text-foreground" : ""
+                          }`}
                       >
                         {p.price}
                       </span>
                       <span
-                        className={`text-sm ${
-                          p.featured ? "text-background/60" : "text-muted-foreground"
-                        }`}
+                        className={`text-sm ${p.featured ? "text-foreground/70" : "text-muted-foreground"
+                          }`}
                       >
                         {p.priceSub}
                       </span>
                     </div>
                     <p
-                      className={`text-xs mt-0.5 ${
-                        p.featured ? "text-background/60" : "text-muted-foreground/70"
-                      }`}
+                      className={`text-xs mt-0.5 ${p.featured ? "text-foreground/70" : "text-muted-foreground/70"
+                        }`}
                     >
                       {corporateInterval === "yearly" ? p.yearlyNote : p.tagline}
                     </p>
-                    <p className={`text-xs mt-1 font-medium ${p.featured ? "text-background/50" : "text-muted-foreground/50"}`}>
+                    <p className={`text-xs mt-1 font-medium ${p.featured ? "text-foreground/60" : "text-muted-foreground/50"}`}>
                       {p.seats}
                     </p>
                   </div>
@@ -440,11 +418,10 @@ function PricingPageInner({
                           : "mailto:founder@getfrugal.dev?subject=Corporate%20Plan%20Waitlist";
                       }
                     }}
-                    className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 flex items-center justify-center gap-1.5 transition-all ${
-                      p.featured
-                        ? "bg-background text-foreground hover:bg-background/90"
-                        : "bg-white/5 hover:bg-white/10 text-foreground border border-white/[0.08]"
-                    }`}
+                    className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 flex items-center justify-center gap-1.5 transition-all ${p.featured
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20"
+                      : "bg-white/5 hover:bg-white/10 text-foreground border border-white/[0.08]"
+                      }`}
                   >
                     <Users className="w-3.5 h-3.5" />
                     {p.ctaLabel}
@@ -454,14 +431,12 @@ function PricingPageInner({
                     {p.features.map((f) => (
                       <li
                         key={f}
-                        className={`flex items-start gap-2 text-sm ${
-                          p.featured ? "text-background/80" : ""
-                        }`}
+                        className={`flex items-start gap-2 text-sm ${p.featured ? "text-foreground/90" : ""
+                          }`}
                       >
                         <Check
-                          className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${
-                            p.featured ? "text-background/60" : "text-primary"
-                          }`}
+                          className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${p.featured ? "text-primary" : "text-primary"
+                            }`}
                         />
                         {f}
                       </li>
@@ -636,7 +611,7 @@ function PricingPageInner({
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href="/signup"
-                className="inline-flex items-center gap-2 bg-foreground text-background hover:bg-foreground/90 font-semibold text-sm px-6 py-3 rounded-xl transition-all"
+                className="inline-flex items-center gap-2 bg-foreground text-foreground hover:bg-foreground/90 font-semibold text-sm px-6 py-3 rounded-xl transition-all"
               >
                 Get started free
                 <ArrowRight className="w-4 h-4" />

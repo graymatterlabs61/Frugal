@@ -1,4 +1,6 @@
+import type { Metadata } from "next"
 import { VideoHero } from "@/components/landing/VideoHero"
+import { FounderQuote } from "@/components/landing/FounderQuote"
 import { ProvidersBar } from "@/components/landing/ProvidersBar"
 import { ProblemSection } from "@/components/landing/ProblemSection"
 import { FeaturesGrid } from "@/components/landing/FeaturesGrid"
@@ -10,6 +12,10 @@ import { FinalCTA } from "@/components/landing/FinalCTA"
 import { Footer } from "@/components/landing/Footer"
 import { Navbar } from "@/components/landing/Navbar"
 import { fetchPlans } from "@/lib/queries/public"
+
+export const metadata: Metadata = {
+  alternates: { canonical: "https://getfrugal.dev/" },
+}
 
 const faqSchema = {
   "@context": "https://schema.org",
@@ -85,6 +91,7 @@ export default async function LandingPage() {
       <Navbar />
       <VideoHero />
       <main>
+        <FounderQuote />
         <ProvidersBar />
         <ProblemSection />
         <FeaturesGrid />

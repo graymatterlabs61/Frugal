@@ -14,9 +14,17 @@ const fontSans = Geist({ subsets: ["latin"], variable: "--font-sans" })
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 const siteUrl = "https://getfrugal.dev"
-const siteTitle = "Frugal — AI API Cost Management"
+const siteTitle = "AI API Cost Management: Track Spend & Stop Bill Shock"
 const siteDescription =
-  "Monitor your OpenAI, Anthropic, Replicate, and fal.ai spend in real time. Set budget limits, get alerts before limits hit, and stop surprise invoices."
+  "Transform your AI API cost management by tracking OpenAI and Anthropic spend in real time. Set limits, prevent massive overages, and start free today."
+
+const ogTitle = "Stop OpenAI Bill Shock | Frugal AI API Cost Management"
+const ogDescription =
+  "Centralize your LLM spend monitoring with Frugal. Set strict budgets for OpenAI, Anthropic, and Replicate, and get instant Slack alerts before you're charged."
+
+const twitterTitle = "Stop OpenAI Bill Shock with Frugal"
+const twitterDescription =
+  "Don't wait for your monthly invoice to discover you've overspent. Frugal provides real-time API cost tracking, budget alerts, and complete peace of mind for developers building with AI."
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -64,8 +72,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: siteUrl,
     siteName: "Frugal",
-    title: siteTitle,
-    description: siteDescription,
+    title: ogTitle,
+    description: ogDescription,
     images: [
       {
         url: `/og.png`,
@@ -77,8 +85,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: siteTitle,
-    description: siteDescription,
+    title: twitterTitle,
+    description: twitterDescription,
     creator: "@neilkumaroff",
     images: [`/twitter.png`],
   },

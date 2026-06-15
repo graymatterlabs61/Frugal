@@ -8,8 +8,9 @@ import { BlogArchiveSearch, BlogArchiveGrid } from "@/components/blog/BlogArchiv
 import { fetchBlogPosts } from "@/lib/queries/public";
 
 export const metadata: Metadata = {
-  title: "Journal — Frugal",
+  title: "The Journal — AI API Cost Management",
   description: "Long-form notes on AI API cost management, engineering, and startup operations.",
+  alternates: { canonical: "https://getfrugal.dev/blog" },
 };
 
 export default async function BlogIndex() {

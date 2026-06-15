@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+import Link from "next/link"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
@@ -60,7 +61,7 @@ export function ProblemSection() {
             <span className="font-playfair italic tracking-normal font-normal">when the invoice arrives</span>
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-muted-foreground">
-            Solo developers watch costs spike overnight with no warning. Teams give everyone AI access and end up with no idea which project burned what. Providers give you keys — not budgets, not attribution, not control.
+            Solo developers watch costs spike overnight with no warning. Teams give everyone AI access and end up with no idea which project burned what. Providers give you keys — not budgets, not attribution, not control. Stop relying on delayed billing dashboards with the only <Link href="/features/openai" className="underline hover:text-primary">OpenAI cost monitoring tool</Link> you need to track your exact usage down to the token.
           </p>
         </div>
 

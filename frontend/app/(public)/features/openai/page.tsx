@@ -4,10 +4,28 @@ import { ArrowRight, Check } from "lucide-react"
 import { MarketingNav } from "@/components/landing/MarketingNav"
 import { Footer } from "@/components/landing/Footer"
 import { FaqSection } from "@/components/landing/FaqSection"
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs"
+
+const pageTitle = "Monitor OpenAI API Costs in Real Time | Frugal"
+const pageDescription =
+  "Track OpenAI spend every 5 minutes. Set budget alerts. No proxy, no code changes. Free to start."
 
 export const metadata: Metadata = {
   title: "The Ultimate OpenAI Spend Tracker for Engineering Teams",
   description: "Frugal connects directly to your OpenAI account to track spend in real-time, enforce budget limits, and alert you before unexpected bills occur.",
+  alternates: { canonical: "https://getfrugal.dev/features/openai" },
+  openGraph: {
+    title: pageTitle,
+    description: pageDescription,
+    url: "https://getfrugal.dev/features/openai",
+    images: [{ url: "/og.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: pageTitle,
+    description: pageDescription,
+    images: ["/twitter.png"],
+  },
 }
 
 const faqs = [
@@ -29,7 +47,7 @@ const faqs = [
   {
     col: 2,
     question: "Which AI providers do you support?",
-    answer: "We currently support OpenAI, Anthropic, Replicate, and fal.ai, with more providers being added regularly."
+    answer: "We support OpenAI, Anthropic, Replicate, fal.ai, Together AI, Mistral, Cohere, Groq, Perplexity, and ElevenLabs, with more providers being added regularly."
   },
   {
     col: 3,
@@ -39,7 +57,7 @@ const faqs = [
   {
     col: 3,
     question: "Do you offer a free trial?",
-    answer: "Yes, we offer a 14-day free trial with full access to all tracking and alerting features, no credit card required."
+    answer: "Yes. Frugal's free plan monitors 1 provider indefinitely — no expiry, no credit card required. You can upgrade to Plus or Pro when you need more providers, projects, or Slack alerts."
   }
 ]
 
@@ -53,6 +71,14 @@ export default function OpenAILandingPage() {
         <section className="relative px-6 pt-32 pb-24 md:px-8 md:pt-48 md:pb-32 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,80,11,0.15),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,80,11,0.12),transparent)] pointer-events-none" />
           <div className="mx-auto max-w-5xl text-center relative z-10">
+            <div className="mb-8 flex justify-center">
+              <Breadcrumbs
+                items={[
+                  { name: "Home", href: "https://getfrugal.dev" },
+                  { name: "OpenAI Cost Monitoring" },
+                ]}
+              />
+            </div>
             <h1 className="mb-6 font-serif text-4xl leading-tight font-medium text-foreground md:text-6xl lg:text-7xl tracking-tight">
               The Ultimate OpenAI Spend Tracker for Engineering Teams
             </h1>
@@ -64,7 +90,7 @@ export default function OpenAILandingPage() {
                 href="/signup"
                 className="group inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground text-base font-semibold px-8 py-4 rounded-xl hover:bg-primary/90 transition-all hover:shadow-[0_0_24px_#FF500B59] w-full sm:w-auto"
               >
-                Start Free Trial
+                Start Free — No Credit Card
                 <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
               <Link
@@ -184,28 +210,46 @@ export default function OpenAILandingPage() {
                   <tr className="border-b border-border text-muted-foreground">
                     <th className="py-4 font-medium px-4">Feature</th>
                     <th className="py-4 font-semibold text-foreground px-4 bg-card rounded-t-xl border-x border-t border-border">Frugal</th>
-                    <th className="py-4 font-medium px-4">DIY Scripts</th>
-                    <th className="py-4 font-medium px-4">Enterprise Platforms</th>
+                    <th className="py-4 font-medium px-4">Helicone</th>
+                    <th className="py-4 font-medium px-4">Portkey</th>
+                    <th className="py-4 font-medium px-4">LangSmith</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border text-sm md:text-base">
                   <tr>
-                    <td className="py-4 px-4 font-medium">Setup Time</td>
-                    <td className="py-4 px-4 bg-card border-x border-border font-semibold text-primary">5 minutes</td>
-                    <td className="py-4 px-4 text-muted-foreground">Days of engineering</td>
-                    <td className="py-4 px-4 text-muted-foreground">Weeks of onboarding</td>
+                    <td className="py-4 px-4 font-medium">No proxy required</td>
+                    <td className="py-4 px-4 bg-card border-x border-border font-semibold text-primary">Yes</td>
+                    <td className="py-4 px-4 text-muted-foreground">No</td>
+                    <td className="py-4 px-4 text-muted-foreground">No</td>
+                    <td className="py-4 px-4 text-muted-foreground">No</td>
                   </tr>
                   <tr>
-                    <td className="py-4 px-4 font-medium">Cost</td>
-                    <td className="py-4 px-4 bg-card border-x border-border font-semibold text-primary">Accessible SaaS</td>
-                    <td className="py-4 px-4 text-muted-foreground">"Free" (Costs dev time)</td>
-                    <td className="py-4 px-4 text-muted-foreground">$1,000+/mo</td>
+                    <td className="py-4 px-4 font-medium">Monitors 10+ providers</td>
+                    <td className="py-4 px-4 bg-card border-x border-border font-semibold text-primary">Yes</td>
+                    <td className="py-4 px-4 text-muted-foreground">Partial</td>
+                    <td className="py-4 px-4 text-muted-foreground">Partial</td>
+                    <td className="py-4 px-4 text-muted-foreground">No</td>
                   </tr>
                   <tr>
-                    <td className="py-4 px-4 font-medium">Custom BI Integrations</td>
-                    <td className="py-4 px-4 bg-card border-x border-border rounded-b-xl border-b font-semibold text-primary">No</td>
+                    <td className="py-4 px-4 font-medium">Budget alerts</td>
+                    <td className="py-4 px-4 bg-card border-x border-border font-semibold text-primary">Yes</td>
                     <td className="py-4 px-4 text-muted-foreground">Yes</td>
                     <td className="py-4 px-4 text-muted-foreground">Yes</td>
+                    <td className="py-4 px-4 text-muted-foreground">No</td>
+                  </tr>
+                  <tr>
+                    <td className="py-4 px-4 font-medium">Hard budget blocks</td>
+                    <td className="py-4 px-4 bg-card border-x border-border font-semibold text-primary">Yes</td>
+                    <td className="py-4 px-4 text-muted-foreground">No</td>
+                    <td className="py-4 px-4 text-muted-foreground">No</td>
+                    <td className="py-4 px-4 text-muted-foreground">No</td>
+                  </tr>
+                  <tr>
+                    <td className="py-4 px-4 font-medium">Code change required</td>
+                    <td className="py-4 px-4 bg-card border-x border-border rounded-b-xl border-b font-semibold text-primary">None</td>
+                    <td className="py-4 px-4 text-muted-foreground">Proxy URL</td>
+                    <td className="py-4 px-4 text-muted-foreground">Proxy URL</td>
+                    <td className="py-4 px-4 text-muted-foreground">SDK wrap</td>
                   </tr>
                 </tbody>
               </table>
@@ -228,7 +272,7 @@ export default function OpenAILandingPage() {
                 href="/signup"
                 className="group inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground text-base font-semibold px-8 py-4 rounded-xl hover:bg-primary/90 transition-all hover:shadow-[0_0_24px_#FF500B59]"
               >
-                Start Your Free Trial Today
+                Start Monitoring for Free
                 <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>

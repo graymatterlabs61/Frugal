@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { BlogPostLayout } from "@/components/blog/BlogPostLayout";
+import { BreadcrumbJsonLd } from "@/components/seo/Breadcrumbs";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -14,8 +15,17 @@ export default async function BlogPost({ params }: Props) {
   if (!post) notFound();
   const { meta, Content } = post;
   return (
-    <BlogPostLayout meta={meta}>
-      <Content />
-    </BlogPostLayout>
+    <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", href: "https://getfrugal.dev" },
+          { name: "Journal", href: "https://getfrugal.dev/blog" },
+          { name: meta.title },
+        ]}
+      />
+      <BlogPostLayout meta={meta}>
+        <Content />
+      </BlogPostLayout>
+    </>
   );
 }

@@ -36,6 +36,12 @@ const googleAuthSchema = z
   })
   .strict();
 
+const updateProfileSchema = z
+  .object({
+    fullName: z.string().max(100).optional(),
+  })
+  .strict();
+
 class AuthController extends BaseController {
   private get service(): AuthService {
     const userRepo = new UserRepository(db);
@@ -79,8 +85,16 @@ class AuthController extends BaseController {
       res.status(404).json({ error: { code: "not_found", message: "User not found" } });
       return;
     }
-    // Strip password hash
     const { passwordHash: _dropped, ...safeUser } = user;
+    this.handleSuccess(res, safeUser);
+  }
+
+  async updateProfile(req: Request, res: Response): Promise<void> {
+    const userId = getUserId(req);
+    const input = updateProfileSchema.parse(req.body);
+    const userRepo = new UserRepository(db);
+    const updated = await userRepo.updateProfile(userId, { fullName: input.fullName });
+    const { passwordHash: _dropped, ...safeUser } = updated;
     this.handleSuccess(res, safeUser);
   }
 }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { BlogPostMeta } from "@/components/blog/BlogPostLayout";
 
 export interface BlogPostEntry {
@@ -11,7 +12,7 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
       title: "AES-256 Encryption for API Keys: Why We Don't Trust Client-Side Storage",
       description:
         "An engineering explanation of how Frugal securely handles user API keys using server-side AES-256 encryption.",
-      date: "2026-06-12",
+      date: "2025-01-14",
       category: "Engineering",
       readTime: "7 min read",
       authorName: "Nilesh Kumar",
@@ -46,8 +47,9 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
           <h2>How It Works</h2>
           <h3>The LocalStorage Fallacy</h3>
           <p>
-            Many lightweight AI tools ask users to paste their key, which is then saved in the
-            browser&apos;s <code>localStorage</code>. This is highly vulnerable to Cross-Site
+            Many lightweight AI tools ask users to{" "}
+            <Link href="/blog/developer-byok-security-nightmare">paste their key</Link>, which is
+            then saved in the browser&apos;s <code>localStorage</code>. This is highly vulnerable to Cross-Site
             Scripting (XSS) attacks. If a malicious script runs on that page, it can scrape{" "}
             <code>localStorage</code> and silently exfiltrate the keys to an attacker&apos;s server.
           </p>
@@ -62,7 +64,11 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
           </p>
           <h3>The Decryption Phase</h3>
           <p>
-            When the Frugal polling worker runs, it retrieves the ciphertext from the database. The
+            When the{" "}
+            <Link href="/blog/building-idempotent-polling-worker-qstash">
+              Frugal polling worker
+            </Link>{" "}
+            runs, it retrieves the ciphertext from the database. The
             worker uses the master <code>ENCRYPTION_SECRET</code> to decrypt the key into memory just
             long enough to authenticate the request to OpenAI or Anthropic, before destroying it again.
           </p>
@@ -115,8 +121,9 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
           </p>
           <h4>Does Frugal store my OpenAI key in plaintext?</h4>
           <p>
-            No. Frugal encrypts all API keys using AES-256-GCM before they are written to the
-            database. The keys are only decrypted ephemerally in server memory during polling jobs.
+            No. <Link href="/features/openai">Frugal</Link> encrypts all API keys using AES-256-GCM
+            before they are written to the database. The keys are only decrypted ephemerally in
+            server memory during polling jobs.
           </p>
           <h2>Conclusion</h2>
           <p>
@@ -135,7 +142,7 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
       title: "We Analyzed 10M API Tokens: Here's Where Your Engineering Team is Wasting Money",
       description:
         "Data-driven insights into common anti-patterns like unnecessarily long system prompts and lacking max_tokens limits.",
-      date: "2026-06-12",
+      date: "2025-09-09",
       category: "LLM Cost Optimization",
       readTime: "7 min read",
       authorName: "Nilesh Kumar",
@@ -171,15 +178,18 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
             hard context limit. If you omit the <code>max_tokens</code> parameter, a confused model
             might output 2,000 words of hallucinated nonsense instead of a simple &ldquo;Yes&rdquo;
             or &ldquo;No&rdquo;. Because output tokens are priced 3x to 5x higher than input tokens,
-            unconstrained generation is the fastest way to burn money.
+            unconstrained generation is the fastest way to burn money — the kind of silent leak that{" "}
+            <Link href="/blog/hard-caps-ai-spend-warning-vs-blocking">hard budget caps</Link> exist
+            to stop.
           </p>
           <h3>Anti-Pattern 2: The Kitchen Sink System Prompt</h3>
           <p>
             We found that 40% of input tokens consisted of massive system prompts containing rules
             utterly irrelevant to the specific user query. For example, injecting 3,000 tokens of
             &ldquo;SQL Schema Guidelines&rdquo; into a prompt where the user simply asked for a UI
-            button color. Unless you are utilizing strict prompt caching, every one of those tokens
-            is billed on every single request.
+            button color. Unless you are utilizing strict{" "}
+            <Link href="/blog/anthropic-prompt-caching-cut-bill-by-40">prompt caching</Link>, every
+            one of those tokens is billed on every single request.
           </p>
           <h3>Anti-Pattern 3: Pretty-Printed JSON</h3>
           <p>
@@ -238,7 +248,9 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
           <p>
             Token optimization is the new performance tuning. Just as engineers optimize database
             queries to reduce CPU load, modern AI developers must ruthlessly audit their prompts and
-            API parameters to eliminate token bloat.
+            API parameters to eliminate token bloat. The first step is visibility:{" "}
+            <Link href="/features/openai">track your spend in real time</Link> so you can see which
+            anti-pattern is actually costing you money.
           </p>
         </>
       );
@@ -250,7 +262,7 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
       title: "Building an Idempotent Polling Worker with QStash for AI Usage Tracking",
       description:
         "Why Vercel functions fail for long-running cron jobs, and how we solved 5-minute polling using Upstash QStash.",
-      date: "2026-06-12",
+      date: "2025-04-08",
       category: "Engineering Deep Dive",
       readTime: "8 min read",
       authorName: "Nilesh Kumar",
@@ -277,9 +289,11 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
           <h2>Why It Matters</h2>
           <p>
             When tracking API spend across hundreds of users, data integrity is paramount. If our
-            system pulls $500 of OpenAI usage for a tenant, experiences a network timeout, and then
-            retries 30 seconds later, a poorly designed worker might record that $500 twice. This
-            results in false budget alerts and broken trust.
+            system pulls $500 of <Link href="/features/openai">OpenAI usage</Link> for a tenant,
+            experiences a network timeout, and then retries 30 seconds later, a poorly designed
+            worker might record that $500 twice. This results in false{" "}
+            <Link href="/blog/hard-caps-ai-spend-warning-vs-blocking">budget alerts</Link> and
+            broken trust.
           </p>
           <h2>How It Works</h2>
           <h3>The Vercel Problem</h3>
@@ -313,7 +327,11 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
             <li>
               <strong>Use a Reliable Message Queue:</strong> Configure Upstash QStash to handle
               retries and DLQs (Dead Letter Queues) so you don&apos;t lose data if an endpoint
-              temporarily goes down.
+              temporarily goes down — the same pattern we use for{" "}
+              <Link href="/blog/handling-webhook-timeouts-stripe-events-background-queue">
+                handling Stripe webhooks
+              </Link>
+              .
             </li>
             <li>
               <strong>Hash Your Records:</strong> Create a deterministic unique ID for every piece
@@ -405,8 +423,11 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
           <h2>How It Works</h2>
           <h3>Centralized Key Management</h3>
           <p>
-            Instead of developers using their own personal API keys or passing a shared key around in
-            Slack, API access should be centralized. This ensures that if a key is compromised or an
+            Instead of developers{" "}
+            <Link href="/blog/developer-byok-security-nightmare">
+              using their own personal API keys
+            </Link>{" "}
+            or passing a shared key around in Slack, API access should be centralized. This ensures that if a key is compromised or an
             employee leaves the company, access can be revoked immediately without disrupting
             production services.
           </p>
@@ -430,15 +451,20 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
             </li>
             <li>
               <strong>Implement Encryption:</strong> Ensure all active keys are stored securely,
-              using industry-standard AES-256 encryption.
+              using industry-standard{" "}
+              <Link href="/blog/aes-256-encryption-api-keys-server-side">AES-256 encryption</Link>.
             </li>
             <li>
-              <strong>Deploy a Tracking Tool:</strong> Use dedicated software like Frugal to monitor
-              spend automatically instead of relying on manual spreadsheet updates.
+              <strong>Deploy a Tracking Tool:</strong> Use dedicated software like{" "}
+              <Link href="/features/openai">Frugal</Link> to monitor spend automatically instead of
+              relying on manual spreadsheet updates.
             </li>
             <li>
-              <strong>Set Hard Limits:</strong> Define the maximum acceptable spend per provider,
-              per month, and communicate this to your engineering leads.
+              <strong>Set Hard Limits:</strong> Define the{" "}
+              <Link href="/blog/hard-caps-ai-spend-warning-vs-blocking">
+                maximum acceptable spend
+              </Link>{" "}
+              per provider, per month, and communicate this to your engineering leads.
             </li>
           </ol>
           <h2>Common Mistakes</h2>
@@ -476,7 +502,7 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
       title: "Designing a Developer-First API Key Management UI",
       description:
         "Designing security interfaces for developers requires respecting their time and paranoia. Never display a full API key after creation.",
-      date: "2026-06-12",
+      date: "2026-01-06",
       category: "Engineering Deep Dive",
       readTime: "5 min read",
       authorName: "Nilesh Kumar",
@@ -501,8 +527,9 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
           </p>
           <h2>Why It Matters</h2>
           <p>
-            When an engineering lead logs into a B2B SaaS platform like Frugal to rotate a
-            compromised OpenAI key, they are usually in a state of stress or hurry. If the UI hides
+            When an engineering lead logs into a B2B SaaS platform like{" "}
+            <Link href="/features/openai">Frugal</Link> to rotate a compromised OpenAI key, they are
+            usually in a state of stress or hurry. If the UI hides
             the rotation button behind three dropdown menus, or fails to clarify whether the key was
             successfully encrypted, that frustration translates into a poor perception of your
             product&apos;s overall reliability.
@@ -513,8 +540,11 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
             The golden rule of API key management is that the platform should only show the full
             plaintext key exactly once: at the moment of creation. After the user navigates away or
             closes the modal, the key must only ever be displayed in a masked format (e.g.,{" "}
-            <code>sk-proj-...a1b2</code>). This proves to the developer that your backend is properly
-            encrypting the credential and cannot retrieve it in plaintext.
+            <code>sk-proj-...a1b2</code>). This proves to the developer that your backend is{" "}
+            <Link href="/blog/aes-256-encryption-api-keys-server-side">
+              properly encrypting the credential
+            </Link>{" "}
+            and cannot retrieve it in plaintext.
           </p>
           <h3>Monospace and Micro-Interactions</h3>
           <p>
@@ -579,7 +609,7 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
       title: "The Developer BYOK Security Nightmare",
       description:
         "The Bring Your Own Key model creates untrackable shadow IT and severely violates security compliance. Here's why you need to centralize API access.",
-      date: "2026-06-12",
+      date: "2024-12-03",
       category: "API Governance & Security",
       readTime: "5 min read",
       authorName: "Nilesh Kumar",
@@ -636,20 +666,26 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
             </li>
             <li>
               <strong>Implement an AI Gateway:</strong> Route all internal requests through a
-              centralized proxy or a governed system like Frugal.
+              centralized proxy or a governed system like{" "}
+              <Link href="/features/openai">Frugal</Link>.
             </li>
           </ol>
           <h2>Common Mistakes</h2>
           <p>
             A frequent mistake is storing centralized keys in a <code>.env</code> file on a shared
-            server without strict access controls. Once you centralize keys, you must treat them with
-            the same paranoia as production database credentials.
+            server without strict access controls. Once you centralize keys, you must{" "}
+            <Link href="/blog/aes-256-encryption-api-keys-server-side">
+              treat them with the same paranoia
+            </Link>{" "}
+            as production database credentials.
           </p>
           <h2>FAQ</h2>
           <h4>Why is BYOK bad for enterprise security?</h4>
           <p>
             It creates shadow IT, violates zero-data-retention compliance policies, prevents the
-            company from auditing AI usage, and makes employee offboarding incredibly dangerous.
+            company from{" "}
+            <Link href="/blog/controlling-employee-ai-spend-and-governance">auditing AI usage</Link>
+            , and makes employee offboarding incredibly dangerous.
           </p>
           <h4>Is BYOK ever a good idea?</h4>
           <p>
@@ -674,7 +710,7 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
       title: "Handling Webhook Timeouts: Stripe Events and Background Queues",
       description:
         "Processing complex Stripe webhooks synchronously on Vercel often leads to 504 Timeout errors. The solution is a background message queue like Upstash QStash.",
-      date: "2026-06-12",
+      date: "2025-05-02",
       category: "Engineering Deep Dive",
       readTime: "6 min read",
       authorName: "Nilesh Kumar",
@@ -700,8 +736,12 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
           </p>
           <h2>Why It Matters</h2>
           <p>
-            When Stripe thinks a webhook failed, it implements exponential backoff and retries. If
-            the event keeps timing out, Stripe will eventually disable your webhook endpoint entirely.
+            When Stripe thinks a webhook failed, it implements{" "}
+            <Link href="/blog/hidden-cost-of-llm-retries-exponential-backoff">
+              exponential backoff and retries
+            </Link>
+            . If the event keeps timing out, Stripe will eventually disable your webhook endpoint
+            entirely.
             Suddenly, users are paying you money, but your application never upgrades their accounts.
           </p>
           <h2>How It Works</h2>
@@ -743,9 +783,15 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
               lightweight. Validate the signature, push to QStash, and exit.
             </li>
             <li>
-              <strong>Build Idempotent Workers:</strong> Since background queues guarantee
-              &ldquo;at-least-once&rdquo; delivery, your worker might receive the same Stripe event
-              twice. Check the database to see if the <code>stripe_event_id</code> has already been
+              <strong>
+                Build{" "}
+                <Link href="/blog/building-idempotent-polling-worker-qstash">
+                  Idempotent Workers
+                </Link>
+                :
+              </strong>{" "}
+              Since background queues guarantee &ldquo;at-least-once&rdquo; delivery, your worker
+              might receive the same Stripe event twice. Check the database to see if the <code>stripe_event_id</code> has already been
               processed before upgrading the account.
             </li>
           </ol>
@@ -786,7 +832,7 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
       title: "Hard Caps on AI Spend: Warning vs. Blocking",
       description:
         "While soft warnings notify your team of high AI spend, hard caps physically prevent further API requests. Here's why you need both.",
-      date: "2026-06-12",
+      date: "2025-02-06",
       category: "API Governance & Security",
       readTime: "6 min read",
       authorName: "Nilesh Kumar",
@@ -821,8 +867,12 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
           <h3>The Soft Warning Layer</h3>
           <p>
             Warnings are informational. They are typically triggered at 50% and 80% of a budget
-            limit. When Frugal detects usage crossing these thresholds during its 5-minute polling
-            cycle, it fires a webhook to Slack or an email to the founder. This prompts humans to
+            limit. When <Link href="/features/openai">Frugal</Link> detects usage crossing these
+            thresholds during its{" "}
+            <Link href="/blog/building-idempotent-polling-worker-qstash">
+              5-minute polling cycle
+            </Link>
+            , it fires a webhook to Slack or an email to the founder. This prompts humans to
             investigate why spend is accelerating.
           </p>
           <h3>The Hard Blocking Layer</h3>
@@ -860,8 +910,12 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
           </ol>
           <h2>Common Mistakes</h2>
           <p>
-            The most common mistake is assuming that setting a limit in the OpenAI dashboard is
-            foolproof. OpenAI&apos;s hard limits operate on a slight delay and only apply to OpenAI.
+            The most common mistake is assuming that setting a{" "}
+            <Link href="/blog/rate-limits-vs-budgets-managing-chaos">
+              limit in the OpenAI dashboard
+            </Link>{" "}
+            is foolproof. OpenAI&apos;s hard limits operate on a slight delay and only apply to
+            OpenAI.
             If a developer accidentally pushes a script using a secondary Anthropic key that lacks
             limits, your startup is completely exposed.
           </p>
@@ -892,7 +946,7 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
       title: "The Hidden Cost of LLM Retries and Exponential Backoff",
       description:
         "Blindly implementing exponential backoff for LLM API 429 errors can accidentally triple your monthly spend. Here's how to implement safe retry logic.",
-      date: "2026-06-12",
+      date: "2026-02-25",
       category: "LLM Cost Optimization",
       readTime: "5 min read",
       authorName: "Nilesh Kumar",
@@ -920,7 +974,11 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
             the world of Large Language Models, a single API call can contain 50,000 tokens. If your
             application blindly retries that massive payload 5 times using standard exponential
             backoff, you are paying for those 50,000 input tokens 5 separate times. A localized
-            10-minute outage at OpenAI can easily obliterate your monthly budget.
+            10-minute outage at OpenAI can easily{" "}
+            <Link href="/blog/hard-caps-ai-spend-warning-vs-blocking">
+              obliterate your monthly budget
+            </Link>
+            .
           </p>
           <h2>How It Works</h2>
           <h3>The Exponential Backoff Trap</h3>
@@ -949,7 +1007,8 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
               Never retry 400 (Bad Request) errors. Handle 500-level errors with circuit breakers.
             </li>
             <li>
-              <strong>Implement Global Circuit Breakers:</strong> Use Redis or Upstash to track
+              <strong>Implement Global Circuit Breakers:</strong> Use Redis or{" "}
+              <Link href="/blog/building-idempotent-polling-worker-qstash">Upstash</Link> to track
               failure rates across your entire fleet. If the failure rate spikes above 10%, flip the
               circuit breaker open and halt all API calls.
             </li>
@@ -959,7 +1018,8 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
             The most devastating mistake is allowing asynchronous background jobs to retry
             infinitely. We&apos;ve seen companies rack up $10,000 bills over a weekend because a
             broken task was stuck in a loop, continually sending a massive 120,000 token document
-            to the Claude API and failing on a timeout.
+            to the <Link href="/blog/anthropic-prompt-caching-cut-bill-by-40">Claude API</Link> and
+            failing on a timeout.
           </p>
           <h2>FAQ</h2>
           <h4>What is the risk of retrying LLM API calls?</h4>
@@ -990,7 +1050,7 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
       title: "Next.js App Router vs Pages Router for B2B Dashboards",
       description:
         "The App Router's nested layouts and React Server Components provide massive performance benefits for complex B2B dashboards like Frugal.",
-      date: "2026-06-12",
+      date: "2025-10-21",
       category: "Engineering Deep Dive",
       readTime: "8 min read",
       authorName: "Nilesh Kumar",
@@ -1016,7 +1076,11 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
           <h2>Why It Matters</h2>
           <p>
             B2B SaaS dashboards are notoriously heavy. They require fetching massive amounts of
-            aggregate data, enforcing strict authentication checks, and rendering complex UI tables.
+            aggregate data, enforcing strict authentication checks, and rendering{" "}
+            <Link href="/blog/build-real-time-spend-chart-tailwind-recharts">
+              complex UI tables and charts
+            </Link>
+            .
             If you build this using traditional client-side rendering, your users will stare at a
             blank white screen with a spinning loader for 4 seconds every time they click a
             navigation link. The App Router fundamentally solves this.
@@ -1033,7 +1097,11 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
           </p>
           <h3>React Server Components (RSC)</h3>
           <p>
-            In Frugal, our dashboard requires querying Supabase for heavy usage aggregates. Instead
+            In <Link href="/features/openai">Frugal</Link>, our dashboard requires{" "}
+            <Link href="/blog/structuring-supabase-rls-policies-multi-tenant-saas">
+              querying Supabase
+            </Link>{" "}
+            for heavy usage aggregates. Instead
             of loading an empty shell, downloading React, running a <code>useEffect</code>, and
             making an API call, we just do it on the server. The client receives pure, pre-rendered
             HTML. We only use <code>&quot;use client&quot;</code> for interactive bits like tooltips
@@ -1094,7 +1162,7 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
       title: "OpenAI vs Anthropic: Real-World Cost Analysis",
       description:
         "Analyzing real-world costs between GPT-4o and Claude 3.5 Sonnet—prompt caching, tokenizer efficiency, and output verbosity all matter more than the sticker price.",
-      date: "2026-06-12",
+      date: "2026-04-14",
       category: "LLM Cost Optimization",
       readTime: "7 min read",
       authorName: "Nilesh Kumar",
@@ -1134,7 +1202,9 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
           </p>
           <h3>The Caching Variable</h3>
           <p>
-            Anthropic&apos;s prompt caching drastically alters this equation. If you are constantly
+            Anthropic&apos;s{" "}
+            <Link href="/blog/anthropic-prompt-caching-cut-bill-by-40">prompt caching</Link>{" "}
+            drastically alters this equation. If you are constantly
             passing a 10,000-token system prompt or RAG context, Claude 3.5 Sonnet will cache it.
             Cached input tokens cost $0.30 per million. If your cache hit rate is 80%, Claude 3.5
             Sonnet becomes exponentially cheaper than GPT-4o for long-context conversational agents.
@@ -1160,15 +1230,19 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
             </li>
             <li>
               <strong>Measure Output Verbosity:</strong> Some models naturally write longer, more
-              verbose responses. Since output tokens are 3x to 5x more expensive than input tokens,
-              a model that rambles will skyrocket your bill.
+              verbose responses. Since{" "}
+              <Link href="/blog/analyzed-10m-api-tokens-wasting-money">
+                output tokens are 3x to 5x more expensive
+              </Link>{" "}
+              than input tokens, a model that rambles will skyrocket your bill.
             </li>
           </ol>
           <h2>Common Mistakes</h2>
           <p>
             The biggest mistake engineering teams make is ignoring output tokens. Because output
             tokens are significantly more expensive across all providers, failing to instruct the
-            model to &ldquo;be concise&rdquo; can silently double your monthly invoice.
+            model to &ldquo;be concise&rdquo; can silently double your{" "}
+            <Link href="/features/openai">monthly invoice</Link>.
           </p>
           <h2>FAQ</h2>
           <h4>Which is cheaper: GPT-4o or Claude 3.5 Sonnet?</h4>
@@ -1200,7 +1274,7 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
       title: "Rate Limits vs. Budgets: Managing the Chaos",
       description:
         "Provider-level rate limits protect their infrastructure, not your bank account. To truly control AI costs, you need hard budget caps and centralized governance.",
-      date: "2026-06-12",
+      date: "2025-03-11",
       category: "API Governance",
       readTime: "6 min read",
       authorName: "Nilesh Kumar",
@@ -1252,19 +1326,26 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
             </li>
             <li>
               <strong>Use a Centralized Dashboard:</strong> Connect all your provider keys (OpenAI,
-              Anthropic, Replicate) to a unified tool like Frugal to monitor aggregated spend in one
-              place.
+              Anthropic, Replicate) to a unified tool like{" "}
+              <Link href="/features/openai">Frugal</Link> to monitor aggregated spend in one place.
             </li>
             <li>
               <strong>Decouple Billing from Routing:</strong> Treat rate limits as an engineering
-              concern (handling 429s) and budgets as a business concern (handling alerts and key
-              revocation).
+              concern (handling 429s) and budgets as a business concern (handling{" "}
+              <Link href="/blog/hard-caps-ai-spend-warning-vs-blocking">
+                alerts and key revocation
+              </Link>
+              ).
             </li>
           </ol>
           <h2>Common Mistakes</h2>
           <p>
             A frequent anti-pattern is hardcoding API keys directly into backend microservices
-            without a centralized secret manager. When a budget is breached, it requires a full
+            without a{" "}
+            <Link href="/blog/aes-256-encryption-api-keys-server-side">
+              centralized secret manager
+            </Link>
+            . When a budget is breached, it requires a full
             redeployment of multiple services to rotate the keys and halt the spending.
           </p>
           <h2>FAQ</h2>
@@ -1295,7 +1376,7 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
       title: "Replicate vs fal.ai: The Economics of Serverless Image Generation",
       description:
         "Replicate charges by the second (including cold boots), while fal.ai often charges a flat rate per megapixel. Your traffic pattern determines which is cheaper.",
-      date: "2026-06-12",
+      date: "2025-07-29",
       category: "LLM Cost Optimization",
       readTime: "6 min read",
       authorName: "Nilesh Kumar",
@@ -1324,8 +1405,9 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
             Image generation requires powerful GPUs (like A100s or H100s) which are incredibly
             expensive to rent by the hour. Serverless platforms promise to only charge you for what
             you use. However, the exact definition of &ldquo;what you use&rdquo; varies wildly
-            between providers. Choosing the wrong provider can result in paying 3x more for the
-            exact same image output.
+            between providers. Choosing the wrong provider can result in{" "}
+            <Link href="/blog/openai-vs-anthropic-real-world-cost-analysis">paying 3x more</Link>{" "}
+            for the exact same image output.
           </p>
           <h2>How It Works</h2>
           <h3>The Cold Boot Penalty</h3>
@@ -1384,7 +1466,9 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
             Navigating the economics of serverless image generation requires looking past the
             marketing copy. By understanding the devastating impact of cold boots on per-second
             billing models, you can architect your application to utilize the right provider at the
-            right time.
+            right time. <Link href="/">Frugal</Link> tracks Replicate and fal.ai spend side by side,
+            so you can see the real cost per provider — and set{" "}
+            <Link href="/blog/hard-caps-ai-spend-warning-vs-blocking">budget alerts</Link> on both.
           </p>
         </>
       );
@@ -1396,7 +1480,7 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
       title: "Structuring Supabase RLS Policies for Multi-Tenant SaaS",
       description:
         "Row Level Security pushes multi-tenant data isolation into Postgres itself. Even if a developer forgets a WHERE clause, the database physically blocks cross-tenant data leaks.",
-      date: "2026-06-12",
+      date: "2025-06-17",
       category: "Engineering Deep Dive",
       readTime: "7 min read",
       authorName: "Nilesh Kumar",
@@ -1424,7 +1508,8 @@ export const BLOG_POSTS: Record<string, BlogPostEntry> = {
             In a standard web application, data isolation is handled by the backend ORM. You might
             write a query with a <code>WHERE user_id = ?</code> clause. But what happens if a junior
             developer forgets the <code>WHERE</code> clause on a new endpoint? They just leaked
-            Company A&apos;s API keys to Company B. By using Postgres RLS, security is enforced at
+            Company A&apos;s{" "}
+            <Link href="/blog/aes-256-encryption-api-keys-server-side">API keys</Link> to Company B. By using Postgres RLS, security is enforced at
             the absolute lowest level. The forgotten <code>WHERE</code> clause simply returns an
             empty array.
           </p>
@@ -1471,8 +1556,11 @@ USING (auth.uid() = user_id);`}</code>
           <h2>Common Mistakes</h2>
           <p>
             The most dangerous mistake is using the Service Role key for standard data fetching on
-            the server side out of convenience. If you use the Service Role key to fetch data in a
-            Next.js Server Component without manually filtering by the current user&apos;s session,
+            the server side out of convenience. If you use the Service Role key to fetch data in a{" "}
+            <Link href="/blog/nextjs-app-router-vs-pages-router-b2b-dashboard">
+              Next.js Server Component
+            </Link>{" "}
+            without manually filtering by the current user&apos;s session,
             you will leak data, because the Service Role ignores all RLS policies.
           </p>
           <h2>FAQ</h2>
@@ -1534,9 +1622,12 @@ USING (auth.uid() = user_id);`}</code>
           <p>
             In the world of RAG and complex agents, context windows are ballooning. Sending a
             50,000-token codebase or a 100-page legal document into an LLM on every single request
-            is incredibly expensive. At $3.00 per million input tokens for Claude 3.5 Sonnet, a
-            high-traffic app can easily burn through its monthly budget just passing static context
-            back and forth. Prompt caching turns this variable cost into a near-zero marginal cost
+            is incredibly expensive. At{" "}
+            <Link href="/blog/openai-vs-anthropic-real-world-cost-analysis">
+              $3.00 per million input tokens
+            </Link>{" "}
+            for Claude 3.5 Sonnet, a high-traffic app can easily burn through its monthly budget
+            just passing static context back and forth. Prompt caching turns this variable cost into a near-zero marginal cost
             for repeated queries.
           </p>
           <h2>How It Works</h2>
@@ -1572,7 +1663,9 @@ USING (auth.uid() = user_id);`}</code>
             <li>
               <strong>Monitor Cache Hits:</strong> Anthropic&apos;s API response includes{" "}
               <code>cache_creation_input_tokens</code> and <code>cache_read_input_tokens</code>. Log
-              these metrics to verify your caching logic is actually working.
+              these metrics to verify your caching logic is actually working, and pair them with{" "}
+              <Link href="/features/openai">real-time spend tracking</Link> to watch the savings
+              materialize.
             </li>
           </ol>
           <h2>Common Mistakes</h2>
@@ -1601,8 +1694,9 @@ USING (auth.uid() = user_id);`}</code>
           </p>
           <h2>Conclusion</h2>
           <p>
-            Prompt caching is the most effective cost-reduction lever currently available to
-            developers building on Anthropic&apos;s models. By restructuring your prompts to isolate
+            Prompt caching is the most effective{" "}
+            <Link href="/blog/analyzed-10m-api-tokens-wasting-money">cost-reduction lever</Link>{" "}
+            currently available to developers building on Anthropic&apos;s models. By restructuring your prompts to isolate
             static context and explicitly enabling the cache, you can drastically reduce your latency
             and slash your API bills.
           </p>
@@ -1616,7 +1710,7 @@ USING (auth.uid() = user_id);`}</code>
       title: "Build a Real-Time Spend Chart with Tailwind and Recharts",
       description:
         "Aggregate 5-minute polling data into daily buckets on Postgres, then use Recharts with Tailwind CSS variables for a smooth, responsive, themeable spend chart.",
-      date: "2026-06-12",
+      date: "2025-11-18",
       category: "Engineering Deep Dive",
       readTime: "5 min read",
       authorName: "Nilesh Kumar",
@@ -1634,15 +1728,19 @@ USING (auth.uid() = user_id);`}</code>
           </blockquote>
           <h2>The Challenge of Real-Time Charts</h2>
           <p>
-            When you poll OpenAI usage every 5 minutes for a month, you generate approximately 8,640
-            data points per user. If you pass an array of 8,640 objects directly to a charting
+            When you{" "}
+            <Link href="/blog/building-idempotent-polling-worker-qstash">
+              poll OpenAI usage every 5 minutes
+            </Link>{" "}
+            for a month, you generate approximately 8,640 data points per user. If you pass an array of 8,640 objects directly to a charting
             library like Recharts, the browser&apos;s main thread will lock up while trying to render
             thousands of SVG nodes. The user experience degrades into a stuttering mess.
           </p>
           <h2>Why It Matters</h2>
           <p>
             A B2B dashboard is judged entirely on its responsiveness and clarity. Users log in
-            specifically to see the main spend chart. If it takes 4 seconds to render and crashes on
+            specifically to see the{" "}
+            <Link href="/features/openai">main spend chart</Link>. If it takes 4 seconds to render and crashes on
             mobile devices, they will lose trust in the platform&apos;s ability to manage their
             infrastructure costs.
           </p>
@@ -1700,8 +1798,11 @@ ORDER BY day ASC;`}</code>
           </ol>
           <h2>Common Mistakes</h2>
           <p>
-            A frequent mistake is not handling the &ldquo;empty state.&rdquo; If a user connects a
-            brand new Anthropic key, there is no spend data yet. Recharts will render a broken, empty
+            A frequent mistake is not handling the &ldquo;empty state.&rdquo; If a user{" "}
+            <Link href="/blog/designing-developer-first-api-key-management-ui">
+              connects a brand new Anthropic key
+            </Link>
+            , there is no spend data yet. Recharts will render a broken, empty
             grid. Always wrap your chart component in a conditional check and render a beautiful empty
             state using a Tailwind flexbox layout.
           </p>

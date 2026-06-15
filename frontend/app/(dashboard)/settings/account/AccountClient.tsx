@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { User, Mail, Crown } from "lucide-react";
+import { apiClient } from "@/lib/api/client";
 
 interface Props {
   userName: string;
@@ -23,6 +25,7 @@ function planLabel(p: string): string {
 }
 
 export function AccountClient({ userName, userEmail, plan }: Props) {
+  const { data: session } = useSession();
   const [name, setName] = useState(userName);
   const [saving, setSaving] = useState(false);
   const displayPlan = planLabel(plan);
@@ -32,15 +35,7 @@ export function AccountClient({ userName, userEmail, plan }: Props) {
     e.preventDefault();
     setSaving(true);
     try {
-      const res = await fetch("/api/auth/me", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName: name }),
-      });
-      if (!res.ok) {
-        const json = await res.json() as { error?: string };
-        throw new Error(json.error ?? "Failed to save");
-      }
+      await apiClient.patch("/api/auth/me", { fullName: name }, session?.backendToken);
       toast.success("Profile saved");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to save");

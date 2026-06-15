@@ -13,6 +13,7 @@ export interface PersonalPlan {
   featured: boolean;
   ctaLabel: string;
   ctaHref: string;
+  cancelText: string;
   /** Full feature list — used on /pricing page */
   features: string[];
   /** Short punchy list — used on landing page teaser (5 items max) */
@@ -55,8 +56,9 @@ export const personalPlans: PersonalPlan[] = [
     yearlyTotal: 0,
     yearlySaving: 0,
     featured: false,
-    ctaLabel: "Get started free",
+    ctaLabel: "Start free, upgrade when ready",
     ctaHref: "/signup",
+    cancelText: "",
     features: [
       "1 API connection — OpenAI, Anthropic, Replicate, or fal.ai",
       "Unified spend dashboard — one place for all providers",
@@ -86,6 +88,7 @@ export const personalPlans: PersonalPlan[] = [
     featured: true,
     ctaLabel: "Start with Plus",
     ctaHref: "/signup?plan=plus",
+    cancelText: "Cancel anytime. No lock-in.",
     features: [
       "3 API connections — cover your full AI stack",
       "5 projects — attribute cost by product or service",
@@ -96,11 +99,11 @@ export const personalPlans: PersonalPlan[] = [
       "Priority email support · 48h response",
     ],
     teaserFeatures: [
-      "3 connections · 5 projects",
-      "Email + Slack alerts",
-      "Budget guardrails: Alert + Block",
-      "Burn rate forecast",
-      "90-day trend history",
+      "Monitor 3 providers — OpenAI, Anthropic, and one more",
+      "Get Slack pings the moment a budget hits 80%",
+      "Hard blocks that stop runaway spend automatically — not just notifications",
+      "See where this month's costs are heading before you get the invoice",
+      "90 days of history to spot recurring cost spikes",
     ],
   },
   {
@@ -116,6 +119,7 @@ export const personalPlans: PersonalPlan[] = [
     featured: false,
     ctaLabel: "Start with Pro",
     ctaHref: "/signup?plan=pro",
+    cancelText: "Cancel anytime. Switch to monthly anytime.",
     features: [
       "Per-user attribution — see exactly which end-users drive your AI costs",
       "Unlimited connections & projects",
@@ -126,11 +130,11 @@ export const personalPlans: PersonalPlan[] = [
       "Priority email support · 24h response",
     ],
     teaserFeatures: [
-      "Per-user cost attribution",
-      "Unlimited connections & projects",
-      "Webhook alerts + programmatic API",
-      "Budget guardrails on unlimited rules",
-      "1-year history · priority 24h support",
+      "See exactly which users drive your AI costs",
+      "Monitor unlimited providers and projects",
+      "Pipe alerts into PagerDuty, Linear, or CI/CD",
+      "Automatically block overruns on unlimited rules",
+      "Spot long-term trends with 1-year spend history",
     ],
   },
 ];
@@ -154,15 +158,15 @@ export const corporatePlans: CorporatePlan[] = [
     yearlyNote: "~$63/mo billed annually",
     seats: "Up to 10 seats",
     featured: false,
-    ctaLabel: "Join waitlist",
+    ctaLabel: "Get early access",
     features: [
-      "Proxy gateway — one config change covers your whole team",
-      "Real-time per-employee and per-project spend attribution",
-      "Sub-second throttle: block or slow requests before the bill hits",
-      "Team budget policies — set limits per person, per project, or org-wide",
-      "Admin dashboard — model, cost, timestamp, employee ID (never prompt content)",
-      "Email + Slack + Webhook alerts",
-      "10M SDK events/month",
+      "One proxy config protects everyone",
+      "Real-time employee & project tracking",
+      "Sub-second throttling & blocks",
+      "Budgets per-person, project, or org",
+      "Secure metadata-only audit logs",
+      "Email, Slack, & Webhook alerts",
+      "10M events per month",
     ],
   },
   {
@@ -176,14 +180,14 @@ export const corporatePlans: CorporatePlan[] = [
     yearlyNote: "~$159/mo billed annually",
     seats: "Up to 25 seats",
     featured: true,
-    ctaLabel: "Join waitlist",
+    ctaLabel: "Get early access",
     features: [
-      "Everything in Starter",
-      "Up to 25 seats covered",
-      "Per-team budget policies — finance, eng, and product stay in their lane",
-      "Cross-team spend comparison dashboard",
-      "Advanced cost reports — cost per feature, per release, per model",
-      "25M SDK events/month",
+      "Includes everything in Starter",
+      "Protect up to 25 team members",
+      "Per-team policies & alignment",
+      "Cross-team spend dashboard",
+      "Cost reports per feature or model",
+      "25M events per month",
       "Priority email support",
     ],
   },
@@ -198,15 +202,15 @@ export const corporatePlans: CorporatePlan[] = [
     yearlyNote: "~$399/mo billed annually",
     seats: "Up to 100 seats",
     featured: false,
-    ctaLabel: "Join waitlist",
+    ctaLabel: "Get early access",
     features: [
-      "Everything in Growth",
-      "Up to 100 seats covered",
-      "Single sign-on (SAML / SSO)",
-      "Audit log & compliance export (CSV / JSON)",
+      "Includes everything in Growth",
+      "Protect up to 100 team members",
+      "SAML/SSO integration",
+      "Export CSV/JSON audit logs",
       "99.9% uptime SLA",
-      "Dedicated Slack support channel",
-      "Unlimited SDK events",
+      "Dedicated Slack channel support",
+      "Unlimited events per month",
     ],
   },
   {
@@ -220,15 +224,15 @@ export const corporatePlans: CorporatePlan[] = [
     yearlyNote: "Custom contract available",
     seats: "Unlimited seats",
     featured: false,
-    ctaLabel: "Contact us",
+    ctaLabel: "Talk to sales",
     features: [
-      "Everything in Scale",
-      "Unlimited seats",
-      "Data-residency options — EU, US, or custom region",
-      "Custom pricing and volume discounts",
-      "Dedicated onboarding and integration support",
-      "Custom SLA with breach penalties",
-      "Architecture review on request",
+      "Includes everything in Scale",
+      "Unlimited team members",
+      "Custom data residency (EU, US)",
+      "Custom pricing & volume discounts",
+      "Dedicated onboarding support",
+      "Custom SLA & breach penalties",
+      "Expert architecture review",
     ],
   },
 ];
@@ -250,7 +254,7 @@ export const faqs: Faq[] = [
   },
   {
     q: "Is my API key secure?",
-    a: "Yes. Your key is AES-256-GCM encrypted immediately on receipt and stored only in encrypted form — never in plaintext anywhere in our stack. It is used exclusively to call your provider's usage/reporting endpoint, never to make model requests. The last 4 characters are shown in the UI; the full key is never returned after save.",
+    a: "Yes. Your key is AES-256-GCM encrypted immediately on receipt and stored only in encrypted form — never in plaintext anywhere in our stack. It is used exclusively to call your provider's usage/reporting endpoint, never to make model requests. The last 4 characters are shown in the UI; the full key is never returned after save. We are targeting SOC 2 Type II certification in Q4 2026.",
   },
   {
     q: "What does 5-minute polling mean in practice?",

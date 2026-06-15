@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import confetti from "canvas-confetti";
 import Link from "next/link";
 import { getConnectionLimit } from "@/lib/tier";
+import { apiClient } from "@/lib/api/client";
 import {
   OpenAI,
   Anthropic,
@@ -66,13 +68,12 @@ interface Project {
 interface Connection {
   id: string;
   provider: string;
-  api_key_suffix: string | null;
+  apiKeySuffix: string | null;
   status: Status;
-  last_polled_at: string | null;
-  project_id: string | null;
-  projects: Project | null;
+  lastPolledAt: string | null;
+  projectId: string | null;
   label: string | null;
-  created_at: string;
+  createdAt: string;
 }
 
 // ── Provider config ────────────────────────────────────────────
@@ -228,10 +229,12 @@ function AddConnectionDialog({
   projects,
   onAdd,
   disabled = false,
+  token,
 }: {
   projects: Project[];
   onAdd: (c: Connection) => void;
   disabled?: boolean;
+  token?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [provider, setProvider] = useState("");
@@ -248,19 +251,13 @@ function AddConnectionDialog({
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/connections", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          provider,
-          apiKey,
-          projectId: projectId || null,
-          label: label || null,
-        }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Failed to connect");
-      onAdd(json.connection as Connection);
+      const conn = await apiClient.post<Connection>("/api/connections", {
+        provider,
+        apiKey,
+        projectId: projectId || null,
+        label: label || null,
+      }, token);
+      onAdd(conn);
       toast.success(`${providerMeta[provider]?.label ?? provider} connected`);
       void confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 }, colors: ["#FF500B", "#ff8c5a", "#ffffff"] });
       setOpen(false);
@@ -395,31 +392,35 @@ function AddConnectionDialog({
 }
 
 export default function ConnectionsPage() {
+  const { data: session } = useSession();
+  const token = session?.backendToken;
   const [connections, setConnections] = useState<Connection[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [userPlan] = useState("free");
 
   useEffect(() => {
+    if (token === undefined) return; // wait for session to resolve
     let cancelled = false;
     void (async () => {
-      const [connRes, projRes] = await Promise.all([
-        fetch("/api/connections"),
-        fetch("/api/projects"),
-      ]);
-      const [connJson, projJson] = await Promise.all([
-        connRes.json() as Promise<{ connections?: Connection[] }>,
-        projRes.json() as Promise<{ projects?: Project[] }>,
-      ]);
-      if (cancelled) return;
-      if (connRes.ok) setConnections(connJson.connections ?? []);
-      if (projRes.ok) setProjects(projJson.projects ?? []);
-      setLoading(false);
+      try {
+        const [conns, projs] = await Promise.all([
+          apiClient.get<Connection[]>("/api/connections", token),
+          apiClient.get<Project[]>("/api/projects", token),
+        ]);
+        if (cancelled) return;
+        setConnections(conns ?? []);
+        setProjects(projs ?? []);
+      } catch {
+        if (!cancelled) toast.error("Failed to load connections");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [token]);
 
   const connLimit = getConnectionLimit(userPlan);
   const atConnLimit = connections.length >= connLimit;
@@ -427,11 +428,11 @@ export default function ConnectionsPage() {
   const handleAdd = (c: Connection) => setConnections((prev) => [c, ...prev]);
 
   const handleDelete = async (id: string) => {
-    const res = await fetch(`/api/connections/${id}`, { method: "DELETE" });
-    if (res.ok) {
+    try {
+      await apiClient.del(`/api/connections/${id}`, token);
       setConnections((prev) => prev.filter((c) => c.id !== id));
       toast.success("Connection removed");
-    } else {
+    } catch {
       toast.error("Failed to remove connection");
     }
   };
@@ -451,7 +452,7 @@ export default function ConnectionsPage() {
           </p>
         </div>
         <div className="flex flex-col items-end gap-1.5">
-          <AddConnectionDialog projects={projects} onAdd={handleAdd} disabled={atConnLimit} />
+          <AddConnectionDialog projects={projects} onAdd={handleAdd} disabled={atConnLimit} token={token} />
           <span className="text-xs text-muted-foreground font-mono">
             {loading ? "…" : `${connections.length} / ${connLimit === Infinity ? "∞" : connLimit} connections`}
           </span>
@@ -523,7 +524,7 @@ export default function ConnectionsPage() {
               const meta = providerMeta[conn.provider];
               const status = statusConfig[conn.status] ?? statusConfig.active;
               const StatusIcon = status.icon;
-              const suffix = conn.api_key_suffix ?? "????";
+              const suffix = conn.apiKeySuffix ?? "????";
 
               return (
                 <div
@@ -567,16 +568,11 @@ export default function ConnectionsPage() {
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <ArrowClockwise size={11} />
-                        {formatRelativeTime(conn.last_polled_at)}
+                        {formatRelativeTime(conn.lastPolledAt)}
                       </span>
-                      {conn.projects?.name && (
-                        <span className="bg-white/5 px-2 py-0.5 rounded-md">
-                          {conn.projects.name}
-                        </span>
-                      )}
                       <span>
                         Added{" "}
-                        {new Date(conn.created_at).toLocaleDateString("en-US", {
+                        {new Date(conn.createdAt).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
                           year: "numeric",

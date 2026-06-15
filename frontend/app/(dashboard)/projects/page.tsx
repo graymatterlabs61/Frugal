@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { getProjectLimit } from "@/lib/tier";
+import { apiClient } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -31,7 +33,7 @@ interface Project {
   name: string;
   description: string | null;
   color: string | null;
-  created_at: string;
+  createdAt: string;
 }
 
 const colorMap: Record<string, string> = {
@@ -55,9 +57,11 @@ const COLOR_OPTIONS = [
 function CreateProjectDialog({
   onCreated,
   disabled = false,
+  token,
 }: {
   onCreated: (p: Project) => void;
   disabled?: boolean;
+  token?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -73,18 +77,12 @@ function CreateProjectDialog({
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/projects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim(),
-          description: description || undefined,
-          color,
-        }),
-      });
-      const json = await res.json() as { project?: Project; error?: string };
-      if (!res.ok) throw new Error(json.error ?? "Failed to create project");
-      onCreated(json.project as Project);
+      const project = await apiClient.post<Project>("/api/projects", {
+        name: name.trim(),
+        description: description || undefined,
+        color,
+      }, token);
+      onCreated(project);
       toast.success("Project created");
       setOpen(false);
       setName("");
@@ -193,23 +191,29 @@ function CreateProjectDialog({
 }
 
 export default function ProjectsPage() {
+  const { data: session } = useSession();
+  const token = session?.backendToken;
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [userPlan] = useState("free");
 
   useEffect(() => {
+    if (token === undefined) return;
     let cancelled = false;
     void (async () => {
-      const res = await fetch("/api/projects");
-      const json = await res.json() as { projects?: Project[] };
-      if (cancelled) return;
-      if (res.ok) setProjects(json.projects ?? []);
-      setLoading(false);
+      try {
+        const projs = await apiClient.get<Project[]>("/api/projects", token);
+        if (!cancelled) setProjects(projs ?? []);
+      } catch {
+        if (!cancelled) toast.error("Failed to load projects");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [token]);
 
   const projLimit = getProjectLimit(userPlan);
   const atProjLimit = projects.length >= projLimit;
@@ -217,11 +221,11 @@ export default function ProjectsPage() {
   const handleCreated = (p: Project) => setProjects((prev) => [p, ...prev]);
 
   const handleDelete = async (id: string) => {
-    const res = await fetch(`/api/projects/${id}`, { method: "DELETE" });
-    if (res.ok) {
+    try {
+      await apiClient.del(`/api/projects/${id}`, token);
       setProjects((prev) => prev.filter((p) => p.id !== id));
       toast.success("Project deleted");
-    } else {
+    } catch {
       toast.error("Failed to delete project");
     }
   };
@@ -236,7 +240,7 @@ export default function ProjectsPage() {
           </p>
         </div>
         <div className="flex flex-col items-end gap-1.5">
-          <CreateProjectDialog onCreated={handleCreated} disabled={atProjLimit} />
+          <CreateProjectDialog onCreated={handleCreated} disabled={atProjLimit} token={token} />
           <span className="text-xs text-muted-foreground font-mono">
             {loading
               ? "…"
@@ -290,7 +294,7 @@ export default function ProjectsPage() {
                   <div className="mt-4 pt-3 border-t border-border/50">
                     <p className="text-xs text-muted-foreground">
                       Created{" "}
-                      {new Date(project.created_at).toLocaleDateString("en-US", {
+                      {new Date(project.createdAt).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
@@ -347,7 +351,7 @@ export default function ProjectsPage() {
           })}
 
           <div className="border border-dashed border-border/50 rounded-2xl p-5 flex flex-col items-center justify-center gap-3 text-center hover:border-primary/30 hover:bg-primary/3 transition-all duration-150 min-h-[160px] group">
-            <CreateProjectDialog onCreated={handleCreated} disabled={atProjLimit} />
+            <CreateProjectDialog onCreated={handleCreated} disabled={atProjLimit} token={token} />
             <p className="text-xs text-muted-foreground mt-1">
               Connect an API key and start tracking
             </p>
@@ -361,7 +365,7 @@ export default function ProjectsPage() {
           <p className="text-xs text-muted-foreground mt-1 mb-4">
             Create a project to group API connections and set budget rules.
           </p>
-          <CreateProjectDialog onCreated={handleCreated} disabled={atProjLimit} />
+          <CreateProjectDialog onCreated={handleCreated} disabled={atProjLimit} token={token} />
         </div>
       )}
     </div>

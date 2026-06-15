@@ -28,7 +28,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 import { canCreateBudgetRules, canUseThrottle } from "@/lib/tier";
+import { apiClient } from "@/lib/api/client";
 import type {
   ProjectStats,
   ProjectConnection,
@@ -48,11 +50,11 @@ interface ProjectDetailClientProps {
 
 interface BudgetRule {
   id: string;
-  limit_usd: number;
-  budget_window: "daily" | "monthly";
+  limitUsd: number;
+  budgetWindow: "daily" | "monthly";
   action: "alert" | "block" | "throttle";
-  threshold_pct: number;
-  created_at: string;
+  thresholdPct: number;
+  createdAt: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -168,10 +170,12 @@ function AddRuleDialog({
   project,
   userPlan,
   onAdd,
+  token,
 }: {
   project: ProjectStats;
   userPlan: string;
   onAdd: (r: BudgetRule) => void;
+  token?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [thresholdPct, setThresholdPct] = useState("80");
@@ -200,22 +204,13 @@ function AddRuleDialog({
 
     setLoading(true);
     try {
-      const res = await fetch("/api/budget-rules", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          projectId: project.id,
-          thresholdPct: threshold,
-          action,
-          ...(limitValue !== undefined && { limitUsd: limitValue }),
-        }),
-      });
-      const json = await res.json();
-      if (!res.ok) {
-        setFormError(json.error ?? "Failed to create rule.");
-        return;
-      }
-      onAdd(json.rule);
+      const rule = await apiClient.post<BudgetRule>(`/api/budget-rules/projects/${project.id}`, {
+        budgetWindow: "monthly",
+        thresholdPct: threshold,
+        action,
+        ...(limitValue !== undefined && { limitUsd: limitValue.toFixed(2) }),
+      }, token);
+      onAdd(rule);
       toast.success("Budget rule created");
       setOpen(false);
       setThresholdPct("80");
@@ -395,6 +390,8 @@ export function ProjectDetailClient({
   alerts,
   userPlan,
 }: ProjectDetailClientProps) {
+  const { data: session } = useSession();
+  const token = session?.backendToken;
   const [rules, setRules] = useState<BudgetRule[]>([]);
   const [rulesLoading, setRulesLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -403,27 +400,21 @@ export function ProjectDetailClient({
   const [slackSaving, setSlackSaving] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/budget-rules?projectId=${project.id}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setRules(data.rules ?? []);
-        setRulesLoading(false);
-      })
+    if (token === undefined) return;
+    apiClient
+      .get<BudgetRule[]>(`/api/budget-rules/projects/${project.id}`, token)
+      .then((rules) => { setRules(rules ?? []); setRulesLoading(false); })
       .catch(() => setRulesLoading(false));
-  }, [project.id]);
+  }, [project.id, token]);
 
   const handleDeleteRule = async (ruleId: string) => {
     setDeletingId(ruleId);
     try {
-      const res = await fetch(`/api/budget-rules/${ruleId}`, { method: "DELETE" });
-      if (res.ok) {
-        setRules((prev) => prev.filter((r) => r.id !== ruleId));
-        toast.success("Rule deleted");
-      } else {
-        toast.error("Failed to delete rule");
-      }
+      await apiClient.del(`/api/budget-rules/${ruleId}`, token);
+      setRules((prev) => prev.filter((r) => r.id !== ruleId));
+      toast.success("Rule deleted");
     } catch {
-      toast.error("Network error");
+      toast.error("Failed to delete rule");
     } finally {
       setDeletingId(null);
       setConfirmDeleteId(null);
@@ -433,18 +424,10 @@ export function ProjectDetailClient({
   const handleSaveSlackWebhook = async () => {
     setSlackSaving(true);
     try {
-      const res = await fetch(`/api/projects/${project.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slack_webhook_url: slackWebhookUrl || null }),
-      });
-      if (res.ok) {
-        toast.success("Slack webhook saved");
-      } else {
-        toast.error("Failed to save webhook URL");
-      }
+      await apiClient.patch(`/api/projects/${project.id}`, { slackWebhookUrl: slackWebhookUrl || null }, token);
+      toast.success("Slack webhook saved");
     } catch {
-      toast.error("Network error");
+      toast.error("Failed to save webhook URL");
     } finally {
       setSlackSaving(false);
     }
@@ -790,6 +773,7 @@ export function ProjectDetailClient({
                   project={project}
                   userPlan={userPlan}
                   onAdd={(r) => setRules((prev) => [...prev, r])}
+                  token={token}
                 />
               </div>
 
@@ -878,8 +862,8 @@ export function ProjectDetailClient({
                                   when
                                 </span>{" "}
                                 <span className="font-mono font-semibold">
-                                  {rule.budget_window} spend ≥{" "}
-                                  {rule.threshold_pct}% of ${rule.limit_usd}
+                                  {rule.budgetWindow} spend ≥{" "}
+                                  {rule.thresholdPct}% of ${rule.limitUsd}
                                 </span>
                               </p>
                             </div>

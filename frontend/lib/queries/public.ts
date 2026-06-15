@@ -13,6 +13,7 @@ export interface PersonalPlan {
   featured: boolean;
   ctaLabel: string;
   ctaHref: string;
+  cancelText: string;
   features: string[];
   teaserFeatures: string[];
 }
@@ -70,7 +71,7 @@ export interface BlogResponse {
 
 export async function fetchPlans(): Promise<PlansResponse> {
   const res = await fetch(`${BACKEND_URL}/api/public/plans`, {
-    next: { revalidate: 3600 },
+    next: { revalidate: process.env.NODE_ENV === 'development' ? 0 : 3600 },
   });
   if (!res.ok) throw new Error(`Failed to fetch plans: ${res.status}`);
   const json = (await res.json()) as { data: PlansResponse };
@@ -79,7 +80,7 @@ export async function fetchPlans(): Promise<PlansResponse> {
 
 export async function fetchBlogPosts(): Promise<BlogResponse> {
   const res = await fetch(`${BACKEND_URL}/api/public/blog`, {
-    next: { revalidate: 3600 },
+    next: { revalidate: process.env.NODE_ENV === 'development' ? 0 : 3600 },
   });
   if (!res.ok) throw new Error(`Failed to fetch blog posts: ${res.status}`);
   const json = (await res.json()) as { data: BlogResponse };

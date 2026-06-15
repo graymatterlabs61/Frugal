@@ -37,7 +37,7 @@ const faqs = [
     question: "How does the pricing work?",
     answer: (
       <>
-        To see a full breakdown of limits and features, you can <Link href="/pricing" className="text-blue-500 underline hover:text-blue-400">compare Frugal pricing plans</Link> designed for solo developers and growing teams. Three personal plans: Free ($0 forever, 1 connection), Plus ($19/mo, Slack alerts and budget rules), and Pro ($49/mo, unlimited connections and API access). Corporate proxy plans are targeting Q3 2026.
+        To see a full breakdown of limits and features, you can <Link href="/pricing" className="text-blue-500 underline hover:text-blue-400">compare Frugal pricing plans</Link> designed for solo developers and growing teams. Plus costs $15/month (billed annually) or $19/month (billed monthly). Pro costs $39/month (billed annually) or $49/month (billed monthly). Free plan is $0 forever — 1 provider, no expiry. Corporate proxy plans are targeting Q3 2026.
       </>
     )
   },

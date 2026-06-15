@@ -1,13 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Check, ArrowRight } from "lucide-react";
 import type { PersonalPlan } from "@/lib/queries/public";
 
 export function PricingTeaser({ plans }: { plans: PersonalPlan[] }) {
-  const [isYearly, setIsYearly] = useState(true);
-
   return (
     <section id="pricing" className="mx-auto w-full max-w-6xl px-4 py-24 md:py-32">
       <div className="mb-12 text-center">
@@ -23,39 +20,8 @@ export function PricingTeaser({ plans }: { plans: PersonalPlan[] }) {
         </p>
       </div>
 
-      {/* Interval toggle */}
-      <div className="mb-10 flex items-center justify-center gap-3">
-        <span
-          className={`text-sm font-medium ${!isYearly ? "text-foreground" : "text-muted-foreground"}`}
-        >
-          Monthly
-        </span>
-        <button
-          role="switch"
-          aria-checked={isYearly}
-          aria-label="Toggle yearly billing"
-          onClick={() => setIsYearly(!isYearly)}
-          className="relative inline-flex h-6 w-11 items-center rounded-full bg-white/10 border border-white/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <span
-            className={`inline-block h-4 w-4 transform rounded-full bg-primary shadow-sm transition-transform duration-200 ease-out ${
-              isYearly ? "translate-x-6" : "translate-x-1"
-            }`}
-          />
-        </button>
-        <span
-          className={`text-sm font-medium flex items-center ${isYearly ? "text-foreground" : "text-muted-foreground"}`}
-        >
-          Yearly
-          <span className="ml-2 rounded-full bg-emerald-900/30 px-2 py-0.5 text-xs text-emerald-400">
-            2 months free
-          </span>
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-3">
         {plans.map((plan) => {
-          const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
           return (
             <div
               key={plan.id}
@@ -73,14 +39,21 @@ export function PricingTeaser({ plans }: { plans: PersonalPlan[] }) {
 
               <div className="mt-5 flex items-baseline gap-1.5">
                 <span className="font-heading text-4xl font-bold tracking-tight text-foreground">
-                  ${price}
+                  ${plan.yearlyPrice}
                 </span>
                 <span className="text-sm text-muted-foreground">
-                  {price === 0 ? "forever" : "/month"}
+                  {plan.yearlyPrice === 0 ? "forever" : "/month"}
                 </span>
               </div>
-              {price > 0 && isYearly && (
-                <p className="mt-1 text-xs text-muted-foreground">billed annually</p>
+              {plan.monthlyPrice > 0 && (
+                <div className="mt-1 flex flex-col">
+                  <span className="text-sm text-muted-foreground/70">
+                    ${plan.monthlyPrice} /month (billed monthly)
+                  </span>
+                  <span className="mt-1 text-xs font-medium text-emerald-500">
+                    billed annually · save 2 months
+                  </span>
+                </div>
               )}
 
               <Link
@@ -93,6 +66,12 @@ export function PricingTeaser({ plans }: { plans: PersonalPlan[] }) {
               >
                 {plan.ctaLabel}
               </Link>
+              
+              {plan.cancelText && (
+                <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                  {plan.cancelText}
+                </p>
+              )}
 
               <ul className="mt-7 flex flex-col gap-3">
                 {plan.teaserFeatures.map((feature) => (

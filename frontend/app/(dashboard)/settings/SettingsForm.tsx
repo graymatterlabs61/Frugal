@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "sonner";
 import { User, Bell, Shield, Trash2 } from "lucide-react";
+import { apiClient } from "@/lib/api/client";
 
 interface SettingsFormProps {
   userName: string;
@@ -38,6 +40,7 @@ function Toggle({
 }
 
 export function SettingsForm({ userName, userEmail }: SettingsFormProps) {
+  const { data: session } = useSession();
   const [name, setName] = useState(userName);
   const [saving, setSaving] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -50,15 +53,7 @@ export function SettingsForm({ userName, userEmail }: SettingsFormProps) {
     e.preventDefault();
     setSaving(true);
     try {
-      const res = await fetch("/api/auth/me", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName: name }),
-      });
-      if (!res.ok) {
-        const json = await res.json() as { error?: string };
-        throw new Error(json.error ?? "Failed to save");
-      }
+      await apiClient.patch("/api/auth/me", { fullName: name }, session?.backendToken);
       toast.success("Profile updated");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to save");

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Check, Building2, Copy, Shield, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { apiClient } from "@/lib/api/client";
 
 interface SettingsClientProps {
   userName: string;
@@ -127,6 +129,7 @@ const billingInvoices: {
 /* ── component ──────────────────────────────────────────── */
 
 export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
+  const { data: session } = useSession();
   const router = useRouter();
   const [name, setName] = useState(userName);
   const [saving, setSaving] = useState(false);
@@ -147,15 +150,7 @@ export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
     e.preventDefault();
     setSaving(true);
     try {
-      const res = await fetch("/api/auth/me", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName: name }),
-      });
-      if (!res.ok) {
-        const json = await res.json() as { error?: string };
-        throw new Error(json.error ?? "Failed to save");
-      }
+      await apiClient.patch("/api/auth/me", { fullName: name }, session?.backendToken);
       toast.success("Profile saved");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to save");

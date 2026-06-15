@@ -6,7 +6,7 @@ import { ShimmerButton } from "@/components/ui/magic/shimmer-button";
 
 export function FinalCTA() {
   return (
-    <section id="get-started" className="glass-panel backdrop-blur-md w-full grid grid-cols-1 md:grid-cols-3 my-20 md:my-40 justify-start relative z-20 max-w-7xl mx-auto rounded-3xl overflow-hidden">
+    <section id="get-started" className="glass-panel backdrop-blur-md w-full my-20 md:my-40 relative z-20 max-w-7xl mx-auto rounded-3xl overflow-hidden">
       <div
         className="absolute w-[calc(100%+var(--offset))] h-[var(--height)] left-[calc(var(--offset)/2*-1)] bg-[linear-gradient(to_right,var(--color),var(--color)_50%,transparent_0,transparent)] [background-size:var(--width)_var(--height)] [mask:linear-gradient(to_left,var(--background)_var(--fade-stop),transparent),_linear-gradient(to_right,var(--background)_var(--fade-stop),transparent),_linear-gradient(black,black)] [mask-composite:exclude] z-30 dark:bg-[linear-gradient(to_right,var(--color-dark),var(--color-dark)_50%,transparent_0,transparent)] top-0"
         style={
@@ -71,7 +71,7 @@ export function FinalCTA() {
           } as React.CSSProperties
         }
       />
-      <div className="md:col-span-2 p-8 md:p-14">
+      <div className="p-8 md:p-14">
         <h2 className="text-left text-neutral-500 dark:text-neutral-200 text-xl md:text-3xl tracking-tight font-medium">
           Stop paying for AI <span className="font-bold text-black dark:text-white">you can&apos;t see</span>.
         </h2>
@@ -86,7 +86,7 @@ export function FinalCTA() {
               borderRadius="8px"
               className="text-base font-semibold gap-2"
             >
-              Get started free
+              See your AI spend now
               <svg
                 stroke="currentColor"
                 fill="currentColor"
@@ -125,21 +125,6 @@ export function FinalCTA() {
               <path d="M19 19a2.003 2.003 0 0 0 .914 -3.782a1.98 1.98 0 0 0 -2.414 .483"></path>
             </svg>
           </a>
-        </div>
-      </div>
-      <div className="border-t md:border-t-0 md:border-l border-dashed p-8 md:p-14">
-        <p className="text-base text-neutral-700 dark:text-neutral-200">
-          &ldquo;In 2025 I lost a product with 50,000 users to a surprise AI
-          bill. Frugal is the alarm system I wish I&apos;d had — so I built
-          it.&rdquo;
-        </p>
-        <div className="flex flex-col text-sm items-start mt-4 gap-1">
-          <p className="font-bold text-neutral-800 dark:text-neutral-200">
-            Nilesh Kumar
-          </p>
-          <p className="text-neutral-500 dark:text-neutral-400">
-            Founder, Frugal
-          </p>
         </div>
       </div>
     </section>
