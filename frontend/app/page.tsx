@@ -11,7 +11,7 @@ import { FaqSection } from "@/components/landing/FaqSection"
 import { FinalCTA } from "@/components/landing/FinalCTA"
 import { Footer } from "@/components/landing/Footer"
 import { Navbar } from "@/components/landing/Navbar"
-import { fetchPlans } from "@/lib/queries/public"
+import { staticPlans } from "@/lib/data/plans"
 
 export const metadata: Metadata = {
   alternates: { canonical: "https://getfrugal.dev/" },
@@ -73,7 +73,7 @@ const faqSchema = {
 }
 
 export default async function LandingPage() {
-  const plans = await fetchPlans();
+  const plans = staticPlans;
 
   return (
     <div className="bg-background text-foreground relative z-0">

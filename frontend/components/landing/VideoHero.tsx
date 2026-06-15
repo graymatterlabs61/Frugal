@@ -1,5 +1,3 @@
-"use client"
-
 import Link from "next/link"
 import { ArrowRight, Check, ShieldCheck } from "lucide-react"
 import { ShimmerButton } from "@/components/ui/magic/shimmer-button"

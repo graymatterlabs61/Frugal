@@ -158,6 +158,8 @@ export default function RootLayout({
       )}
     >
       <head>
+        <link rel="preconnect" href="https://d8j0ntlcm91z4.cloudfront.net" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-18G4BDB421" strategy="afterInteractive" />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
