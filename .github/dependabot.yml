@@ -1,0 +1,47 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: 'Asia/Kolkata'
+    open-pull-requests-limit: 5
+    groups:
+      ui-deps:
+        patterns:
+          - '@radix-ui/*'
+          - 'shadcn'
+          - 'lucide-react'
+          - 'tailwind*'
+          - 'tw-*'
+      next-react:
+        patterns:
+          - 'next'
+          - 'react'
+          - 'react-dom'
+
+  - package-ecosystem: npm
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: 'Asia/Kolkata'
+    open-pull-requests-limit: 5
+    groups:
+      observability:
+        patterns:
+          - '@upstash/*'
+      stripe:
+        patterns:
+          - 'stripe'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: 'Asia/Kolkata'

@@ -1,4 +1,4 @@
-# dependencies
+# ── Dependencies ──────────────────────────────────────────────────────────────
 node_modules/
 .pnp
 .pnp.*
@@ -8,31 +8,87 @@ node_modules/
 !.yarn/releases
 !.yarn/versions
 
-# testing
-coverage/
-
-# next.js
-.next/
-out/
-
-# production
-build/
+# ── Build outputs ─────────────────────────────────────────────────────────────
 dist/
+build/
+out/
+.next/
+.turbo/
 
-# misc
-.DS_Store
+# ── Environment & secrets ──────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+!.env.*.example
 *.pem
+*.key
+*.p12
+*.pfx
+*.cert
+*.crt
 
-# debug
+# ── SSH / key files ────────────────────────────────────────────────────────────
+claude
+claude.pub
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+
+# ── AI tooling (local, not for teammates) ─────────────────────────────────────
+.agents/
+.claude/
+.planning/
+skills-lock.json
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
-!.env.example
-
-# typescript
+# ── TypeScript ────────────────────────────────────────────────────────────────
 *.tsbuildinfo
 next-env.d.ts
+
+# ── Testing ───────────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ── Editors ───────────────────────────────────────────────────────────────────
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+
+# ── Drizzle ───────────────────────────────────────────────────────────────────
+drizzle/meta/
+
+# ── Vercel ────────────────────────────────────────────────────────────────────
+.vercel
+
+# ── Generated / scratch docs at repo root ─────────────────────────────────────
+frugal-*.md
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+*.tgz
+.cache/
+tmp/
+temp/
