@@ -1,7 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { randomUUID } from "node:crypto";
 import { ZodError } from "zod";
-import { Sentry } from "../instrument.js";
 import { ApiError } from "../utils/errors.js";
 import { logger } from "../utils/logger.js";
 
@@ -31,6 +30,13 @@ export function errorHandler(
     return;
   }
 
+  if ((err as { type?: string }).type === "entity.too.large") {
+    res.status(413).json({
+      error: { code: "payload_too_large", message: "Request body exceeds size limit", requestId: reqId },
+    });
+    return;
+  }
+
   if (err instanceof ZodError) {
     res.status(422).json({
       error: {
@@ -44,7 +50,6 @@ export function errorHandler(
     return;
   }
 
-  Sentry.captureException(err, { tags: { requestId: reqId } });
   logger.error("unhandled_error", {
     requestId: reqId,
     path: req.path,

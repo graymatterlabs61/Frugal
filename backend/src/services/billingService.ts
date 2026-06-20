@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import { config } from "../config/unifiedConfig.js";
 import type { UserRepository } from "../repositories/UserRepository.js";
+import { BadRequestError } from "../utils/errors.js";
 import type { Plan } from "../utils/tier.js";
 
 export interface InvoiceItem {
@@ -115,7 +116,7 @@ export class BillingService {
     try {
       event = stripe.webhooks.constructEvent(rawBody, signature, config.stripe.webhookSecret);
     } catch {
-      throw new Error("Invalid Stripe webhook signature");
+      throw new BadRequestError("Invalid Stripe webhook signature");
     }
 
     switch (event.type) {
