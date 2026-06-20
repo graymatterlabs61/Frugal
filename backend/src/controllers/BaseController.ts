@@ -1,5 +1,4 @@
 import type { Response } from "express";
-import { Sentry } from "../instrument.js";
 import { ApiError } from "../utils/errors.js";
 import { logger } from "../utils/logger.js";
 
@@ -31,7 +30,6 @@ export abstract class BaseController {
       return;
     }
 
-    Sentry.captureException(error, { tags: { requestId, context } });
     logger.error("controller_error", {
       requestId,
       context,

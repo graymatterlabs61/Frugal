@@ -15,7 +15,6 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(4000),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   CORS_ORIGINS: z.string().default("http://localhost:3000"),
-  SENTRY_DSN: z.string().url().optional().or(z.literal("").transform(() => undefined)),
   RESEND_API_KEY: z.string().optional(),
   RESEND_FROM_WELCOME: z.string().default("Frugal <hello@getfrugal.dev>"),
   RESEND_FROM_ALERTS: z.string().default("Frugal Alerts <alerts@getfrugal.dev>"),
@@ -70,9 +69,6 @@ export const config = {
   },
   encryption: {
     key: env.ENCRYPTION_KEY,
-  },
-  observability: {
-    sentryDsn: env.SENTRY_DSN,
   },
   resend: {
     apiKey: env.RESEND_API_KEY,

@@ -1,12 +1,10 @@
-// Sentry MUST be imported via the --import CLI flag in Node.js >= 18.19.0 for ESM support
-import "./instrument.js";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
-import * as Sentry from "@sentry/node";
 import { config } from "./config/unifiedConfig.js";
 import { closeDb } from "./db/index.js";
 import { errorHandler, requestId } from "./middleware/errorHandler.js";
+import { apiRateLimit } from "./middleware/rateLimit.js";
 import { logger } from "./utils/logger.js";
 
 // Routes
@@ -33,9 +31,6 @@ app.use(
   })
 );
 
-// ── Sentry request handler (must be before routes) ───────────────────────────
-Sentry.setupExpressErrorHandler(app);
-
 // ── Raw body for Stripe webhook (must be before json middleware) ──────────────
 app.use("/api/billing/webhook", express.raw({ type: "application/json" }));
 
@@ -44,6 +39,9 @@ app.use(express.json({ limit: "256kb" }));
 
 // ── Correlation ID ───────────────────────────────────────────────────────────
 app.use(requestId);
+
+// ── Rate Limiting ────────────────────────────────────────────────────────────
+app.use("/api", apiRateLimit);
 
 // ── Routes ───────────────────────────────────────────────────────────────────
 app.use("/api/auth", authRoutes);
