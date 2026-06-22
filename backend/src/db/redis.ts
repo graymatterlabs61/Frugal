@@ -31,13 +31,13 @@ export const statusRatelimit = new Ratelimit({
 
 export const appApiRatelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(120, "1 m"),
+  limiter: Ratelimit.slidingWindow(60, "1 m"),
   prefix: "rl:app",
 });
 
 export const authRatelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(10, "1 m"),
+  limiter: Ratelimit.slidingWindow(5, "15 m"),
   prefix: "rl:auth",
 });
 

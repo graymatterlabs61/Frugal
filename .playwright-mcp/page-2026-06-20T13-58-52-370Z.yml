@@ -1,0 +1,529 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e7]:
+      - generic [ref=e8]:
+        - link "Frugal Logo Frugal" [ref=e9] [cursor=pointer]:
+          - /url: /
+          - img "Frugal Logo" [ref=e11]
+          - generic [ref=e12]: Frugal
+        - generic [ref=e13]:
+          - link "Home" [ref=e14] [cursor=pointer]:
+            - /url: /
+            - text: Home
+          - link "Features" [ref=e16] [cursor=pointer]:
+            - /url: "#features"
+          - link "Pricing" [ref=e17] [cursor=pointer]:
+            - /url: "#pricing"
+          - link "FAQ" [ref=e18] [cursor=pointer]:
+            - /url: "#faq"
+          - link "Journal" [ref=e19] [cursor=pointer]:
+            - /url: /blog
+        - link "Get Started →" [ref=e21] [cursor=pointer]:
+          - /url: /signup
+          - button "Get Started →" [ref=e22]:
+            - generic [ref=e23]: Get Started →
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - img [ref=e33]
+          - text: AES-256 encrypted keys · SOC 2 Type II target Q4 2026
+        - paragraph [ref=e36]: AI API cost management
+        - heading "Stop getting surprised by AI bills" [level=1] [ref=e37]
+        - paragraph [ref=e38]: Frugal polls OpenAI, Anthropic, Replicate, and 7 more providers every 5 minutes — and alerts you before your budget blows up. No proxy. No code changes.
+        - generic [ref=e39]:
+          - generic [ref=e40]: "Connecting to:"
+          - generic [ref=e41]: OpenAI, Anthropic, Replicate, and fal.ai
+      - generic [ref=e43]:
+        - generic [ref=e44]:
+          - generic [ref=e45]:
+            - img [ref=e46]
+            - text: Free plan, no credit card
+          - generic [ref=e48]:
+            - img [ref=e49]
+            - text: No proxy, no code changes
+          - generic [ref=e51]:
+            - img [ref=e52]
+            - text: Keys AES-256 encrypted
+        - link "Start monitoring free" [ref=e54] [cursor=pointer]:
+          - /url: /signup
+          - button "Start monitoring free" [ref=e55]:
+            - text: Start monitoring free
+            - img [ref=e59]
+        - paragraph [ref=e63]: Your AI costs are running right now. Connect in 2 minutes.
+        - link "See how it works" [ref=e64] [cursor=pointer]:
+          - /url: "#how-it-works"
+    - main [ref=e65]:
+      - generic [ref=e68]:
+        - generic [ref=e70]:
+          - img "OpenAI" [ref=e71]
+          - text: OpenAI
+        - generic [ref=e75]:
+          - img "Anthropic" [ref=e76]
+          - text: Anthropic
+        - generic [ref=e80]:
+          - img "Replicate" [ref=e81]
+          - text: Replicate
+        - generic [ref=e85]:
+          - img "Fal" [ref=e86]
+          - text: fal.ai
+        - generic [ref=e90]:
+          - img "together.ai" [ref=e91]
+          - text: Together AI
+        - generic [ref=e97]:
+          - img "Mistral" [ref=e98]
+          - text: Mistral
+        - generic [ref=e102]:
+          - img "Cohere" [ref=e103]
+          - text: Cohere
+        - generic [ref=e109]:
+          - img "Grok" [ref=e110]
+          - text: Groq
+        - generic [ref=e114]:
+          - img "Perplexity" [ref=e115]
+          - text: Perplexity
+        - generic [ref=e119]:
+          - img "ElevenLabs" [ref=e120]
+          - text: ElevenLabs
+        - generic [ref=e124]:
+          - img "OpenAI" [ref=e125]
+          - text: OpenAI
+        - generic [ref=e129]:
+          - img "Anthropic" [ref=e130]
+          - text: Anthropic
+        - generic [ref=e134]:
+          - img "Replicate" [ref=e135]
+          - text: Replicate
+        - generic [ref=e139]:
+          - img "Fal" [ref=e140]
+          - text: fal.ai
+        - generic [ref=e144]:
+          - img "together.ai" [ref=e145]
+          - text: Together AI
+        - generic [ref=e151]:
+          - img "Mistral" [ref=e152]
+          - text: Mistral
+        - generic [ref=e156]:
+          - img "Cohere" [ref=e157]
+          - text: Cohere
+        - generic [ref=e163]:
+          - img "Grok" [ref=e164]
+          - text: Groq
+        - generic [ref=e168]:
+          - img "Perplexity" [ref=e169]
+          - text: Perplexity
+        - generic [ref=e173]:
+          - img "ElevenLabs" [ref=e174]
+          - text: ElevenLabs
+      - generic [ref=e178]:
+        - blockquote [ref=e180]: “In 2025 I lost a product with 50,000 users to a surprise AI bill. Frugal is the alarm system I wish I'd had — so I built it.”
+        - paragraph [ref=e181]: — Nilesh Kumar, Founder
+        - generic [ref=e182]:
+          - img [ref=e183]
+          - generic [ref=e186]: AES-256 Encrypted
+          - generic [ref=e187]:
+            - generic [ref=e188]: ·
+            - text: GDPR Compliant
+          - generic [ref=e189]:
+            - generic [ref=e190]: ·
+            - text: Read-Only Key Access
+          - generic [ref=e191]:
+            - generic [ref=e192]: ·
+            - text: No Proxy Required
+      - generic [ref=e194]:
+        - generic [ref=e195]:
+          - paragraph [ref=e196]: The problem
+          - heading "You only find out when the invoice arrives" [level=2] [ref=e197]
+          - paragraph [ref=e198]:
+            - text: Solo developers watch costs spike overnight with no warning. Teams give everyone AI access and end up with no idea which project burned what. Providers give you keys — not budgets, not attribution, not control. Stop relying on delayed billing dashboards with the only
+            - link "OpenAI cost monitoring tool" [ref=e199] [cursor=pointer]:
+              - /url: /features/openai
+            - text: you need to track your exact usage down to the token.
+        - generic [ref=e200]:
+          - generic [ref=e201]:
+            - generic [ref=e202]:
+              - paragraph [ref=e203]: Spend attribution
+              - heading "Every provider. Every project. Every team member." [level=3] [ref=e204]:
+                - text: Every provider. Every project.
+                - text: Every team member.
+            - generic [ref=e205]:
+              - generic [ref=e206]:
+                - paragraph [ref=e207]: Total AI spend this month
+                - paragraph [ref=e208]: $234.50
+              - generic [ref=e222]:
+                - generic [ref=e224]:
+                  - generic [ref=e225]: OpenAI
+                  - generic [ref=e226]: $193.50
+                - generic [ref=e230]:
+                  - generic [ref=e231]: Anthropic
+                  - generic [ref=e232]: $41.00
+          - generic [ref=e235]:
+            - generic [ref=e237]: 5m
+            - paragraph [ref=e238]: Polling interval
+            - paragraph [ref=e239]: Sub-5 minute
+            - paragraph [ref=e240]: Usage data refreshed every 5 minutes — never out of sync.
+          - generic [ref=e241]:
+            - generic [ref=e243]: AES
+            - paragraph [ref=e244]: Encryption
+            - paragraph [ref=e245]: AES-256
+            - paragraph [ref=e246]: API keys encrypted before storage. Never logged or exposed.
+      - generic [ref=e248]:
+        - generic [ref=e249]:
+          - paragraph [ref=e250]: Features
+          - heading "Developer-first cost control" [level=2] [ref=e251]
+          - paragraph [ref=e252]: Everything you need to attribute, enforce, and control AI API spend — for individuals and teams — without changing a line of your existing code.
+        - generic [ref=e253]:
+          - generic [ref=e254]:
+            - generic [ref=e256]:
+              - generic [ref=e257]:
+                - img "Frugal Bot" [ref=e258]
+                - generic [ref=e259]: "Warning: OpenAI spend crossed 80% limit!"
+              - generic [ref=e260]:
+                - generic [ref=e261]: You
+                - generic [ref=e262]: Got it, pausing the cron job.
+              - generic [ref=e263]:
+                - img "Frugal Bot" [ref=e264]
+                - generic [ref=e265]: Anthropic usage is at 45% ($225/$500).
+              - generic [ref=e266]:
+                - generic [ref=e267]: SK
+                - generic [ref=e268]: Looks good, thanks.
+            - generic [ref=e269]:
+              - heading "Automatic enforcement, not just alerts" [level=3] [ref=e270]
+              - paragraph [ref=e271]: Hard budget blocks and Slack/email fire the moment spend crosses your threshold — before the damage is done, not after.
+          - generic [ref=e272]:
+            - generic [ref=e293] [cursor=pointer]:
+              - generic [ref=e297]: sk-***
+              - generic [ref=e299]: sk-***
+              - generic [ref=e301]: sk-***
+            - generic [ref=e319]:
+              - heading "AES-256 encryption" [level=3] [ref=e320]
+              - paragraph [ref=e321]: API keys encrypted before storage. Never logged, never exposed in errors or support tickets.
+          - generic [ref=e322]:
+            - generic [ref=e324]:
+              - generic [ref=e335]:
+                - generic [ref=e336]: "1"
+                - generic [ref=e337]: "2"
+                - generic [ref=e338]: "3"
+                - generic [ref=e339]: "4"
+                - generic [ref=e340]: "5"
+                - generic [ref=e341]: "6"
+                - generic [ref=e342]: "7"
+                - generic [ref=e343]: "8"
+                - generic [ref=e344]: "9"
+                - generic [ref=e345]: "10"
+                - generic [ref=e346]: "11"
+                - generic [ref=e347]: "12"
+                - generic [ref=e348]: "13"
+                - generic [ref=e349]: "14"
+                - generic [ref=e350]: "15"
+              - generic [ref=e381]:
+                - img [ref=e382]
+                - generic [ref=e384]:
+                  - generic [ref=e385]: SK
+                  - generic [ref=e386]: Sara
+              - generic [ref=e387]:
+                - img [ref=e388]
+                - generic [ref=e390]:
+                  - generic [ref=e391]: DV
+                  - generic [ref=e392]: Dev
+            - generic [ref=e393]:
+              - heading "Spend attribution by project, team, and provider" [level=3] [ref=e394]
+              - paragraph [ref=e395]: See exactly who spent what — broken down by project, team member, and provider — updated every 5 minutes across your whole org.
+          - generic [ref=e396]:
+            - generic [ref=e399]:
+              - generic [ref=e402]:
+                - paragraph [ref=e403]: A retry loop on staging hammers the API all weekend. The 80% budget alert fires Saturday morning — not on the invoice.
+                - paragraph [ref=e404]: Runaway retry loop
+              - generic [ref=e407]:
+                - paragraph [ref=e408]: A prompt tweak doubles output tokens overnight. The spend chart shows the jump the same morning, per project, per provider.
+                - paragraph [ref=e409]: Silent prompt regression
+              - generic [ref=e412]:
+                - paragraph [ref=e413]: A forgotten cron job keeps calling an expensive model every minute. Daily spend triples — the alert lands in Slack within five minutes of the threshold.
+                - paragraph [ref=e414]: Zombie cron job
+              - generic [ref=e417]:
+                - paragraph [ref=e418]: A demo link goes viral and traffic spikes 20x. The daily limit holds the line while you decide what to do — before the month-end surprise.
+                - paragraph [ref=e419]: Viral traffic spike
+              - generic [ref=e422]:
+                - paragraph [ref=e423]: A retry loop on staging hammers the API all weekend. The 80% budget alert fires Saturday morning — not on the invoice.
+                - paragraph [ref=e424]: Runaway retry loop
+              - generic [ref=e427]:
+                - paragraph [ref=e428]: A prompt tweak doubles output tokens overnight. The spend chart shows the jump the same morning, per project, per provider.
+                - paragraph [ref=e429]: Silent prompt regression
+              - generic [ref=e432]:
+                - paragraph [ref=e433]: A forgotten cron job keeps calling an expensive model every minute. Daily spend triples — the alert lands in Slack within five minutes of the threshold.
+                - paragraph [ref=e434]: Zombie cron job
+              - generic [ref=e437]:
+                - paragraph [ref=e438]: A demo link goes viral and traffic spikes 20x. The daily limit holds the line while you decide what to do — before the month-end surprise.
+                - paragraph [ref=e439]: Viral traffic spike
+            - generic [ref=e440]:
+              - heading "Budget governance for every failure mode" [level=3] [ref=e441]
+              - paragraph [ref=e442]: Whether it's a solo dev's runaway loop or a team's unchecked model usage — Frugal catches it early instead of letting it show up on the invoice.
+      - generic [ref=e444]:
+        - generic [ref=e445]:
+          - paragraph [ref=e446]: How it works
+          - heading "Up and running in three steps" [level=2] [ref=e447]
+        - generic [ref=e448]:
+          - generic [ref=e449]:
+            - generic [ref=e450]:
+              - img [ref=e452]
+              - generic [ref=e454]: "1"
+            - heading "Connect your providers" [level=3] [ref=e455]
+            - paragraph [ref=e456]: Paste your API keys or invite your team and assign theirs. Frugal validates and starts tracking immediately — all keys encrypted with AES-256 before touching the database.
+          - generic [ref=e457]:
+            - generic [ref=e458]:
+              - img [ref=e460]
+              - generic [ref=e462]: "2"
+            - heading "Set budgets per project or team" [level=3] [ref=e463]
+            - paragraph [ref=e464]: Monthly limits per provider, per project, or per team. Alert at 80%, 90%, 100% — or any threshold you choose. Works for a solo dev's side project or a 20-person engineering org.
+          - generic [ref=e465]:
+            - generic [ref=e466]:
+              - img [ref=e468]
+              - generic [ref=e470]: "3"
+            - heading "Enforce limits, not just notifications" [level=3] [ref=e471]
+            - paragraph [ref=e472]: Frugal polls every 5 minutes. Hard budget blocks and Slack/email alerts fire the moment a threshold is crossed — so you stop runaway spend, not just hear about it.
+      - generic [ref=e474]:
+        - generic [ref=e475]:
+          - paragraph [ref=e476]: Use cases
+          - heading "Built for the people paying the bill" [level=2] [ref=e477]
+        - generic [ref=e478]:
+          - generic [ref=e479]:
+            - img [ref=e481]
+            - paragraph [ref=e483]: Indie developers
+            - heading "Stop AI bills from killing side projects" [level=3] [ref=e484]
+            - paragraph [ref=e485]: One misconfigured prompt loop can rack up hundreds of dollars overnight. Set hard spending caps and sleep knowing Frugal will cut it off before it hurts.
+          - generic [ref=e486]:
+            - img [ref=e488]
+            - paragraph [ref=e490]: Engineering managers
+            - heading "Know before your CFO asks" [level=3] [ref=e491]
+            - paragraph [ref=e492]: Your team ships features using AI APIs every day. Frugal shows you exactly which project is burning what — before the invoice lands.
+          - generic [ref=e493]:
+            - img [ref=e495]
+            - paragraph [ref=e497]: Startups & founders
+            - heading "Make every dollar of runway count" [level=3] [ref=e498]
+            - paragraph [ref=e499]: You're giving your team access to GPT, Claude, and Replicate. Frugal tracks what each project spends and blocks runaway costs before they eat your runway.
+          - generic [ref=e500]:
+            - img [ref=e502]
+            - paragraph [ref=e504]: Companies & teams
+            - heading "AI budget governance without the spreadsheet" [level=3] [ref=e505]
+            - paragraph [ref=e506]: Set per-team and per-project budgets across every AI provider. Get automatic alerts and hard blocks. Know exactly who spent what before month-end.
+      - generic [ref=e507]:
+        - generic [ref=e508]:
+          - paragraph [ref=e509]: Pricing
+          - heading "Start free, upgrade when spend grows" [level=2] [ref=e510]
+          - paragraph [ref=e511]: No credit card to start. No proxy, no code change on any plan.
+        - generic [ref=e512]:
+          - generic [ref=e513]:
+            - heading "Free" [level=3] [ref=e514]
+            - paragraph [ref=e515]: See your AI spend before it sees you
+            - generic [ref=e516]:
+              - generic [ref=e517]: $0
+              - generic [ref=e518]: forever
+            - link "Start free, upgrade when ready" [ref=e519] [cursor=pointer]:
+              - /url: /signup
+            - list [ref=e520]:
+              - listitem [ref=e521]:
+                - img [ref=e522]
+                - text: Unified dashboard — all providers in one view
+              - listitem [ref=e524]:
+                - img [ref=e525]
+                - text: Email alerts on spend spikes
+              - listitem [ref=e527]:
+                - img [ref=e528]
+                - text: 7-day usage history
+              - listitem [ref=e530]:
+                - img [ref=e531]
+                - text: 1 connection · 1 project
+              - listitem [ref=e533]:
+                - img [ref=e534]
+                - text: No proxy · no code change
+          - generic [ref=e536]:
+            - generic [ref=e537]: Most popular
+            - heading "Plus" [level=3] [ref=e538]
+            - paragraph [ref=e539]: Stop guessing. Start controlling.
+            - generic [ref=e540]:
+              - generic [ref=e541]: $15
+              - generic [ref=e542]: /month
+            - generic [ref=e543]:
+              - generic [ref=e544]: $19 /month (billed monthly)
+              - generic [ref=e545]: billed annually · save 2 months
+            - link "Start with Plus" [ref=e546] [cursor=pointer]:
+              - /url: /signup?plan=plus
+            - paragraph [ref=e547]: Cancel anytime. No lock-in.
+            - list [ref=e548]:
+              - listitem [ref=e549]:
+                - img [ref=e550]
+                - text: Monitor 3 providers — OpenAI, Anthropic, and one more
+              - listitem [ref=e552]:
+                - img [ref=e553]
+                - text: Get Slack pings the moment a budget hits 80%
+              - listitem [ref=e555]:
+                - img [ref=e556]
+                - text: Hard blocks that stop runaway spend automatically — not just notifications
+              - listitem [ref=e558]:
+                - img [ref=e559]
+                - text: See where this month's costs are heading before you get the invoice
+              - listitem [ref=e561]:
+                - img [ref=e562]
+                - text: 90 days of history to spot recurring cost spikes
+          - generic [ref=e564]:
+            - heading "Pro" [level=3] [ref=e565]
+            - paragraph [ref=e566]: Know exactly which users are costing you money.
+            - generic [ref=e567]:
+              - generic [ref=e568]: $39
+              - generic [ref=e569]: /month
+            - generic [ref=e570]:
+              - generic [ref=e571]: $49 /month (billed monthly)
+              - generic [ref=e572]: billed annually · save 2 months
+            - link "Start with Pro" [ref=e573] [cursor=pointer]:
+              - /url: /signup?plan=pro
+            - paragraph [ref=e574]: Cancel anytime. Switch to monthly anytime.
+            - list [ref=e575]:
+              - listitem [ref=e576]:
+                - img [ref=e577]
+                - text: See exactly which users drive your AI costs
+              - listitem [ref=e579]:
+                - img [ref=e580]
+                - text: Monitor unlimited providers and projects
+              - listitem [ref=e582]:
+                - img [ref=e583]
+                - text: Pipe alerts into PagerDuty, Linear, or CI/CD
+              - listitem [ref=e585]:
+                - img [ref=e586]
+                - text: Automatically block overruns on unlimited rules
+              - listitem [ref=e588]:
+                - img [ref=e589]
+                - text: Spot long-term trends with 1-year spend history
+        - paragraph [ref=e591]:
+          - text: Need team-level proxy control with per-employee attribution?
+          - link "See Corporate plans" [ref=e592] [cursor=pointer]:
+            - /url: /pricing?tab=corporate
+            - text: See Corporate plans
+            - img [ref=e593]
+      - generic [ref=e595]:
+        - heading "Frequently asked questions" [level=2] [ref=e596]
+        - paragraph [ref=e597]:
+          - text: We are here to help you with any questions you may have. If you don't find what you need, please contact us at
+          - link "support@getfrugal.dev" [ref=e598] [cursor=pointer]:
+            - /url: mailto:support@getfrugal.dev
+        - generic [ref=e599]:
+          - generic [ref=e600]:
+            - generic [ref=e601]:
+              - heading "What is Frugal?" [level=3] [ref=e602]
+              - paragraph [ref=e603]: Frugal is an AI API cost management SaaS. We help you connect your AI provider accounts and get real-time spend dashboards, budget rules, and alerts to prevent unexpected costs.
+            - generic [ref=e604]:
+              - heading "What is the best tool for monitoring LLM API costs?" [level=3] [ref=e605]
+              - paragraph [ref=e606]: Frugal provides a unified comparison table against native dashboards, letting you view real-time spend across OpenAI, Anthropic, Replicate, and fal.ai in one place.
+            - generic [ref=e607]:
+              - heading "How do I set a hard budget limit on the OpenAI API?" [level=3] [ref=e608]
+              - paragraph [ref=e609]: 1. Connect your OpenAI API key to Frugal. 2. Navigate to Budget Rules. 3. Create a rule with your limit amount and choose the Block action. Frugal acts at the next 5-minute poll — pair it with OpenAI's native hard limit for a guaranteed stop.
+          - generic [ref=e610]:
+            - generic [ref=e611]:
+              - heading "How to get alerts before OpenAI API overspend?" [level=3] [ref=e612]
+              - paragraph [ref=e613]: 1. Go to the Alerts tab in Frugal. 2. Set up an alert for your OpenAI provider. 3. Configure thresholds (e.g. 80% of budget). 4. Choose email or Slack notifications.
+            - generic [ref=e614]:
+              - heading "How much does the Anthropic Claude 3 API cost compared to OpenAI?" [level=3] [ref=e615]
+              - paragraph [ref=e616]: Frugal offers a real-time comparison table of your usage so you can directly compare your effective cost-per-token across Anthropic Claude 3 models and OpenAI GPT-4 models based on your actual prompts.
+            - generic [ref=e617]:
+              - heading "What happens when you exceed your AI API budget?" [level=3] [ref=e618]
+              - paragraph [ref=e619]: Frugal alerts you by email or Slack and, with a Block rule, flags the connection at the next 5-minute poll. Because Frugal never sits between your app and the provider, pair Block with your provider's native hard limit for a guaranteed stop.
+          - generic [ref=e620]:
+            - generic [ref=e621]:
+              - heading "How does the pricing work?" [level=3] [ref=e622]
+              - paragraph [ref=e623]:
+                - text: To see a full breakdown of limits and features, you can
+                - link "compare Frugal pricing plans" [ref=e624] [cursor=pointer]:
+                  - /url: /pricing
+                - text: designed for solo developers and growing teams. Plus costs $15/month (billed annually) or $19/month (billed monthly). Pro costs $39/month (billed annually) or $49/month (billed monthly). Free plan is $0 forever — 1 provider, no expiry. Corporate proxy plans are targeting Q3 2026.
+            - generic [ref=e625]:
+              - heading "What payment methods do you accept?" [level=3] [ref=e626]
+              - paragraph [ref=e627]: Payments are processed by Stripe — all major credit and debit cards are supported. You can upgrade, downgrade, or cancel from billing settings at any time.
+            - generic [ref=e628]:
+              - heading "How do I contact support?" [level=3] [ref=e629]
+              - paragraph [ref=e630]: You can contact support by email at support@getfrugal.dev. We are here to help you with any questions or issues.
+      - generic [ref=e636]:
+        - heading "Stop paying for AI you can't see." [level=2] [ref=e637]
+        - paragraph [ref=e638]: Whether you're a solo dev protecting a side project or a team lead managing AI spend across 20 engineers — Frugal gives you the visibility and control you need.
+        - generic [ref=e639]:
+          - link "See your AI spend now" [ref=e640] [cursor=pointer]:
+            - /url: /signup
+            - button "See your AI spend now" [ref=e641]:
+              - text: See your AI spend now
+              - img [ref=e645]
+          - link "Talk to us" [ref=e649] [cursor=pointer]:
+            - /url: mailto:support@getfrugal.dev
+            - generic [ref=e650]: Talk to us
+            - img [ref=e651]
+    - contentinfo [ref=e654]:
+      - generic [ref=e656]:
+        - generic [ref=e657]:
+          - link "logo Frugal" [ref=e659] [cursor=pointer]:
+            - /url: /
+            - img "logo" [ref=e660]
+            - generic [ref=e661]: Frugal
+          - generic [ref=e662]:
+            - paragraph [ref=e663]: A product of Gray Matter Labs.
+            - paragraph [ref=e664]: Made by Nilesh Kumar.
+            - paragraph [ref=e665]: © 2026 Frugal. All rights reserved.
+            - link "support@getfrugal.dev" [ref=e667] [cursor=pointer]:
+              - /url: mailto:support@getfrugal.dev
+        - generic [ref=e668]:
+          - generic [ref=e669]:
+            - paragraph [ref=e670]: Product
+            - list [ref=e671]:
+              - listitem [ref=e672]:
+                - link "Features" [ref=e673] [cursor=pointer]:
+                  - /url: "#features"
+              - listitem [ref=e674]:
+                - link "How it Works" [ref=e675] [cursor=pointer]:
+                  - /url: "#how-it-works"
+              - listitem [ref=e676]:
+                - link "Pricing" [ref=e677] [cursor=pointer]:
+                  - /url: "#pricing"
+              - listitem [ref=e678]:
+                - link "FAQ" [ref=e679] [cursor=pointer]:
+                  - /url: "#faq"
+              - listitem [ref=e680]:
+                - link "Plans & Comparison" [ref=e681] [cursor=pointer]:
+                  - /url: /pricing
+          - generic [ref=e682]:
+            - paragraph [ref=e683]: Company
+            - list [ref=e684]:
+              - listitem [ref=e685]:
+                - link "About Us" [ref=e686] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e687]:
+                - link "Contact" [ref=e688] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=e689]:
+                - link "Sign Up" [ref=e690] [cursor=pointer]:
+                  - /url: /signup
+              - listitem [ref=e691]:
+                - link "Login" [ref=e692] [cursor=pointer]:
+                  - /url: /login
+          - generic [ref=e693]:
+            - paragraph [ref=e694]: Legal
+            - list [ref=e695]:
+              - listitem [ref=e696]:
+                - link "Privacy Policy" [ref=e697] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e698]:
+                - link "Terms of Service" [ref=e699] [cursor=pointer]:
+                  - /url: /terms
+              - listitem [ref=e700]:
+                - link "Cookie Policy" [ref=e701] [cursor=pointer]:
+                  - /url: /cookies
+              - listitem [ref=e702]:
+                - link "Refund Policy" [ref=e703] [cursor=pointer]:
+                  - /url: /refund
+          - generic [ref=e704]:
+            - paragraph [ref=e705]: Support
+            - list [ref=e706]:
+              - listitem [ref=e707]:
+                - link "support@getfrugal.dev" [ref=e708] [cursor=pointer]:
+                  - /url: mailto:support@getfrugal.dev
+              - listitem [ref=e709]:
+                - link "Send Feedback" [ref=e710] [cursor=pointer]:
+                  - /url: mailto:feedback@getfrugal.dev
+      - paragraph [ref=e712]: FRUGAL
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e718] [cursor=pointer]:
+    - img [ref=e719]

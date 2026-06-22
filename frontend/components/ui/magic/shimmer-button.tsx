@@ -44,6 +44,7 @@ export const ShimmerButton = React.forwardRef<
         className={cn(
           "group relative z-0 flex cursor-pointer items-center justify-center overflow-hidden [border-radius:var(--radius)] border border-white/10 px-6 py-3 whitespace-nowrap text-white [background:var(--bg)]",
           "transform-gpu transition-transform duration-300 ease-in-out active:translate-y-px",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
           className
         )}
         ref={ref}
@@ -68,16 +69,9 @@ export const ShimmerButton = React.forwardRef<
         <div
           className={cn(
             "absolute inset-0 size-full",
-
             "rounded-2xl px-4 py-1.5 text-sm font-medium shadow-[inset_0_-8px_10px_#ffffff1f]",
-
-            // transition
             "transform-gpu transition-all duration-300 ease-in-out",
-
-            // on hover
             "group-hover:shadow-[inset_0_-6px_10px_#ffffff3f]",
-
-            // on click
             "group-active:shadow-[inset_0_-10px_10px_#ffffff3f]"
           )}
         />

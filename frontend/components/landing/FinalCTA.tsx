@@ -72,10 +72,10 @@ export function FinalCTA() {
         }
       />
       <div className="p-8 md:p-14">
-        <h2 className="text-left text-neutral-500 dark:text-neutral-200 text-xl md:text-3xl tracking-tight font-medium">
+        <h2 className="text-left text-neutral-700 dark:text-neutral-200 text-xl md:text-3xl tracking-tight font-medium">
           Stop paying for AI <span className="font-bold text-black dark:text-white">you can&apos;t see</span>.
         </h2>
-        <p className="text-left text-neutral-500 mt-4 max-w-lg dark:text-neutral-200 text-base md:text-lg tracking-tight font-medium">
+        <p className="text-left text-neutral-600 mt-4 max-w-lg dark:text-neutral-200 text-base md:text-lg tracking-tight font-medium">
           Whether you&apos;re a solo dev protecting a side project or a team lead managing AI spend across 20 engineers — Frugal gives you the visibility and control you need.
         </p>
         <div className="flex items-start sm:items-center flex-col sm:flex-row sm:gap-4">
@@ -106,7 +106,7 @@ export function FinalCTA() {
               </svg>
             </ShimmerButton>
           </Link>
-          <a href="mailto:support@getfrugal.dev" className="mt-8 flex space-x-2 items-center group text-base px-4 py-2 rounded-lg text-black dark:text-white border border-neutral-200 dark:border-neutral-800 shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]">
+          <a href="mailto:support@getfrugal.dev" className="mt-8 flex space-x-2 items-center group text-base px-4 py-2 rounded-lg text-black dark:text-white border border-neutral-300 dark:border-neutral-700 shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset] hover:border-neutral-400 dark:hover:border-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
             <span>Talk to us</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"

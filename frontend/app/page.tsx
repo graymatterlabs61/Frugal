@@ -91,8 +91,8 @@ export default async function LandingPage() {
       <Navbar />
       <VideoHero />
       <main>
-        <FounderQuote />
         <ProvidersBar />
+        <FounderQuote />
         <ProblemSection />
         <FeaturesGrid />
         <HowItWorks />

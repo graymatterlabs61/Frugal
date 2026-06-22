@@ -27,6 +27,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { canCreateBudgetRules, canUseThrottle } from "@/lib/tier";
@@ -381,6 +388,156 @@ function AddRuleDialog({
 }
 
 // ---------------------------------------------------------------------------
+// AddConnectionToProjectDialog
+// ---------------------------------------------------------------------------
+
+const PROVIDERS = [
+  { value: "openai", label: "OpenAI" },
+  { value: "anthropic", label: "Anthropic" },
+  { value: "gemini", label: "Google Gemini" },
+  { value: "groq", label: "Groq" },
+  { value: "mistral", label: "Mistral" },
+  { value: "together", label: "Together AI" },
+  { value: "cohere", label: "Cohere" },
+  { value: "perplexity", label: "Perplexity" },
+  { value: "deepseek", label: "DeepSeek" },
+  { value: "replicate", label: "Replicate" },
+  { value: "falai", label: "fal.ai" },
+  { value: "stability", label: "Stability AI" },
+];
+
+interface AddedConnection {
+  id: string;
+  provider: string;
+  apiKeySuffix: string | null;
+  status: string;
+  lastPolledAt: string | null;
+}
+
+function AddConnectionToProjectDialog({
+  projectId,
+  onAdd,
+  token,
+}: {
+  projectId: string;
+  onAdd: (c: AddedConnection) => void;
+  token?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [provider, setProvider] = useState("");
+  const [apiKey, setApiKey] = useState("");
+  const [label, setLabel] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!provider || !apiKey) {
+      toast.error("Provider and API key required");
+      return;
+    }
+    setLoading(true);
+    try {
+      const conn = await apiClient.post<AddedConnection>("/api/connections", {
+        provider,
+        apiKey,
+        projectId,
+        label: label || null,
+      }, token);
+      onAdd(conn);
+      toast.success(`${PROVIDERS.find((p) => p.value === provider)?.label ?? provider} connected`);
+      setOpen(false);
+      setProvider("");
+      setApiKey("");
+      setLabel("");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to connect");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="bg-primary hover:bg-primary/90 text-white rounded-xl h-9 px-3 text-sm font-semibold">
+          <Plus size={14} className="mr-1.5" />
+          Add Connection
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="bg-card border-border rounded-2xl sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-bold">Add API Connection</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+              Provider
+            </label>
+            <Select value={provider} onValueChange={setProvider}>
+              <SelectTrigger className="bg-input/30 border-border/40 h-10 rounded-xl">
+                <SelectValue placeholder="Select a provider" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border rounded-xl">
+                {PROVIDERS.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>
+                    {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+              API Key
+            </label>
+            <Input
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="Paste your API key"
+              className="bg-input/30 border-border/40 h-10 rounded-xl font-mono"
+              autoComplete="off"
+            />
+            <p className="text-xs text-muted-foreground">
+              AES-256 encrypted before storage. Never logged or returned after save.
+            </p>
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+              Label{" "}
+              <span className="normal-case font-normal text-muted-foreground/60">(optional)</span>
+            </label>
+            <Input
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              placeholder="e.g. production key"
+              className="bg-input/30 border-border/40 h-10 rounded-xl"
+            />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 rounded-xl h-10 border-border/40"
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-primary hover:bg-primary/90 text-white rounded-xl h-10 font-semibold"
+            >
+              {loading ? "Validating…" : "Connect"}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
@@ -392,6 +549,15 @@ export function ProjectDetailClient({
 }: ProjectDetailClientProps) {
   const { data: session } = useSession();
   const token = session?.backendToken;
+  const [localConnections, setLocalConnections] = useState<AddedConnection[]>(
+    connections.map((c) => ({
+      id: c.id,
+      provider: c.provider,
+      apiKeySuffix: c.apiKeySuffix,
+      status: c.status,
+      lastPolledAt: c.lastPolledAt,
+    }))
+  );
   const [rules, setRules] = useState<BudgetRule[]>([]);
   const [rulesLoading, setRulesLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -663,24 +829,31 @@ export function ProjectDetailClient({
               <div className="flex items-center gap-2">
                 <PlugsConnected size={16} className="text-muted-foreground" />
                 <h3 className="font-semibold text-sm">API Keys</h3>
+                <span className="text-[10px] font-mono bg-white/10 px-1.5 py-0.5 rounded-md text-muted-foreground">
+                  {localConnections.length}
+                </span>
               </div>
-              <Link href="/connections">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="rounded-xl border-border/40 text-xs h-8"
-                >
-                  Manage All
-                </Button>
-              </Link>
+              <AddConnectionToProjectDialog
+                projectId={project.id}
+                onAdd={(c) => setLocalConnections((prev) => [c, ...prev])}
+                token={token}
+              />
             </div>
             <div className="divide-y divide-border">
-              {connections.length === 0 ? (
-                <div className="px-5 py-10 text-center text-sm text-muted-foreground">
-                  No connections yet.
+              {localConnections.length === 0 ? (
+                <div className="px-5 py-12 text-center space-y-3">
+                  <p className="text-sm font-semibold">No connections yet</p>
+                  <p className="text-xs text-muted-foreground">
+                    Add an API key to start tracking spend for this project.
+                  </p>
+                  <AddConnectionToProjectDialog
+                    projectId={project.id}
+                    onAdd={(c) => setLocalConnections((prev) => [c, ...prev])}
+                    token={token}
+                  />
                 </div>
               ) : (
-                connections.map((conn) => {
+                localConnections.map((conn) => {
                   const cs =
                     connStatusConfig[conn.status] ?? connStatusConfig.invalid;
                   const CsIcon = cs.icon;
@@ -700,7 +873,10 @@ export function ProjectDetailClient({
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-sm text-muted-foreground">
+                          <span className="font-semibold text-sm capitalize">
+                            {PROVIDERS.find((p) => p.value === conn.provider)?.label ?? conn.provider}
+                          </span>
+                          <span className="font-mono text-xs text-muted-foreground">
                             ••••••••{conn.apiKeySuffix}
                           </span>
                           <span

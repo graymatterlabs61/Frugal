@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { getProjectLimit } from "@/lib/tier";
@@ -192,6 +193,7 @@ function CreateProjectDialog({
 
 export default function ProjectsPage() {
   const { data: session } = useSession();
+  const router = useRouter();
   const token = session?.backendToken;
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -218,7 +220,10 @@ export default function ProjectsPage() {
   const projLimit = getProjectLimit(userPlan);
   const atProjLimit = projects.length >= projLimit;
 
-  const handleCreated = (p: Project) => setProjects((prev) => [p, ...prev]);
+  const handleCreated = (p: Project) => {
+    setProjects((prev) => [p, ...prev]);
+    router.push(`/projects/${p.id}`);
+  };
 
   const handleDelete = async (id: string) => {
     try {

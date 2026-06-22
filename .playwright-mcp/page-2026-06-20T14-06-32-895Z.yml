@@ -1,0 +1,34 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - img "Frugal" [ref=e10]
+        - generic [ref=e11]: Frugal
+      - generic [ref=e14]:
+        - generic [ref=e15]:
+          - heading "Welcome back" [level=1] [ref=e16]
+          - paragraph [ref=e17]: Sign in to your Frugal account.
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - text: Email
+            - textbox "alex@company.com" [ref=e20]
+          - generic [ref=e21]:
+            - generic [ref=e22]:
+              - generic [ref=e23]: Password
+              - link "Forgot password?" [ref=e24] [cursor=pointer]:
+                - /url: /forgot-password
+            - textbox "••••••••" [ref=e25]
+          - button "Sign In" [ref=e26]:
+            - text: Sign In
+            - img
+        - generic [ref=e29]: Or continue with
+        - button "Continue with Google" [ref=e31]:
+          - img
+          - text: Continue with Google
+        - paragraph [ref=e33]:
+          - text: New to Frugal?
+          - link "Create an account" [ref=e34] [cursor=pointer]:
+            - /url: /signup
+    - generic [ref=e39]: Frugal
+  - region "Notifications alt+T"
+  - alert [ref=e40]

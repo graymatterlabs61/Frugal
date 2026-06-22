@@ -15,6 +15,7 @@ import {
   getRecentAlerts,
 } from "@/lib/queries/dashboard";
 import { getHistoryDays } from "@/lib/tier";
+import { ExitPopup } from "@/components/landing/ExitPopup";
 
 const severityStyles: Record<string, string> = {
   warning: "bg-yellow-500/15 text-yellow-400 border-yellow-500/25",
@@ -98,13 +99,6 @@ export default async function DashboardPage({
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <Link
-            href="/connections"
-            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold glass-panel hover:border-white/20 transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Add Connection
-          </Link>
-          <Link
             href="/projects"
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-all shadow-[0_4px_20px_rgba(255,80,11,0.35)]"
           >
@@ -155,7 +149,7 @@ export default async function DashboardPage({
               label: "API Connections",
               value: stats.connectionCount,
               sub: "Across all projects",
-              href: "/connections",
+              href: "/projects",
             },
             {
               label: "Budget Alerts",
@@ -237,9 +231,9 @@ export default async function DashboardPage({
                 const pct =
                   p.budgetLimit !== null
                     ? Math.min(
-                        100,
-                        Math.round((p.monthlySpend / p.budgetLimit) * 100),
-                      )
+                      100,
+                      Math.round((p.monthlySpend / p.budgetLimit) * 100),
+                    )
                     : null;
                 return (
                   <Link key={p.id} href={`/projects/${p.id}`} className="block group">
@@ -259,13 +253,12 @@ export default async function DashboardPage({
                     </div>
                     <div className="h-1.5 rounded-full bg-white/6 overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all ${
-                          pct !== null && pct >= 100
+                        className={`h-full rounded-full transition-all ${pct !== null && pct >= 100
                             ? "bg-destructive"
                             : pct !== null && pct >= 80
                               ? "bg-yellow-500"
                               : "bg-primary"
-                        }`}
+                          }`}
                         style={{ width: pct !== null ? `${pct}%` : "0%" }}
                       />
                     </div>
@@ -374,19 +367,19 @@ export default async function DashboardPage({
         </div>
       </div>
 
-      {/* ── CTA (no connections) ─────────────────────────── */}
-      {stats.connectionCount === 0 && (
+      {/* ── CTA (no projects) ────────────────────────────── */}
+      {stats.activeProjects === 0 && (
         <div className="glass-panel cta-gradient rounded-3xl p-8 flex items-center gap-5 border-primary/25 shadow-[0_0_40px_rgba(255,80,11,0.08)]">
           <div className="w-12 h-12 rounded-2xl bg-primary/15 border border-primary/25 flex items-center justify-center shrink-0">
             <Zap className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <p className="font-semibold">Connect your first API key</p>
+            <p className="font-semibold">Create your first project</p>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Add a provider connection to start tracking real spend.
+              Projects group your API connections and let you set budget rules per app.
             </p>
             <Link
-              href="/connections"
+              href="/projects"
               className="inline-block mt-3 text-sm font-semibold text-primary hover:underline"
             >
               Get started →
@@ -394,6 +387,7 @@ export default async function DashboardPage({
           </div>
         </div>
       )}
+      <ExitPopup />
     </div>
   );
 }

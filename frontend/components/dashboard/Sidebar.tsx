@@ -9,7 +9,6 @@ import {
   BellIcon,
   GearSixIcon,
   SignOutIcon,
-  PlugsConnectedIcon,
   UserIcon,
   InfoIcon,
   CrownIcon,
@@ -69,7 +68,6 @@ const navSections: NavSection[] = [
     label: "Menu",
     items: [
       { href: "/dashboard", icon: HouseIcon, label: "Overview" },
-      { href: "/connections", icon: PlugsConnectedIcon, label: "Connections" },
       { href: "/projects", icon: FolderSimpleIcon, label: "Projects" },
       { href: "/alerts", icon: BellIcon, label: "Alerts" },
     ],

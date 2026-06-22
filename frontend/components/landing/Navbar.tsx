@@ -13,7 +13,7 @@ const NAV_LINKS = [
   { label: "Features", href: "#features" },
   { label: "Pricing", href: "#pricing" },
   { label: "FAQ", href: "#faq" },
-  { label: "Journal", href: "/blog" },
+  { label: "Blog", href: "/blog" },
 ]
 
 export function Navbar() {
@@ -93,7 +93,7 @@ export function Navbar() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="relative px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors text-foreground/70 hover:text-foreground"
+                  className="relative px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors text-foreground/70 hover:text-foreground rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
                 >
                   {isActive && (
                     <motion.span
@@ -112,7 +112,7 @@ export function Navbar() {
 
           <div className="ml-auto sm:ml-0 flex items-center gap-1">
             <button
-              className="sm:hidden p-2 text-foreground/70 hover:text-foreground transition-colors rounded-lg hover:bg-white/5"
+              className="sm:hidden p-2 text-foreground/70 hover:text-foreground transition-colors rounded-lg hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
               onClick={() => setMenuOpen(o => !o)}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
             >
