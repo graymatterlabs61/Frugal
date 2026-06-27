@@ -87,12 +87,12 @@ export async function fetchBlogPosts(): Promise<BlogResponse> {
     description: cover.description,
     date: cover.date,
     category: cover.category,
-    image: cover.image,
+    image: cover.image || "/images/blog/default.png",
     authorName: cover.authorName,
     authorInitials: cover.authorInitials,
   };
   const posts: BlogPost[] = rest.map(({ slug, title, description, date, category, image }) => ({
-    slug, title, description, date, category, image,
+    slug, title, description, date, category, image: image || "/images/blog/default.png",
   }));
   return { coverStory, posts };
 }
