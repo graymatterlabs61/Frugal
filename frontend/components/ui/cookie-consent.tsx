@@ -9,6 +9,19 @@ export function CookieConsent() {
   useEffect(() => {
     // Check if consent has already been given or denied
     const consent = localStorage.getItem("frugal-cookie-consent");
+    
+    if (consent === "granted") {
+      // Apply consent for returning users
+      (window as any).dataLayer = (window as any).dataLayer || [];
+      function gtag(){(window as any).dataLayer.push(arguments);}
+      gtag("consent", "update", {
+        ad_storage: "granted",
+        analytics_storage: "granted",
+        ad_user_data: "granted",
+        ad_personalization: "granted",
+      });
+    }
+    
     if (!consent) {
       // Delay showing slightly for a better entrance
       const timer = setTimeout(() => setShow(true), 1000);
