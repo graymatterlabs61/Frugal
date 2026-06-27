@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth/use-session";
 import { useRouter } from "next/navigation";
 import { Check, Building2, Copy, Shield, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -129,7 +129,7 @@ const billingInvoices: {
 /* ── component ──────────────────────────────────────────── */
 
 export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
-  const { data: session } = useSession();
+  const { user } = useSession();
   const router = useRouter();
   const [name, setName] = useState(userName);
   const [saving, setSaving] = useState(false);
@@ -150,7 +150,7 @@ export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
     e.preventDefault();
     setSaving(true);
     try {
-      await apiClient.patch("/api/auth/me", { fullName: name }, session?.backendToken);
+      await apiClient.patch("/api/auth/me", { fullName: name }, undefined);
       toast.success("Profile saved");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to save");
@@ -246,7 +246,7 @@ export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
 
         {/* ── Account ──────────────────────────────────── */}
         <TabsContent value="Account">
-          <form id="profile-form" onSubmit={handleSaveProfile} className="space-y-5 max-w-2xl">
+          <form id="profile-form" onSubmit={handleSaveProfile} className="space-y-5 max-w-4xl">
             <div className="glass-panel rounded-2xl p-6 flex items-center gap-5">
               <div className="w-16 h-16 rounded-2xl bg-primary/20 border-2 border-primary/30 flex items-center justify-center text-2xl font-bold text-primary shrink-0 select-none">
                 {initial}
@@ -267,11 +267,11 @@ export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
               <div className="p-5 space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">Full Name</label>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">Full Name</label>
                     <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" className="bg-input/30 border-border/40 h-10 rounded-xl" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">Email Address</label>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">Email Address</label>
                     <Input value={userEmail} disabled className="bg-input/10 border-border/20 h-10 rounded-xl opacity-60 cursor-not-allowed" />
                   </div>
                 </div>
@@ -336,7 +336,7 @@ export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
                       <p className="text-sm font-semibold">{label}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>
                     </div>
-                    <Toggle checked={true} onChange={() => {}} />
+                    <Toggle checked={true} onChange={() => { }} />
                   </div>
                 ))}
               </div>
@@ -383,7 +383,7 @@ export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
                 </div>
                 {slackAlerts && (
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">Webhook URL</label>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">Webhook URL</label>
                     <Input value={slackWebhook} onChange={(e) => setSlackWebhook(e.target.value)} placeholder="https://hooks.slack.com/services/…" className="bg-input/30 border-border/40 h-10 rounded-xl font-mono text-sm" />
                   </div>
                 )}
@@ -407,11 +407,11 @@ export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
                 {webhookAlerts && (
                   <>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">Endpoint URL</label>
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">Endpoint URL</label>
                       <Input value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} placeholder="https://your-app.com/webhooks/frugal" className="bg-input/30 border-border/40 h-10 rounded-xl font-mono text-sm" />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">Signing Secret</label>
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">Signing Secret</label>
                       <div className="flex gap-2">
                         <Input value="Generated when you save your endpoint" disabled className="bg-input/10 border-border/20 h-10 rounded-xl font-mono text-sm opacity-60 flex-1" />
                         <Button type="button" variant="outline" disabled className="h-10 rounded-xl border-border/40 shrink-0" aria-label="Copy signing secret (available after save)"><Copy className="w-3.5 h-3.5" /></Button>
@@ -459,11 +459,10 @@ export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
                 return (
                   <div
                     key={p.id}
-                    className={`border rounded-2xl p-5 relative flex flex-col ${
-                      p.featured
+                    className={`border rounded-2xl p-5 relative flex flex-col ${p.featured
                         ? "bg-foreground text-background border-foreground"
                         : "bg-card border-border"
-                    }`}
+                      }`}
                   >
                     {/* Badge */}
                     <div className="flex items-center justify-between mb-4">
@@ -494,13 +493,12 @@ export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
                     <Button
                       disabled={p.current}
                       onClick={() => { if (!p.current) router.push("/settings/billing"); }}
-                      className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 ${
-                        p.featured
+                      className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 ${p.featured
                           ? "bg-background text-foreground hover:bg-background/90"
                           : p.current
                             ? "bg-white/5 text-muted-foreground border border-border cursor-default"
                             : "bg-white/5 hover:bg-white/10 text-foreground border border-border"
-                      }`}
+                        }`}
                     >
                       {p.cta}
                     </Button>
@@ -595,11 +593,11 @@ export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
               <form onSubmit={handleChangePassword} className="p-5 space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">New Password</label>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">New Password</label>
                     <PasswordInput value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Enter new password" className="bg-input/30 border-border/40 h-10 rounded-xl" showStrength />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">Confirm Password</label>
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">Confirm Password</label>
                     <PasswordInput value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm new password" className="bg-input/30 border-border/40 h-10 rounded-xl" />
                   </div>
                 </div>
@@ -664,7 +662,7 @@ export function SettingsClient({ userName, userEmail }: SettingsClientProps) {
                       <span className="text-[9px] font-bold uppercase tracking-wider bg-muted text-muted-foreground/60 rounded px-1.5 py-0.5">
                         Soon
                       </span>
-                      <Toggle checked={enabled} onChange={() => {}} disabled />
+                      <Toggle checked={enabled} onChange={() => { }} disabled />
                     </div>
                   </div>
                 ))}

@@ -35,7 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth/use-session";
 import { canCreateBudgetRules, canUseThrottle } from "@/lib/tier";
 import { apiClient } from "@/lib/api/client";
 import type {
@@ -74,11 +74,6 @@ const statusStyles: Record<string, string> = {
   critical: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
-const modelBreakdown = [
-  { model: "gpt-4o", spend: 89.3, tokens: "1.2M" },
-  { model: "gpt-4o-mini", spend: 34.7, tokens: "8.4M" },
-  { model: "text-embedding-3-small", spend: 18.5, tokens: "45M" },
-];
 
 const connStatusConfig: Record<
   string,
@@ -211,13 +206,14 @@ function AddRuleDialog({
 
     setLoading(true);
     try {
-      const rule = await apiClient.post<BudgetRule>(`/api/budget-rules/projects/${project.id}`, {
+      const result = await apiClient.post<{ rule: BudgetRule }>(`/api/v1/budget-rules`, {
+        projectId: project.id,
         budgetWindow: "monthly",
         thresholdPct: threshold,
         action,
         ...(limitValue !== undefined && { limitUsd: limitValue.toFixed(2) }),
       }, token);
-      onAdd(rule);
+      onAdd(result.rule);
       toast.success("Budget rule created");
       setOpen(false);
       setThresholdPct("80");
@@ -246,7 +242,7 @@ function AddRuleDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           <div className="space-y-1.5">
-            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
               Alert at (% of budget)
             </label>
             <Input
@@ -262,7 +258,7 @@ function AddRuleDialog({
 
           {needsLimitField && (
             <div className="space-y-1.5">
-              <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
                 Monthly Budget ($)
               </label>
               <Input
@@ -278,7 +274,7 @@ function AddRuleDialog({
           )}
 
           <div className="space-y-2">
-            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
               Action
             </label>
             <RadioGroup
@@ -395,15 +391,8 @@ const PROVIDERS = [
   { value: "openai", label: "OpenAI" },
   { value: "anthropic", label: "Anthropic" },
   { value: "gemini", label: "Google Gemini" },
-  { value: "groq", label: "Groq" },
-  { value: "mistral", label: "Mistral" },
-  { value: "together", label: "Together AI" },
-  { value: "cohere", label: "Cohere" },
-  { value: "perplexity", label: "Perplexity" },
-  { value: "deepseek", label: "DeepSeek" },
   { value: "replicate", label: "Replicate" },
   { value: "falai", label: "fal.ai" },
-  { value: "stability", label: "Stability AI" },
 ];
 
 interface AddedConnection {
@@ -437,13 +426,13 @@ function AddConnectionToProjectDialog({
     }
     setLoading(true);
     try {
-      const conn = await apiClient.post<AddedConnection>("/api/connections", {
+      const result = await apiClient.post<{ connection: AddedConnection }>("/api/v1/connections", {
         provider,
         apiKey,
         projectId,
         label: label || null,
       }, token);
-      onAdd(conn);
+      onAdd(result.connection);
       toast.success(`${PROVIDERS.find((p) => p.value === provider)?.label ?? provider} connected`);
       setOpen(false);
       setProvider("");
@@ -470,7 +459,7 @@ function AddConnectionToProjectDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           <div className="space-y-1.5">
-            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
               Provider
             </label>
             <Select value={provider} onValueChange={setProvider}>
@@ -487,7 +476,7 @@ function AddConnectionToProjectDialog({
             </Select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
               API Key
             </label>
             <Input
@@ -503,7 +492,7 @@ function AddConnectionToProjectDialog({
             </p>
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
               Label{" "}
               <span className="normal-case font-normal text-muted-foreground/60">(optional)</span>
             </label>
@@ -547,8 +536,8 @@ export function ProjectDetailClient({
   alerts,
   userPlan,
 }: ProjectDetailClientProps) {
-  const { data: session } = useSession();
-  const token = session?.backendToken;
+  const { user } = useSession();
+  const token = undefined;
   const [localConnections, setLocalConnections] = useState<AddedConnection[]>(
     connections.map((c) => ({
       id: c.id,
@@ -568,15 +557,15 @@ export function ProjectDetailClient({
   useEffect(() => {
     if (token === undefined) return;
     apiClient
-      .get<BudgetRule[]>(`/api/budget-rules/projects/${project.id}`, token)
-      .then((rules) => { setRules(rules ?? []); setRulesLoading(false); })
+      .get<{ rules: BudgetRule[] }>(`/api/v1/budget-rules?projectId=${project.id}`, token)
+      .then((data) => { setRules(data.rules ?? []); setRulesLoading(false); })
       .catch(() => setRulesLoading(false));
   }, [project.id, token]);
 
   const handleDeleteRule = async (ruleId: string) => {
     setDeletingId(ruleId);
     try {
-      await apiClient.del(`/api/budget-rules/${ruleId}`, token);
+      await apiClient.del(`/api/v1/budget-rules/${ruleId}`, token);
       setRules((prev) => prev.filter((r) => r.id !== ruleId));
       toast.success("Rule deleted");
     } catch {
@@ -590,7 +579,7 @@ export function ProjectDetailClient({
   const handleSaveSlackWebhook = async () => {
     setSlackSaving(true);
     try {
-      await apiClient.patch(`/api/projects/${project.id}`, { slackWebhookUrl: slackWebhookUrl || null }, token);
+      await apiClient.patch(`/api/v1/projects/${project.id}`, { slackWebhookUrl: slackWebhookUrl || null }, token);
       toast.success("Slack webhook saved");
     } catch {
       toast.error("Failed to save webhook URL");
@@ -650,41 +639,37 @@ export function ProjectDetailClient({
         </div>
       </div>
 
-      {/* Summary stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="glass-panel rounded-2xl p-4">
-          <p className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground mb-2">
+      {/* Summary stats — asymmetric: primary spend + secondary metrics */}
+      <div className="grid lg:grid-cols-[1fr_260px] gap-4">
+        <div className="glass-panel rounded-2xl p-5">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-3">
             Spend This Month
           </p>
-          <p className="text-2xl font-bold font-mono">
+          <p className="text-4xl font-bold font-mono leading-none">
             ${project.monthlySpend.toFixed(2)}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            of{" "}
-            {hasBudget ? `$${project.budgetLimit} budget` : "No budget set"}
+          <p className="text-xs text-muted-foreground mt-2">
+            of {hasBudget ? `$${project.budgetLimit} budget` : "no budget set"}
           </p>
-        </div>
-
-        <div className="glass-panel rounded-2xl p-4">
-          <p className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground mb-2">
-            Budget Used
-          </p>
-          {hasBudget && budgetPct !== null ? (
-            <>
-              <p
-                className={`text-2xl font-bold font-mono ${
-                  budgetPct >= 100
-                    ? "text-destructive"
-                    : budgetPct >= 80
-                      ? "text-yellow-400"
-                      : "text-emerald-400"
-                }`}
-              >
-                {budgetPct}%
-              </p>
-              <div className="mt-2 h-1.5 bg-white/5 rounded-full overflow-hidden">
+          {hasBudget && budgetPct !== null && (
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-xs mb-1.5">
+                <span className="text-muted-foreground">Budget used</span>
+                <span
+                  className={`font-mono font-bold ${
+                    budgetPct >= 100
+                      ? "text-destructive"
+                      : budgetPct >= 80
+                        ? "text-yellow-400"
+                        : "text-emerald-400"
+                  }`}
+                >
+                  {budgetPct}%
+                </span>
+              </div>
+              <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                 <div
-                  className={`h-full rounded-full ${
+                  className={`h-full rounded-full transition-all ${
                     budgetPct >= 100
                       ? "bg-destructive"
                       : budgetPct >= 80
@@ -694,43 +679,40 @@ export function ProjectDetailClient({
                   style={{ width: `${Math.min(100, budgetPct)}%` }}
                 />
               </div>
-            </>
-          ) : (
-            <p className="text-2xl font-bold font-mono text-muted-foreground">
-              —
-            </p>
+            </div>
           )}
         </div>
 
-        <div className="glass-panel rounded-2xl p-4">
-          <p className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground mb-2">
-            Burn Rate
-          </p>
-          <p className="text-2xl font-bold font-mono">
-            ${project.burnRateDaily.toFixed(2)}
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">per day avg</p>
-        </div>
-
-        <div className="glass-panel rounded-2xl p-4">
-          <p className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground mb-2">
-            Projected / Month
-          </p>
-          <p
-            className={`text-2xl font-bold font-mono ${
-              hasBudget &&
-              project.projectedMonthly > (project.budgetLimit ?? Infinity)
-                ? "text-destructive"
-                : "text-foreground"
-            }`}
-          >
-            ${project.projectedMonthly.toFixed(0)}
-          </p>
-          {daysUntilLimit !== null && (
-            <p className="text-xs text-yellow-400 mt-1">
-              ~{daysUntilLimit}d until limit
+        <div className="flex flex-col gap-4">
+          <div className="glass-panel rounded-2xl p-4 flex-1">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">
+              Burn Rate
             </p>
-          )}
+            <p className="text-2xl font-bold font-mono leading-none">
+              ${project.burnRateDaily.toFixed(2)}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1.5">per day avg</p>
+          </div>
+          <div className="glass-panel rounded-2xl p-4 flex-1">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">
+              Projected / Month
+            </p>
+            <p
+              className={`text-2xl font-bold font-mono leading-none ${
+                hasBudget &&
+                project.projectedMonthly > (project.budgetLimit ?? Infinity)
+                  ? "text-destructive"
+                  : ""
+              }`}
+            >
+              ${project.projectedMonthly.toFixed(0)}
+            </p>
+            {daysUntilLimit !== null && (
+              <p className="text-xs text-yellow-400 mt-1.5">
+                ~{daysUntilLimit}d until limit
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
@@ -787,37 +769,17 @@ export function ProjectDetailClient({
             </div>
           </div>
 
-          <div className="glass-panel rounded-2xl p-5">
-            <h3 className="font-semibold mb-4">Model Breakdown</h3>
-            <div className="space-y-4">
-              {modelBreakdown.map((m) => {
-                const modelPct =
-                  project.monthlySpend > 0
-                    ? Math.round((m.spend / project.monthlySpend) * 100)
-                    : 0;
-                return (
-                  <div key={m.model}>
-                    <div className="flex items-center justify-between text-sm mb-1.5">
-                      <span className="font-mono font-semibold">{m.model}</span>
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        <span>{m.tokens} tokens</span>
-                        <span className="font-mono font-semibold text-foreground">
-                          ${m.spend.toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-primary"
-                        style={{ width: `${modelPct}%` }}
-                      />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {modelPct}% of project spend
-                    </p>
-                  </div>
-                );
-              })}
+          <div className="glass-panel rounded-2xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-white/[0.05] flex items-center justify-between">
+              <h3 className="font-semibold text-sm">Model Breakdown</h3>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40 bg-white/[0.03] border border-white/[0.06] rounded px-2 py-0.5">
+                v1.1
+              </span>
+            </div>
+            <div className="px-5 py-10 text-center">
+              <p className="text-sm text-muted-foreground">
+                Per-model token breakdown available in v1.1
+              </p>
             </div>
           </div>
         </TabsContent>
@@ -841,9 +803,12 @@ export function ProjectDetailClient({
             </div>
             <div className="divide-y divide-border">
               {localConnections.length === 0 ? (
-                <div className="px-5 py-12 text-center space-y-3">
-                  <p className="text-sm font-semibold">No connections yet</p>
-                  <p className="text-xs text-muted-foreground">
+                <div className="px-5 py-14 text-center">
+                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
+                    <PlugsConnected size={22} className="text-muted-foreground" />
+                  </div>
+                  <p className="text-sm font-semibold mb-1.5">No connections yet</p>
+                  <p className="text-xs text-muted-foreground mb-5 max-w-[260px] mx-auto leading-relaxed">
                     Add an API key to start tracking spend for this project.
                   </p>
                   <AddConnectionToProjectDialog
@@ -1075,8 +1040,14 @@ export function ProjectDetailClient({
             </div>
             <div className="divide-y divide-border">
               {alerts.length === 0 ? (
-                <div className="px-5 py-10 text-center text-sm text-muted-foreground">
-                  No alerts for this project yet.
+                <div className="px-5 py-14 text-center">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle size={22} className="text-emerald-500" weight="fill" />
+                  </div>
+                  <p className="text-sm font-semibold mb-1.5">All clear</p>
+                  <p className="text-xs text-muted-foreground max-w-[240px] mx-auto leading-relaxed">
+                    No alerts for this project yet. Thresholds will fire here when crossed.
+                  </p>
                 </div>
               ) : (
                 alerts.map((alert) => (

@@ -73,11 +73,11 @@ function PlanCard({
       <MagicCard
         mode="orb"
         className="rounded-2xl p-5 flex flex-col cursor-default h-full"
-        glowFrom="#6366f1"
-        glowTo="#8b5cf6"
-        glowSize={120}
+        glowFrom="#FF500B"
+        glowTo="#b83b08"
+        glowSize={100}
         glowBlur={40}
-        glowOpacity={0.2}
+        glowOpacity={0.08}
       >
         {children}
       </MagicCard>
@@ -151,16 +151,16 @@ function PricingPageInner({
 
       <main className="min-h-screen">
         {/* ── Hero ──────────────────────────────────────────────────────── */}
-        <section className="pt-24 pb-12 px-4 text-center">
+        <section className="pt-24 pb-12 px-4 text-center animate-fade-in-up">
+          <p className="section-eyebrow mx-auto mb-4">Pricing</p>
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/8 px-4 py-1.5 text-xs font-semibold text-primary mb-6">
             Simple, transparent pricing
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground max-w-3xl mx-auto leading-tight">
-            Pick the plan that fits<br className="hidden md:block" /> your team
+            Pick the plan <span className="text-primary">that fits</span>
           </h1>
-          <p className="mt-5 text-base md:text-lg text-muted-foreground max-w-xl mx-auto">
-            For individual developers who fear surprise bills, and for companies managing AI spend
-            across their whole team. Start free — no credit card, no code change.
+          <p className="mt-5 text-base md:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            Solo dev protecting a side project or a team managing AI spend across 20 engineers — start free, no credit card, no code change.
           </p>
         </section>
 
@@ -176,7 +176,7 @@ function PricingPageInner({
             <button
               onClick={() => setTab("personal")}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${tab === "personal"
-                ? "bg-foreground text-foreground shadow-md"
+                ? "bg-white/[0.12] text-foreground border border-white/[0.12] shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
                 }`}
             >
@@ -186,7 +186,7 @@ function PricingPageInner({
             <button
               onClick={() => setTab("corporate")}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${tab === "corporate"
-                ? "bg-foreground text-foreground shadow-md"
+                ? "bg-white/[0.12] text-foreground border border-white/[0.12] shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
                 }`}
             >
@@ -299,6 +299,10 @@ function PricingPageInner({
               })}
             </div>
 
+            <p className="text-center text-xs text-muted-foreground mt-4">
+              No credit card required · Cancel anytime · Data export on cancellation
+            </p>
+
             {personalInterval === "monthly" && (
               <p className="text-center text-sm text-muted-foreground mt-5">
                 Switch to yearly and save up to $120/yr.{" "}
@@ -410,22 +414,18 @@ function PricingPageInner({
                     </p>
                   </div>
 
-                  <button
-                    onClick={() => {
-                      if (typeof window !== "undefined") {
-                        window.location.href = p.id === "enterprise"
-                          ? "mailto:founder@getfrugal.dev?subject=Enterprise%20Inquiry"
-                          : "mailto:founder@getfrugal.dev?subject=Corporate%20Plan%20Waitlist";
-                      }
-                    }}
-                    className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 flex items-center justify-center gap-1.5 transition-all ${p.featured
+                  <a
+                    href={p.id === "enterprise"
+                      ? "mailto:founder@getfrugal.dev?subject=Enterprise%20Inquiry"
+                      : "mailto:founder@getfrugal.dev?subject=Corporate%20Plan%20Waitlist"}
+                    className={`w-full rounded-xl h-10 text-sm font-semibold mb-5 flex items-center justify-center gap-1.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${p.featured
                       ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20"
                       : "bg-white/5 hover:bg-white/10 text-foreground border border-white/[0.08]"
                       }`}
                   >
                     <Users className="w-3.5 h-3.5" />
                     {p.ctaLabel}
-                  </button>
+                  </a>
 
                   <ul className="space-y-2 flex-1">
                     {p.features.map((f) => (
@@ -611,7 +611,7 @@ function PricingPageInner({
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href="/signup"
-                className="inline-flex items-center gap-2 bg-foreground text-foreground hover:bg-foreground/90 font-semibold text-sm px-6 py-3 rounded-xl transition-all"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-[0_0_20px_#FF500B40] font-semibold text-sm px-6 py-3 rounded-xl transition-all"
               >
                 Get started free
                 <ArrowRight className="w-4 h-4" />

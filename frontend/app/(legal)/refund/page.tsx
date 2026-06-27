@@ -17,7 +17,7 @@ export default function RefundPage() {
     <LegalLayout
       title={
         <>
-          Refund <em className="text-[#4a2a1a] italic font-light">Policy</em>
+          Refund <em className="text-primary/50 italic font-light">Policy</em>
         </>
       }
       subtitle="Detailed information regarding subscriptions, satisfaction guarantees, and service credits."
@@ -33,8 +33,8 @@ export default function RefundPage() {
 
         <LegalList>
           <li>
-            <strong className="text-white">14-Day Satisfaction:</strong> New users are
-            eligible for a full refund within the first 14 days of their initial
+            <strong className="text-white">7-Day Satisfaction:</strong> New users are
+            eligible for a full refund within the first 7 days of their initial
             subscription.
           </li>
           <li>

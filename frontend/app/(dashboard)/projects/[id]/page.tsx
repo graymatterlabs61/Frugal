@@ -7,8 +7,6 @@ import {
   getProjectAlerts,
 } from "@/lib/queries/dashboard";
 import { ProjectDetailClient } from "./ProjectDetailClient";
-import { headers } from "next/headers";
-import { getToken } from "next-auth/jwt";
 
 export default async function ProjectDetailPage({
   params,
@@ -16,23 +14,13 @@ export default async function ProjectDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const session = await requireSession();
-
-  const hdrs = await headers();
-  const cookieHeader = hdrs.get("cookie") ?? "";
-  const jwt = await getToken({
-    req: { headers: { cookie: cookieHeader } } as Parameters<typeof getToken>[0]["req"],
-    secret: process.env.NEXTAUTH_SECRET!,
-  });
-  const token = jwt?.sub ? (jwt as { accessToken?: string }).accessToken ?? undefined : undefined;
-
+  const token = undefined;
   const { id } = await params;
 
-  const userPlan = "free"; // plan comes from Express backend; default for display
-
   const [project, connections, alerts] = await Promise.all([
-    getProjectStats(session.id, id, token),
-    getProjectConnections(session.id, id, token),
-    getProjectAlerts(session.id, id, 20, token),
+    getProjectStats(id, token),
+    getProjectConnections(id, token),
+    getProjectAlerts(id, 20, token),
   ]);
 
   if (project === null) {
@@ -57,7 +45,7 @@ export default async function ProjectDetailPage({
       project={project}
       connections={connections}
       alerts={alerts}
-      userPlan={userPlan}
+      userPlan={session.plan ?? "free"}
     />
   );
 }

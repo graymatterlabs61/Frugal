@@ -1,18 +1,23 @@
 import { redirect } from "next/navigation";
-import { auth } from "./index";
+import { createClient } from "@/lib/supabase/server";
 
 export interface AuthSession {
   id: string;
   email: string;
-  backendToken: string | undefined;
+  name: string | null;
+  plan: string;
 }
 
 export async function requireSession(): Promise<AuthSession> {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
   return {
-    id: session.user.id,
-    email: session.user.email ?? "",
-    backendToken: session.backendToken,
+    id: user.id,
+    email: user.email ?? "",
+    name: (user.user_metadata?.full_name as string | null) ?? null,
+    plan: (user.user_metadata?.plan as string | null) ?? "free",
   };
 }

@@ -53,31 +53,31 @@ function ResetPasswordContent() {
     return (
       <AuthLayout showcase={<ShowcaseResetPassword />}>
         <div className="flex flex-col space-y-6">
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight mb-3">
+          <div className="animate-fade-in-up">
+            <h1 className="text-4xl font-bold tracking-tight mb-2">
               Link{" "}
               <span className="font-serif italic font-normal gradient-text-warm">expired</span>
             </h1>
-            <p className="text-muted-foreground text-lg max-w-sm">
+            <p className="text-muted-foreground">
               This reset link is invalid or has expired. Request a new one.
             </p>
           </div>
           <Link
             href="/forgot-password"
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 h-12 text-sm font-semibold text-white btn-glow w-fit"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 h-12 text-sm font-semibold text-white btn-glow w-fit shadow-[0_4px_24px_rgba(255,80,11,0.3)] animate-fade-in-up stagger-1"
           >
             Request new link
             <ArrowRight className="w-4 h-4" />
           </Link>
-          <div className="text-center pt-2">
+          <p className="text-center animate-fade-in-up stagger-2">
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Back to sign in
             </Link>
-          </div>
+          </p>
         </div>
       </AuthLayout>
     );
@@ -86,12 +86,12 @@ function ResetPasswordContent() {
   return (
     <AuthLayout showcase={<ShowcaseResetPassword />}>
       <div className="flex flex-col space-y-6">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight mb-3">
+        <div className="animate-fade-in-up">
+          <h1 className="text-4xl font-bold tracking-tight mb-2">
             New{" "}
             <span className="font-serif italic font-normal gradient-text-warm">password</span>
           </h1>
-          <p className="text-muted-foreground text-lg max-w-sm">
+          <p className="text-muted-foreground">
             {done
               ? "Your password has been updated."
               : "Choose a strong password for your account."}
@@ -99,15 +99,15 @@ function ResetPasswordContent() {
         </div>
 
         {!done ? (
-          <form className="space-y-4 pt-4" onSubmit={handleSubmit}>
+          <form className="space-y-4 animate-fade-in-up stagger-1" onSubmit={handleSubmit}>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
                 New Password
               </label>
               <Input
                 type="password"
                 placeholder="Min. 8 characters"
-                className="bg-white/[0.05] border-white/[0.12] h-12 rounded-xl px-4 focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20 transition-all duration-200"
+                className="input-focus-glow bg-white/[0.05] border-white/[0.10] h-12 rounded-xl px-4 transition-all duration-200"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -117,13 +117,13 @@ function ResetPasswordContent() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
                 Confirm Password
               </label>
               <Input
                 type="password"
                 placeholder="Repeat your password"
-                className="bg-white/[0.05] border-white/[0.12] h-12 rounded-xl px-4 focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20 transition-all duration-200"
+                className="input-focus-glow bg-white/[0.05] border-white/[0.10] h-12 rounded-xl px-4 transition-all duration-200"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 required
@@ -134,14 +134,14 @@ function ResetPasswordContent() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 rounded-xl text-md font-semibold mt-2 bg-primary hover:bg-primary/90 text-white btn-glow"
+              className="w-full h-12 rounded-xl font-semibold mt-1 bg-primary hover:bg-primary/90 text-white btn-glow shadow-[0_4px_24px_rgba(255,80,11,0.3)]"
             >
-              {loading ? "Updating…" : "Set New Password"}
-              {!loading && <ArrowRight className="w-4 h-4 ml-2" />}
+              {loading ? "Updating…" : "Set new password"}
+              {!loading && <ArrowRight className="w-4 h-4 ml-1.5" />}
             </Button>
           </form>
         ) : (
-          <div className="pt-4 space-y-4">
+          <div className="space-y-4 animate-fade-in-up stagger-1">
             <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.06] px-5 py-4">
               <p className="text-sm text-emerald-400 font-semibold">Password updated</p>
               <p className="text-xs text-muted-foreground mt-0.5">
@@ -150,7 +150,7 @@ function ResetPasswordContent() {
             </div>
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 w-full justify-center rounded-xl bg-primary h-12 text-sm font-semibold text-white btn-glow"
+              className="inline-flex items-center gap-2 w-full justify-center rounded-xl bg-primary h-12 text-sm font-semibold text-white btn-glow shadow-[0_4px_24px_rgba(255,80,11,0.3)]"
             >
               Sign in now
               <ArrowRight className="w-4 h-4" />
@@ -159,15 +159,15 @@ function ResetPasswordContent() {
         )}
 
         {!done && (
-          <div className="text-center pt-2">
+          <p className="text-center animate-fade-in-up stagger-2">
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Back to sign in
             </Link>
-          </div>
+          </p>
         )}
       </div>
     </AuthLayout>

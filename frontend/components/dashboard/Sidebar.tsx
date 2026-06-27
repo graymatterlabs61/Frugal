@@ -13,7 +13,6 @@ import {
   InfoIcon,
   CrownIcon,
   ChartLineUpIcon,
-  ClockCountdownIcon,
   ShieldCheckIcon,
   UsersThreeIcon,
   FileTextIcon,
@@ -36,7 +35,7 @@ function LayoutSidebarIcon({ size = 18, className }: { size?: number; className?
   );
 }
 import { cn } from "@/lib/utils";
-import { signOut } from "next-auth/react";
+import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import {
   Tooltip,
@@ -73,24 +72,21 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    label: "Monitor",
-    items: [
-      { href: "/usage", icon: ChartLineUpIcon, label: "Usage Analytics", soon: true },
-      { href: "/real-time", icon: LightningIcon, label: "Real-time Feed", soon: true },
-      { href: "/history", icon: ClockCountdownIcon, label: "History", soon: true },
-      { href: "/reports", icon: FileTextIcon, label: "Cost Reports", soon: true },
-      { href: "/budgets", icon: CurrencyDollarIcon, label: "Budget Rules", soon: true },
-      { href: "/limits", icon: ShieldCheckIcon, label: "Spend Limits", soon: true },
-    ],
-  },
-  {
     label: "Account",
     items: [
-      { href: "/team", icon: UsersThreeIcon, label: "Team", soon: true },
       { href: "/settings", icon: GearSixIcon, label: "Settings" },
       { href: "/contact", icon: InfoIcon, label: "Help & Support" },
     ],
   },
+];
+
+const comingSoonItems = [
+  { label: "Usage Analytics", icon: ChartLineUpIcon },
+  { label: "Real-time Feed", icon: LightningIcon },
+  { label: "Cost Reports", icon: FileTextIcon },
+  { label: "Budget Rules", icon: CurrencyDollarIcon },
+  { label: "Spend Limits", icon: ShieldCheckIcon },
+  { label: "Team", icon: UsersThreeIcon },
 ];
 
 interface SidebarProps {
@@ -119,7 +115,9 @@ export function Sidebar({
   const handleSignOut = async () => {
     setUserMenuOpen(false);
     try {
-      await signOut({ callbackUrl: "/login" });
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      window.location.href = "/login";
     } catch {
       toast.error("Sign out failed");
     }
@@ -237,9 +235,9 @@ export function Sidebar({
               <img
                 src="/logo.svg"
                 alt="Frugal"
-                className="w-8 h-8 shrink-0 group-hover:scale-105 transition-transform duration-200"
+                className="w-7 h-7 shrink-0 group-hover:drop-shadow-[0_0_6px_#FF500B88] transition-[filter] duration-200"
               />
-              <span className="font-bold text-lg tracking-tight truncate">
+              <span className="font-ethnocentric text-base tracking-tight truncate pt-2">
                 Frugal
               </span>
             </Link>
@@ -280,6 +278,27 @@ export function Sidebar({
             </div>
           </div>
         ))}
+
+        {!isCollapsed && (
+          <div>
+            <div className="border-t border-white/[0.06] my-3 mx-1" />
+            <div className="rounded-xl bg-white/[0.025] border border-white/[0.06] p-3 mx-1">
+              <p className="text-[9px] font-bold font-mono uppercase tracking-widest text-muted-foreground/40 mb-2.5">
+                V1.1 Roadmap
+              </p>
+              <div className="space-y-1.5">
+                {comingSoonItems.map(({ label, icon: Icon }) => (
+                  <div key={label} className="flex items-center gap-2">
+                    <Icon size={12} className="text-muted-foreground/25 shrink-0" />
+                    <span className="text-[11px] text-muted-foreground/35 leading-none">
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div>
           <div

@@ -1,5 +1,4 @@
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL ?? "https://frugal-66tx.onrender.com";
+import { BACKEND_URL } from "@/config";
 
 export class ApiError extends Error {
   constructor(
@@ -38,10 +37,6 @@ async function request<T>(
 
   if (res.status === 204) return undefined as T;
   const json = (await res.json()) as Record<string, unknown>;
-  // BaseController wraps all success responses in { data: ... } — unwrap it
-  if (json && typeof json === "object" && "data" in json) {
-    return json.data as T;
-  }
   return json as T;
 }
 

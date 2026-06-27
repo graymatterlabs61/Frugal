@@ -21,13 +21,14 @@ export function LegalLayout({
   variant = "legal",
   children,
 }: LegalLayoutProps) {
+  const currentYear = new Date().getFullYear();
   return (
     <>
     <MarketingNav />
     <div className="min-h-screen bg-background text-foreground flex justify-center pt-24 pb-12 md:pb-20 px-6 md:px-12">
       <div className="flex flex-col md:flex-row gap-12 md:gap-24 w-full max-w-[1300px]">
         <LegalSidebar sections={sections} variant={variant} />
-        
+
         <main className="flex-1 min-w-0 flex justify-center md:justify-start">
           <div className="w-full max-w-[850px] rounded-[2.5rem] bg-gradient-to-b from-[#170c08] to-[#0e0705] border border-[#2e1c13] p-8 md:p-16 lg:p-24 shadow-[0_32px_80px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.04)] relative overflow-hidden">
             {/* Ambient orbs */}
@@ -35,18 +36,18 @@ export function LegalLayout({
             <div className="legal-orb-2" />
 
             {/* Header section */}
-            <header className="mb-24">
+            <header className="mb-24 animate-fade-in-up">
               <div className="mb-10 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                 <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-primary uppercase">
                   {dateLabel}
                 </span>
               </div>
-              
+
               <h1 className="font-serif text-6xl md:text-[5.5rem] font-normal tracking-tight text-white mb-8 leading-[1.05]">
                 {title}
               </h1>
-              
+
               {subtitle && (
                 <p className="text-sm md:text-base leading-relaxed text-muted-foreground/80 max-w-lg">
                   {subtitle}
@@ -60,7 +61,7 @@ export function LegalLayout({
             
             {/* Footer inside card */}
             <footer className="mt-32 pt-10 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] font-mono tracking-[0.2em] text-muted-foreground/40 uppercase">
-              <span>© 2026 GRAY MATTER LABS INC.</span>
+              <span>© {currentYear} GRAY MATTER LABS INC.</span>
               <div className="flex gap-6">
                 <span className="hover:text-white transition-colors cursor-pointer">PRIVACY</span>
                 <span className="hover:text-white transition-colors cursor-pointer">COOKIES</span>
@@ -147,7 +148,7 @@ export function LegalList({ children }: { children: React.ReactNode }) {
 
 export function LegalContact({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-6 space-y-2 border-l-[3px] border-primary/30 pl-6 text-muted-foreground/80 text-[15px] leading-loose">
+    <div className="mt-6 space-y-2 rounded-xl bg-primary/[0.04] border border-primary/[0.12] px-6 py-5 text-muted-foreground/80 text-[15px] leading-loose">
       {children}
     </div>
   )

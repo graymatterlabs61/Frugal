@@ -8,14 +8,12 @@ export function PricingTeaser({ plans }: { plans: PersonalPlan[] }) {
   return (
     <section id="pricing" className="mx-auto w-full max-w-6xl px-4 py-24 md:py-32">
       <div className="mb-12 text-center">
-        <p className="mb-3 font-ethnocentric text-[10px] tracking-widest text-primary">
-          Pricing
-        </p>
-        <h2 className="font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+        <p className="section-eyebrow mx-auto mb-3">Pricing</p>
+        <h2 className="font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
           Start free, upgrade when{" "}
-          <span className="font-playfair italic tracking-normal font-normal">spend grows</span>
+          <span className="italic tracking-normal font-normal text-primary">spend grows</span>
         </h2>
-        <p className="mx-auto mt-4 max-w-md text-muted-foreground">
+        <p className="mx-auto mt-4 max-w-md text-muted-foreground leading-relaxed">
           No credit card to start. No proxy, no code change on any plan.
         </p>
       </div>
@@ -34,11 +32,11 @@ export function PricingTeaser({ plans }: { plans: PersonalPlan[] }) {
                   Most popular
                 </span>
               )}
-              <h3 className="font-heading text-lg font-bold text-foreground">{plan.name}</h3>
+              <h3 className="text-base font-semibold text-foreground leading-snug">{plan.name}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{plan.tagline}</p>
 
               <div className="mt-5 flex items-baseline gap-1.5">
-                <span className="font-heading text-4xl font-bold tracking-tight text-foreground">
+                <span className="text-4xl font-bold tracking-tight text-foreground font-mono stat-display">
                   ${plan.yearlyPrice}
                 </span>
                 <span className="text-sm text-muted-foreground">
@@ -89,8 +87,12 @@ export function PricingTeaser({ plans }: { plans: PersonalPlan[] }) {
         })}
       </div>
 
-      <p className="mt-8 text-center text-sm text-muted-foreground">
-        Need team-level proxy control with per-employee attribution?{" "}
+      <p className="mt-8 text-center text-xs text-muted-foreground">
+        No credit card required · Cancel anytime · Data export on cancellation
+      </p>
+
+      <p className="mt-4 text-center text-sm text-muted-foreground">
+        Managing AI spend across a whole team?{" "}
         <Link
           href="/pricing?tab=corporate"
           className="inline-flex items-center gap-1 font-medium text-foreground hover:text-primary transition-colors"

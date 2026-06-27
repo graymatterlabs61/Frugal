@@ -8,7 +8,8 @@ export default function SettingsLayout({
   return (
     <div className="space-y-0">
       {/* Page header */}
-      <div className="pb-5 border-b border-border mb-5">
+      <div className="pb-5 border-b border-white/[0.06] mb-5 animate-fade-in-up">
+        <p className="section-eyebrow">Configuration</p>
         <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
         <p className="text-sm text-muted-foreground mt-0.5">
           Manage your account, billing, and preferences.

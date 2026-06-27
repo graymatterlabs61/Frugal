@@ -29,7 +29,7 @@ const features = [
 
 export default function TeamManagementPage() {
   return (
-    <div className="max-w-2xl mx-auto space-y-5">
+    <div className="w-full space-y-5">
       {/* Coming soon banner */}
       <div
         className="rounded-2xl p-8 flex flex-col items-center text-center gap-4"

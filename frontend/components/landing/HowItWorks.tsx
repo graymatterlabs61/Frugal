@@ -60,11 +60,10 @@ export function HowItWorks() {
     >
       <div className="mx-auto max-w-5xl">
         <div className="hiw-head mb-16 text-center">
-          <p className="mb-3 font-ethnocentric text-[10px] tracking-widest text-primary">
-            How it works
-          </p>
-          <h2 className="font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-            Up and running in three steps
+          <p className="section-eyebrow">How it works</p>
+          <h2 className="font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
+            Up and running in{" "}
+            <span className="text-primary">three steps</span>
           </h2>
         </div>
 
@@ -79,18 +78,18 @@ export function HowItWorks() {
           />
 
           {steps.map(({ num, Icon, title, body }) => (
-            <div key={num} className="hiw-step relative flex flex-col gap-6 glass-panel backdrop-blur-md rounded-[2rem] p-8 md:p-10 border border-neutral-200 dark:border-white/[0.05] shadow-lg dark:shadow-none transition-transform duration-300 hover:-translate-y-2">
-              <div className="relative flex h-16 w-16 items-center justify-center">
+            <div key={num} className="hiw-step card-lift relative flex flex-col gap-5 glass-panel backdrop-blur-md rounded-[2rem] p-8 md:p-10 border border-white/[0.07] shadow-lg dark:shadow-none">
+              <div className="relative flex h-14 w-14 items-center justify-center shrink-0">
                 <div
                   className="absolute inset-0 rounded-2xl border border-primary/20 bg-primary/[0.08]"
                   style={{ boxShadow: "0 0 28px oklch(0.62 0.27 288 / 0.15)" }}
                 />
-                <Icon size={26} className="relative z-10 text-primary" />
-                <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary font-ethnocentric text-[8px] text-white">
+                <Icon size={24} className="relative z-10 text-primary" weight="duotone" />
+                <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary font-ethnocentric text-[8px] text-white shadow-[0_0_10px_#FF500B66]">
                   {num.replace("0", "")}
                 </span>
               </div>
-              <h3 className="font-heading text-lg font-semibold text-foreground">
+              <h3 className="text-base font-semibold text-foreground leading-snug">
                 {title}
               </h3>
               <p className="text-sm leading-relaxed text-muted-foreground">

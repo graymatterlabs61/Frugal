@@ -64,12 +64,10 @@ export function UseCases() {
       className="px-6 py-24 md:px-8 md:py-32"
     >
       <div className="mx-auto max-w-5xl">
-        <div className="uc-head mb-14 text-center">
-          <p className="mb-3 font-heading text-xs font-semibold uppercase tracking-widest text-primary">
-            Use cases
-          </p>
-          <h2 className="font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-            Built for the people <span className="text-foreground italic font-serif tracking-normal font-normal">paying the bill</span>
+        <div className="uc-head mb-16 text-center">
+          <p className="section-eyebrow mx-auto mb-3">Use cases</p>
+          <h2 className="font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
+            Built for the people <span className="italic font-serif tracking-normal font-normal text-primary">paying the bill</span>
           </h2>
         </div>
 
@@ -82,10 +80,10 @@ export function UseCases() {
               <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-primary/20 bg-primary/[0.08]">
                 <Icon size={22} className="text-primary" />
               </div>
-              <p className="mb-1 font-heading text-xs font-semibold uppercase tracking-wider text-primary">
+              <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-primary">
                 {label}
               </p>
-              <h3 className="mb-2.5 font-heading text-xl font-bold text-foreground">
+              <h3 className="mb-2.5 text-base font-semibold text-foreground leading-snug">
                 {title}
               </h3>
               <p className="text-sm leading-relaxed text-muted-foreground">

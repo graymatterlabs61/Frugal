@@ -14,7 +14,7 @@ export function SecurityClient() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-5">
+    <div className="w-full space-y-5">
       {/* Sign-in method */}
       <div className="rounded-2xl overflow-hidden" style={glassCard}>
         <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-2">

@@ -100,16 +100,15 @@ export function FeaturesGrid() {
     <section ref={ref} id="features" className="px-6 py-24 md:px-8 md:py-32 overflow-hidden">
       <div className="mx-auto max-w-6xl">
         {/* Heading */}
-        <div className="feat-heading mb-14 text-center">
-          <p className="mb-3 font-ethnocentric text-[10px] tracking-widest text-primary">
-            Features
-          </p>
-          <h2 className="font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-            Developer-first <span className="font-playfair italic tracking-normal font-normal">cost control</span>
+        <div className="feat-heading mb-16 text-center">
+          <p className="section-eyebrow">Features</p>
+          <h2 className="font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
+            <span className="text-primary">Developer-first</span>{" "}
+            <span className="font-playfair italic tracking-normal font-normal">cost control</span>
           </h2>
-          <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
+          <p className="mx-auto mt-5 max-w-lg text-muted-foreground leading-relaxed">
             Everything you need to attribute, enforce, and control AI API spend
-            — for individuals and teams — without changing a line of your existing code.
+            for individuals and teams, without changing a line of your existing code.
           </p>
         </div>
 
@@ -138,7 +137,7 @@ export function FeaturesGrid() {
               </div>
             </div>
             <div className="mt-4 shrink-0">
-              <h3 className="font-heading text-lg font-semibold text-foreground">Automatic enforcement, not just alerts</h3>
+              <h3 className="text-base font-semibold text-foreground leading-snug">Automatic enforcement, not just alerts</h3>
               <p className="mt-2 text-sm text-muted-foreground">Hard budget blocks and Slack/email fire the moment spend crosses your threshold — before the damage is done, not after.</p>
             </div>
           </div>
@@ -200,7 +199,7 @@ export function FeaturesGrid() {
               </div>
             </div>
             <div className="mt-4 shrink-0">
-              <h3 className="font-heading text-lg font-semibold text-foreground">AES-256 encryption</h3>
+              <h3 className="text-base font-semibold text-foreground leading-snug">AES-256 encryption</h3>
               <p className="mt-2 text-sm text-muted-foreground">API keys encrypted before storage. Never logged, never exposed in errors or support tickets.</p>
             </div>
           </div>
@@ -261,7 +260,7 @@ export function FeaturesGrid() {
               </div>
             </div>
             <div className="mt-4 shrink-0">
-              <h3 className="font-heading text-lg font-semibold text-foreground">Spend attribution by project, team, and provider</h3>
+              <h3 className="text-base font-semibold text-foreground leading-snug">Spend attribution by project, team, and provider</h3>
               <p className="mt-2 text-sm text-muted-foreground">See exactly who spent what — broken down by project, team member, and provider — updated every 5 minutes across your whole org.</p>
             </div>
           </div>
@@ -341,7 +340,7 @@ export function FeaturesGrid() {
               </div>
             </div>
             <div className="mt-4 shrink-0">
-              <h3 className="font-heading text-lg font-semibold text-foreground">Budget governance for every failure mode</h3>
+              <h3 className="text-base font-semibold text-foreground leading-snug">Budget governance for every failure mode</h3>
               <p className="mt-2 text-sm text-muted-foreground">Whether it&apos;s a solo dev&apos;s runaway loop or a team&apos;s unchecked model usage — Frugal catches it early instead of letting it show up on the invoice.</p>
             </div>
           </div>

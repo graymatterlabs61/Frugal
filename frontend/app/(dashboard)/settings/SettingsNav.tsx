@@ -48,18 +48,18 @@ export function SettingsNav() {
                   className="absolute inset-0 rounded-xl pointer-events-none"
                   style={{
                     background:
-                      "linear-gradient(145deg, oklch(1 0 0 / 0.08) 0%, oklch(1 0 0 / 0.03) 100%)",
+                      "linear-gradient(145deg, rgba(255,80,11,0.10) 0%, rgba(255,80,11,0.04) 100%)",
                     backdropFilter: "blur(16px)",
                     WebkitBackdropFilter: "blur(16px)",
-                    border: "1px solid oklch(1 0 0 / 0.10)",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
+                    border: "1px solid rgba(255,80,11,0.18)",
+                    boxShadow: "0 2px 12px rgba(255,80,11,0.08)",
                   }}
                 />
               )}
-              <Icon className="w-3.5 h-3.5 shrink-0 relative z-10" />
+              <Icon className={cn("w-3.5 h-3.5 shrink-0 relative z-10", active && "text-primary")} />
               <span className="relative z-10">{label}</span>
               {active && (
-                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-primary rounded-full z-10" />
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-primary/70 rounded-full z-10" />
               )}
             </Link>
           );

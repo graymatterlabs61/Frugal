@@ -37,7 +37,7 @@ export default function AboutPage() {
       title={
         <>
           About{" "}
-          <em className="text-[#4a2a1a] italic font-light">Frugal</em>
+          <em className="text-primary/70 italic font-light">Frugal</em>
         </>
       }
       subtitle="We build the cost management layer that AI providers forgot to ship."

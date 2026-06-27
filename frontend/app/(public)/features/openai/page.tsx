@@ -70,7 +70,7 @@ export default function OpenAILandingPage() {
         {/* HERO */}
         <section className="relative px-6 pt-32 pb-24 md:px-8 md:pt-48 md:pb-32 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,80,11,0.15),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,80,11,0.12),transparent)] pointer-events-none" />
-          <div className="mx-auto max-w-5xl text-center relative z-10">
+          <div className="mx-auto max-w-5xl text-center relative z-10 animate-fade-in-up">
             <div className="mb-8 flex justify-center">
               <Breadcrumbs
                 items={[
@@ -80,10 +80,10 @@ export default function OpenAILandingPage() {
               />
             </div>
             <h1 className="mb-6 font-serif text-4xl leading-tight font-medium text-foreground md:text-6xl lg:text-7xl tracking-tight">
-              The Ultimate OpenAI Spend Tracker for Engineering Teams
+              Stop Getting <span className="text-primary">Surprised</span> by Your OpenAI Bill
             </h1>
-            <p className="mx-auto max-w-2xl text-lg text-muted-foreground mb-10">
-              Frugal is an AI API cost management platform that connects directly to your OpenAI account to track spend in real-time, enforce budget limits, and alert you before unexpected bills occur.
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground mb-10 leading-relaxed">
+              Frugal connects directly to your OpenAI account and alerts you before costs spiral — no proxy, no code changes, up and running in 2&nbsp;minutes.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -100,11 +100,14 @@ export default function OpenAILandingPage() {
                 View Pricing
               </Link>
             </div>
-            <div className="mt-16 flex items-center justify-center gap-8 opacity-60 grayscale">
-              <span className="font-ethnocentric text-xl">OpenAI</span>
-              <span className="font-ethnocentric text-xl">Anthropic</span>
-              <span className="font-ethnocentric text-xl">Replicate</span>
-              <span className="font-ethnocentric text-xl">fal.ai</span>
+            <div className="mt-16 flex items-center justify-center gap-8">
+              <span className="text-sm text-muted-foreground font-medium">OpenAI</span>
+              <span className="text-muted-foreground/30">·</span>
+              <span className="text-sm text-muted-foreground font-medium">Anthropic</span>
+              <span className="text-muted-foreground/30">·</span>
+              <span className="text-sm text-muted-foreground font-medium">Replicate</span>
+              <span className="text-muted-foreground/30">·</span>
+              <span className="text-sm text-muted-foreground font-medium">fal.ai</span>
             </div>
           </div>
         </section>
@@ -142,17 +145,22 @@ export default function OpenAILandingPage() {
             <div className="text-center mb-16">
               <h2 className="font-serif text-4xl font-medium mb-4">Everything you need to control spend</h2>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              {[
-                { title: "Real-time Polling", desc: "See your spend updated every 5 minutes, not just at the end of the month." },
-                { title: "Budget Enforcement", desc: "Set hard caps that automatically trigger alerts when approaching limits." },
-                { title: "AES-256 Encryption", desc: "Your API keys are securely encrypted server-side. We never expose them." }
-              ].map(f => (
-                <div key={f.title} className="p-8 rounded-2xl border border-border bg-card">
-                  <h3 className="font-heading text-xl font-semibold mb-3">{f.title}</h3>
-                  <p className="text-muted-foreground">{f.desc}</p>
+            <div className="grid md:grid-cols-[2fr_1fr] gap-6">
+              <div className="glass-panel card-lift p-8 rounded-2xl">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-primary/70 mb-4 block">Core capability</span>
+                <h3 className="text-xl font-semibold text-foreground leading-snug mb-3">Real-time Polling</h3>
+                <p className="text-muted-foreground leading-relaxed">See your spend updated every 5 minutes — not just at the end of the month when it's too late to act.</p>
+              </div>
+              <div className="flex flex-col gap-6">
+                <div className="glass-panel card-lift p-6 rounded-2xl flex-1">
+                  <h3 className="text-base font-semibold text-foreground leading-snug mb-2">Budget Enforcement</h3>
+                  <p className="text-muted-foreground leading-relaxed text-sm">Set hard caps that automatically trigger alerts when approaching limits.</p>
                 </div>
-              ))}
+                <div className="glass-panel card-lift p-6 rounded-2xl flex-1">
+                  <h3 className="text-base font-semibold text-foreground leading-snug mb-2">AES-256 Encryption</h3>
+                  <p className="text-muted-foreground leading-relaxed text-sm">Your API keys are securely encrypted server-side. We never expose them.</p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -161,16 +169,17 @@ export default function OpenAILandingPage() {
         <section className="px-6 py-24 md:px-8 bg-muted/50 border-y border-border">
           <div className="mx-auto max-w-4xl text-center">
             <blockquote className="font-serif text-2xl md:text-3xl leading-relaxed text-foreground italic mb-8">
-              "Frugal saved us from a $2,000 runaway loop in our dev environment. The Slack alert fired the minute the loop started, allowing us to kill the process instantly."
+              "Frugal caught a runaway dev loop before it hit $2,000. The Slack alert fired within minutes — we killed the process before it became an invoice."
             </blockquote>
-            <p className="text-muted-foreground font-medium">— Startup Founder</p>
+            <p className="text-muted-foreground font-medium">— Early access user, AI startup</p>
             
             <div className="mt-16">
               <Link
                 href="/signup"
                 className="group inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground text-base font-semibold px-8 py-4 rounded-xl hover:bg-primary/90 transition-all hover:shadow-[0_0_24px_#FF500B59]"
               >
-                Stop guessing your OpenAI costs. Get Started.
+                Start monitoring for free
+                <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>
           </div>
@@ -182,16 +191,20 @@ export default function OpenAILandingPage() {
             <div className="text-center mb-16">
               <h2 className="font-serif text-4xl font-medium">How it works</h2>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="max-w-2xl mx-auto space-y-8">
               {[
-                { num: "01", title: "Connect Your Account", desc: "Securely add your OpenAI API key (encrypted with AES-256)." },
-                { num: "02", title: "Set Budget Rules", desc: "Define monthly financial limits for your entire team or specific projects." },
-                { num: "03", title: "Get Alerts", desc: "Receive Slack and email notifications the exact moment you hit 80% of your budget." }
+                { num: "01", title: "Connect Your Account", desc: "Securely add your OpenAI API key. It's encrypted with AES-256 before storage and never appears in plaintext." },
+                { num: "02", title: "Set Budget Rules", desc: "Define monthly financial limits for your entire team or specific projects. Choose to alert, throttle, or block." },
+                { num: "03", title: "Get Alerts", desc: "Receive Slack and email notifications the moment you hit 80% of your budget — before costs spiral." }
               ].map(step => (
-                <div key={step.num} className="relative">
-                  <div className="text-6xl font-ethnocentric text-primary/10 mb-4">{step.num}</div>
-                  <h3 className="font-heading text-xl font-semibold mb-3">{step.title}</h3>
-                  <p className="text-muted-foreground">{step.desc}</p>
+                <div key={step.num} className="flex items-start gap-5">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="text-xs font-bold font-mono text-primary">{step.num}</span>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground leading-snug mb-1.5">{step.title}</h3>
+                    <p className="text-muted-foreground leading-relaxed text-sm">{step.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -276,10 +289,10 @@ export default function OpenAILandingPage() {
                 <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>
-            <div className="mt-8 flex items-center justify-center gap-6 text-sm text-muted-foreground font-medium">
-              <span className="flex items-center gap-2"><Check size={16} className="text-primary"/> Built on Supabase</span>
-              <span className="flex items-center gap-2"><Check size={16} className="text-primary"/> Secured with AES-256</span>
-              <span className="flex items-center gap-2"><Check size={16} className="text-primary"/> Deployed on Vercel</span>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground font-medium">
+              <span className="flex items-center gap-2"><Check size={16} className="text-primary"/> Free forever plan</span>
+              <span className="flex items-center gap-2"><Check size={16} className="text-primary"/> No credit card required</span>
+              <span className="flex items-center gap-2"><Check size={16} className="text-primary"/> AES-256 encrypted keys</span>
             </div>
           </div>
         </section>

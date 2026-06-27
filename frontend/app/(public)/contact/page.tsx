@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
+import Link from "next/link"
 import { LegalLayout, LegalSection, LegalH3, LegalList, LegalCard, LegalContact } from "@/components/legal"
 import { Mail, MessageSquare } from "lucide-react"
 
@@ -57,7 +58,7 @@ export default function ContactPage() {
       title={
         <>
           Get in{" "}
-          <em className="text-[#4a2a1a] italic font-light">Touch</em>
+          <em className="text-primary/70 italic font-light">Touch</em>
         </>
       }
       subtitle="We're a small team and we read every message. Expect a reply within 24 hours on business days."
@@ -84,13 +85,13 @@ export default function ContactPage() {
                 {icon}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-mono font-semibold tracking-[0.15em] uppercase text-muted-foreground/50 mb-1">
+                <p className="text-[10px] font-mono font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-1">
                   {label}
                 </p>
                 <p className="text-sm font-semibold text-white group-hover:text-primary transition-colors mb-1">
                   {value}
                 </p>
-                <p className="text-xs text-muted-foreground/60 leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   {description}
                 </p>
               </div>
@@ -134,6 +135,19 @@ export default function ContactPage() {
           response SLAs. Email us to register interest and get founding-customer pricing.
         </LegalCard>
       </LegalSection>
+
+      <div className="my-10 rounded-2xl p-6 bg-primary/5 border border-primary/15 flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="flex-1">
+          <p className="font-semibold text-foreground text-sm">Ready to stop surprise AI bills?</p>
+          <p className="text-xs text-muted-foreground mt-1">Free plan — 1 provider, 1 project, forever. No credit card.</p>
+        </div>
+        <Link
+          href="/signup"
+          className="shrink-0 inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-primary/90 transition-all hover:shadow-[0_0_16px_#FF500B40] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        >
+          Start free →
+        </Link>
+      </div>
 
       <LegalSection id="faq" num={3} title="Quick Answers">
         <p>

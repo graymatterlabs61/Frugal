@@ -36,14 +36,12 @@ function Toggle({
       type="button"
       disabled={disabled}
       onClick={() => !disabled && onChange(!checked)}
-      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors shrink-0 ${
-        disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
-      } ${checked && !disabled ? "bg-primary" : "bg-white/10"}`}
+      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors shrink-0 ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
+        } ${checked && !disabled ? "bg-primary" : "bg-white/10"}`}
     >
       <span
-        className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
-          checked ? "translate-x-4" : "translate-x-1"
-        }`}
+        className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${checked ? "translate-x-4" : "translate-x-1"
+          }`}
       />
     </button>
   );
@@ -58,14 +56,14 @@ export default function IntegrationPage() {
   const [webhookUrl, setWebhookUrl] = useState("");
 
   const apiEndpoints = [
-    { method: "GET",  path: "/api/v1/projects" },
-    { method: "GET",  path: "/api/v1/projects/:id/spend" },
+    { method: "GET", path: "/api/v1/projects" },
+    { method: "GET", path: "/api/v1/projects/:id/spend" },
     { method: "POST", path: "/api/v1/projects/:id/budget-rules" },
-    { method: "GET",  path: "/api/v1/usage" },
+    { method: "GET", path: "/api/v1/usage" },
   ] as const;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-5">
+    <div className="w-full space-y-5">
       {/* Programmatic API */}
       <div className="rounded-2xl overflow-hidden" style={glassCard}>
         <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
@@ -125,7 +123,7 @@ export default function IntegrationPage() {
           </div>
           {slackEnabled && (
             <div className="space-y-1.5">
-              <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
                 Webhook URL
               </label>
               <Input
@@ -167,7 +165,7 @@ export default function IntegrationPage() {
           {webhookEnabled && (
             <>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+                <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
                   Endpoint URL
                 </label>
                 <Input
@@ -178,7 +176,7 @@ export default function IntegrationPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+                <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
                   Signing Secret
                 </label>
                 <div className="flex gap-2">

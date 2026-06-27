@@ -41,7 +41,7 @@ export function VideoHero() {
               {/* Badge above headline (not at top, no navbar clash) */}
               <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-md">
                 <ShieldCheck size={13} className="text-emerald-400 shrink-0" />
-                AES-256 encrypted keys · SOC 2 Type II target Q4 2026
+                AES-256 encrypted keys · No proxy · No code changes
               </span>
 
               <p className="font-ethnocentric text-[10px] sm:text-xs tracking-[0.25em] text-primary uppercase drop-shadow-md">
@@ -56,8 +56,8 @@ export function VideoHero() {
               </h1>
 
               <p className="text-white/90 text-base sm:text-lg max-w-lg drop-shadow-md leading-relaxed">
-                Frugal polls OpenAI, Anthropic, Replicate, and 7 more providers
-                every 5 minutes — and alerts you before your budget blows up.
+                Get alerts before your AI bill blows up. Frugal monitors OpenAI,
+                Anthropic, Replicate, and 7 more providers every 5&nbsp;minutes.
                 No proxy. No code changes.
               </p>
 
@@ -82,14 +82,14 @@ export function VideoHero() {
                   ))}
                 </div>
 
-                <Link href="/signup" className="w-full">
+                <Link href="/wishlist" className="w-full">
                   <ShimmerButton
                     background="rgba(255,80,11,1)"
                     shimmerColor="#ffffff"
                     borderRadius="12px"
                     className="w-full text-sm font-semibold py-3.5 gap-2"
                   >
-                    Start monitoring free
+                    Join wishlist — 25% off
                     <ArrowRight size={16} />
                   </ShimmerButton>
                 </Link>

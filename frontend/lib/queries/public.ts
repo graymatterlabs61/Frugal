@@ -70,19 +70,29 @@ export interface BlogResponse {
 }
 
 export async function fetchPlans(): Promise<PlansResponse> {
-  const res = await fetch(`${BACKEND_URL}/api/public/plans`, {
-    next: { revalidate: process.env.NODE_ENV === 'development' ? 0 : 3600 },
-  });
-  if (!res.ok) throw new Error(`Failed to fetch plans: ${res.status}`);
-  const json = (await res.json()) as { data: PlansResponse };
-  return json.data;
+  const { staticPlans } = await import("@/lib/data/plans");
+  return staticPlans;
 }
 
 export async function fetchBlogPosts(): Promise<BlogResponse> {
-  const res = await fetch(`${BACKEND_URL}/api/public/blog`, {
-    next: { revalidate: process.env.NODE_ENV === 'development' ? 0 : 3600 },
-  });
-  if (!res.ok) throw new Error(`Failed to fetch blog posts: ${res.status}`);
-  const json = (await res.json()) as { data: BlogResponse };
-  return json.data;
+  const { BLOG_POSTS } = await import("@/lib/blog/posts");
+  const entries = Object.entries(BLOG_POSTS)
+    .map(([slug, { meta }]) => ({ slug, ...meta }))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  const [cover, ...rest] = entries;
+  const coverStory: CoverStory = {
+    slug: cover.slug,
+    title: cover.title,
+    description: cover.description,
+    date: cover.date,
+    category: cover.category,
+    image: cover.image,
+    authorName: cover.authorName,
+    authorInitials: cover.authorInitials,
+  };
+  const posts: BlogPost[] = rest.map(({ slug, title, description, date, category, image }) => ({
+    slug, title, description, date, category, image,
+  }));
+  return { coverStory, posts };
 }

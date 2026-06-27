@@ -53,14 +53,12 @@ export function ProblemSection() {
       <div className="mx-auto max-w-5xl">
         {/* Centered headline — Gladia style */}
         <div className="mb-14 text-center">
-          <p className="prob-eyebrow mb-3 font-ethnocentric text-[10px] tracking-widest text-primary">
-            The problem
-          </p>
-          <h2 className="prob-h2 mx-auto max-w-3xl font-heading text-4xl font-bold leading-[1.1] tracking-tight text-foreground md:text-5xl">
-            You only find out{" "}
+          <p className="prob-eyebrow section-eyebrow">The problem</p>
+          <h2 className="prob-h2 mx-auto max-w-3xl font-heading text-4xl font-bold leading-[1.1] tracking-tight text-foreground md:text-5xl lg:text-6xl">
+            <span className="text-primary">You only find out</span>{" "}
             <span className="font-playfair italic tracking-normal font-normal">when the invoice arrives</span>
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-muted-foreground">
+          <p className="mx-auto mt-5 max-w-xl text-muted-foreground leading-relaxed">
             Solo developers watch costs spike overnight with no warning. Teams give everyone AI access and end up with no idea which project burned what. Providers give you keys — not budgets, not attribution, not control. Stop relying on delayed billing dashboards with the only <Link href="/features/openai" className="underline hover:text-primary">OpenAI cost monitoring tool</Link> you need to track your exact usage down to the token.
           </p>
         </div>
@@ -74,7 +72,7 @@ export function ProblemSection() {
               <p className="mb-1 font-heading text-xs font-semibold uppercase tracking-widest text-primary">
                 Spend attribution
               </p>
-              <h3 className="font-heading text-2xl font-bold text-foreground">
+              <h3 className="text-2xl font-bold text-foreground leading-snug">
                 Every provider. Every project.
                 <br />
                 Every team member.
@@ -143,7 +141,7 @@ export function ProblemSection() {
             >
               <span className="font-ethnocentric text-xs text-primary">5m</span>
             </div>
-            <p className="font-heading text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
               Polling interval
             </p>
             <p className="mt-1 font-nasalization text-2xl text-foreground">
@@ -162,7 +160,7 @@ export function ProblemSection() {
             >
               <span className="font-ethnocentric text-[9px] text-primary">AES</span>
             </div>
-            <p className="font-heading text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
               Encryption
             </p>
             <p className="mt-1 font-nasalization text-2xl text-foreground">

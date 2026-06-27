@@ -118,7 +118,7 @@ export function Navbar() {
             >
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
-            <Link href="/signup" className="hidden sm:inline-flex">
+            <Link href="/wishlist" className="hidden sm:inline-flex">
               <ShinyButton className="px-4 sm:px-5 py-2 rounded-xl text-xs shadow-[0_0_12px_#FF500B4D]">
                 Get Started →
               </ShinyButton>
@@ -147,7 +147,7 @@ export function Navbar() {
                 </Link>
               )
             })}
-            <Link href="/signup" onClick={() => setMenuOpen(false)} className="mt-2">
+            <Link href="/wishlist" onClick={() => setMenuOpen(false)} className="mt-2">
               <ShinyButton className="w-full py-3 rounded-xl shadow-[0_0_12px_#FF500B4D]">
                 Get Started →
               </ShinyButton>

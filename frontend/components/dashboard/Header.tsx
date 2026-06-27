@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { ListIcon, BellIcon, CheckIcon, WarningIcon, XCircleIcon, ArrowRightIcon } from "@phosphor-icons/react";
+import {
+  ListIcon,
+  BellIcon,
+  CheckIcon,
+  WarningIcon,
+  XCircleIcon,
+  ArrowRightIcon,
+  CaretRightIcon,
+} from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -12,35 +20,28 @@ import {
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-const pageTitles: Record<string, string> = {
-  "/dashboard": "Overview",
-  "/connections": "API Connections",
-  "/projects": "Projects",
-  "/alerts": "Alerts",
-  "/billing": "Billing",
-  "/usage": "Usage Analytics",
-  "/real-time": "Real-time Feed",
-  "/history": "History",
-  "/budgets": "Budget Rules",
-  "/limits": "Spend Limits",
-  "/reports": "Cost Reports",
-  "/team": "Team",
-  "/help": "Help & Support",
-  "/settings": "Settings",
-  "/settings/account": "Account Settings",
-  "/settings/security": "Security",
-  "/settings/team-management": "Team Management",
-  "/settings/preferences": "Preferences",
-  "/settings/integration": "Integrations",
-  "/settings/billing": "Billing",
-  "/settings/reports": "Reports",
+const breadcrumbs: Record<string, { label: string; parent?: string; parentHref?: string }> = {
+  "/dashboard":             { label: "Overview" },
+  "/projects":              { label: "Projects" },
+  "/alerts":                { label: "Alerts" },
+  "/connections":           { label: "Connections" },
+  "/settings":              { label: "Settings" },
+  "/settings/account":      { label: "Account",      parent: "Settings", parentHref: "/settings" },
+  "/settings/security":     { label: "Security",     parent: "Settings", parentHref: "/settings" },
+  "/settings/billing":      { label: "Billing",      parent: "Settings", parentHref: "/settings" },
+  "/settings/preferences":  { label: "Preferences",  parent: "Settings", parentHref: "/settings" },
+  "/settings/integration":  { label: "Integrations", parent: "Settings", parentHref: "/settings" },
+  "/settings/reports":      { label: "Reports",      parent: "Settings", parentHref: "/settings" },
+  "/settings/team-management": { label: "Team",      parent: "Settings", parentHref: "/settings" },
+  "/billing":               { label: "Billing" },
+  "/help":                  { label: "Help & Support" },
 };
 
-function getTitle(pathname: string): string {
-  if (pageTitles[pathname]) return pageTitles[pathname];
-  if (pathname.startsWith("/projects/")) return "Project";
-  if (pathname.startsWith("/settings/")) return "Settings";
-  return "Dashboard";
+function getPageInfo(pathname: string) {
+  if (breadcrumbs[pathname]) return breadcrumbs[pathname];
+  if (pathname.startsWith("/projects/")) return { label: "Project", parent: "Projects", parentHref: "/projects" };
+  if (pathname.startsWith("/settings/")) return { label: "Settings" };
+  return { label: "Dashboard" };
 }
 
 type NotifType = "warning" | "error" | "success";
@@ -55,8 +56,6 @@ interface Notification {
   href?: string;
 }
 
-// Real notifications arrive with the alerts feed wiring (Phase 7).
-// Until then the bell shows a truthful empty state — never sample data.
 const initialNotifications: Notification[] = [];
 
 const typeIcon: Record<NotifType, React.ElementType> = {
@@ -78,7 +77,7 @@ interface HeaderProps {
 
 export function Header({ onMenuClick }: HeaderProps) {
   const pathname = usePathname();
-  const title = getTitle(pathname);
+  const pageInfo = getPageInfo(pathname);
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
 
@@ -93,24 +92,40 @@ export function Header({ onMenuClick }: HeaderProps) {
     );
 
   return (
-    <header className="h-16 border-b border-white/[0.06] flex items-center px-5 gap-4 header-glass sticky top-0 z-40">
+    <header className="h-14 border-b border-white/[0.06] flex items-center px-5 gap-3 header-glass sticky top-0 z-40">
       <Button
         variant="ghost"
         size="icon"
-        className="lg:hidden text-muted-foreground hover:text-foreground"
+        className="lg:hidden text-muted-foreground hover:text-foreground -ml-1 shrink-0"
         onClick={onMenuClick}
       >
         <ListIcon size={20} />
       </Button>
 
-      <h1 className="font-semibold text-lg flex-1">{title}</h1>
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+        {pageInfo.parent && pageInfo.parentHref ? (
+          <>
+            <Link
+              href={pageInfo.parentHref}
+              className="text-sm text-muted-foreground/60 hover:text-muted-foreground transition-colors truncate"
+            >
+              {pageInfo.parent}
+            </Link>
+            <CaretRightIcon size={12} className="text-muted-foreground/30 shrink-0" />
+            <span className="text-sm font-semibold truncate">{pageInfo.label}</span>
+          </>
+        ) : (
+          <span className="text-sm font-semibold">{pageInfo.label}</span>
+        )}
+      </div>
 
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
-            className="relative text-muted-foreground hover:text-foreground"
+            className="relative text-muted-foreground hover:text-foreground shrink-0"
           >
             <BellIcon size={19} weight={open ? "fill" : "regular"} />
             {unreadCount > 0 && (

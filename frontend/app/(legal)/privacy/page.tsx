@@ -31,7 +31,7 @@ export default function PrivacyPage() {
     <LegalLayout
       title={
         <>
-          Privacy <em className="text-[#4a2a1a] italic font-light">Policy</em>
+          Privacy <em className="text-primary/50 italic font-light">Policy</em>
         </>
       }
       subtitle="How Gray Matter Labs, Inc. collects, uses, and protects your personal information."

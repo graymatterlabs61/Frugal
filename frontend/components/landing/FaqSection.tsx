@@ -37,7 +37,7 @@ const faqs = [
     question: "How does the pricing work?",
     answer: (
       <>
-        To see a full breakdown of limits and features, you can <Link href="/pricing" className="text-blue-500 underline hover:text-blue-400">compare Frugal pricing plans</Link> designed for solo developers and growing teams. Plus costs $15/month (billed annually) or $19/month (billed monthly). Pro costs $39/month (billed annually) or $49/month (billed monthly). Free plan is $0 forever — 1 provider, no expiry. Corporate proxy plans are targeting Q3 2026.
+        To see a full breakdown of limits and features, you can <Link href="/pricing" className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors">compare Frugal pricing plans</Link> designed for solo developers and growing teams. Plus costs $15/month (billed annually) or $19/month (billed monthly). Pro costs $39/month (billed annually) or $49/month (billed monthly). Free plan is $0 forever — 1 provider, no expiry. Corporate proxy plans are targeting Q3 2026.
       </>
     )
   },
@@ -60,20 +60,21 @@ export function FaqSection({ customFaqs }: { customFaqs?: { question: string, an
   const col3Faqs = data.filter(f => f.col === 3);
 
   const FaqCard = ({ question, answer }: { question: string, answer: React.ReactNode }) => (
-    <div className="rounded-2xl glass-panel backdrop-blur-md p-8 shadow-[0_1px_1px_rgba(0,0,0,0.05),0_4px_6px_rgba(34,42,53,0.04),0_24px_68px_rgba(47,48,55,0.05),0_2px_3px_rgba(0,0,0,0.04)] dark:shadow-[2px_4px_16px_0px_rgba(248,248,248,0.06)_inset]">
-      <h3 className="text-lg font-medium text-neutral-700 dark:text-neutral-200">{question}</h3>
-      <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400 lg:text-base">{answer}</p>
+    <div className="rounded-2xl glass-panel card-lift p-7 md:p-8">
+      <h3 className="text-sm font-semibold text-foreground leading-snug">{question}</h3>
+      <div className="mt-2 text-sm text-muted-foreground leading-relaxed">{answer}</div>
     </div>
   );
 
   return (
     <section id="faq" className="mx-auto grid max-w-7xl gap-4 px-4 py-20 md:px-8 md:py-40">
-      <h2 className="text-left text-4xl font-medium tracking-tight text-neutral-600 dark:text-neutral-50 md:text-5xl">
+      <p className="section-eyebrow">FAQ</p>
+      <h2 className="text-left text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
         Frequently asked questions
       </h2>
-      <p className="max-w-lg text-left text-base text-neutral-600 dark:text-neutral-50">
-        We are here to help you with any questions you may have. If you don&apos;t find what you need, please contact us at{" "}
-        <a href="mailto:support@getfrugal.dev" className="text-blue-500 underline">
+      <p className="max-w-lg text-left text-base text-muted-foreground leading-relaxed">
+        If you don&apos;t find what you need, contact us at{" "}
+        <a href="mailto:support@getfrugal.dev" className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors">
           support@getfrugal.dev
         </a>
       </p>

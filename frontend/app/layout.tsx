@@ -4,6 +4,7 @@ import Script from "next/script"
 import "./globals.css"
 import { cn } from "@/lib/utils"
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider"
+import { AuthProvider } from "@/components/providers/AuthProvider"
 import { Toaster } from "sonner"
 import { CookieConsent } from "@/components/ui/cookie-consent"
 import { Analytics } from "@vercel/analytics/next"
@@ -183,7 +184,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        <AuthProvider>
+          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        </AuthProvider>
         <CookieConsent />
         <Toaster theme="dark" position="bottom-right" richColors />
         <Analytics />

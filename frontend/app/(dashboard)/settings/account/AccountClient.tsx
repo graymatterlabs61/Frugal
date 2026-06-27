@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth/use-session";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -25,7 +25,7 @@ function planLabel(p: string): string {
 }
 
 export function AccountClient({ userName, userEmail, plan }: Props) {
-  const { data: session } = useSession();
+  const { user } = useSession();
   const [name, setName] = useState(userName);
   const [saving, setSaving] = useState(false);
   const displayPlan = planLabel(plan);
@@ -35,7 +35,7 @@ export function AccountClient({ userName, userEmail, plan }: Props) {
     e.preventDefault();
     setSaving(true);
     try {
-      await apiClient.patch("/api/auth/me", { fullName: name }, session?.backendToken);
+      await apiClient.patch("/api/v1/auth/profile", { fullName: name }, undefined);
       toast.success("Profile saved");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to save");
@@ -45,7 +45,7 @@ export function AccountClient({ userName, userEmail, plan }: Props) {
   };
 
   return (
-    <form onSubmit={handleSave} className="space-y-5 max-w-2xl mx-auto">
+    <form onSubmit={handleSave} className="space-y-5 w-full mx-auto">
       {/* Avatar card */}
       <div
         className="rounded-2xl p-5 flex items-center gap-5"
@@ -90,18 +90,18 @@ export function AccountClient({ userName, userEmail, plan }: Props) {
         <div className="p-5 space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
                 Full Name
               </label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
-                className="bg-white/[0.06] border-white/[0.1] h-10 rounded-xl"
+                className="input-focus-glow bg-white/[0.05] border-white/[0.10] h-10 rounded-xl transition-all duration-200"
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
                 Email Address
               </label>
               <div className="relative">

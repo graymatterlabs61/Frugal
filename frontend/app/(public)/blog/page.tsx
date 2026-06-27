@@ -42,7 +42,7 @@ export default async function BlogIndex() {
               <div className="max-w-2xl animate-fade-in-up stagger-1">
                 <h1 className="font-serif text-5xl md:text-7xl font-medium tracking-tight text-foreground leading-[0.95]">
                   The{" "}
-                  <span className="font-serif italic font-normal gradient-text-warm">
+                  <span className="font-serif italic font-normal text-primary">
                     Journal
                   </span>
                 </h1>

@@ -1,8 +1,6 @@
 import { Bell, ShieldAlert, CheckCircle2, Clock } from "lucide-react";
 import { requireSession } from "@/lib/auth/session";
 import { getRecentAlerts, type RecentAlert } from "@/lib/queries/dashboard";
-import { headers } from "next/headers";
-import { getToken } from "next-auth/jwt";
 
 const severityStyles = {
   critical: "text-destructive bg-destructive/10 border-destructive/20",
@@ -33,16 +31,9 @@ function formatAlertTime(firedAt: string): string {
 
 export default async function AlertsPage() {
   const session = await requireSession();
+  const token = undefined;
 
-  const hdrs = await headers();
-  const cookieHeader = hdrs.get("cookie") ?? "";
-  const jwt = await getToken({
-    req: { headers: { cookie: cookieHeader } } as Parameters<typeof getToken>[0]["req"],
-    secret: process.env.NEXTAUTH_SECRET!,
-  });
-  const token = jwt?.sub ? (jwt as { accessToken?: string }).accessToken ?? undefined : undefined;
-
-  const alerts = await getRecentAlerts(session.id, 100, token);
+  const alerts = await getRecentAlerts(100, token);
 
   const activeCount = alerts.filter((a) => a.status === "active").length;
   const criticalCount = alerts.filter((a) => a.severity === "critical").length;
@@ -51,67 +42,73 @@ export default async function AlertsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
+      <div className="animate-fade-in-up">
+        <p className="section-eyebrow">Monitoring</p>
         <h2 className="text-2xl font-bold">Alerts</h2>
         <p className="text-sm text-muted-foreground mt-1">
           Budget thresholds, spend spikes, and limit breaches.
         </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="glass-panel card-lift rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
-              Active
-            </p>
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/10 border border-destructive/20">
+      {/* Status bar */}
+      <div className="glass-panel rounded-2xl animate-fade-in-up stagger-1 overflow-hidden">
+        <div className="grid grid-cols-3 divide-x divide-white/[0.06]">
+          <div className="px-6 py-5 flex items-center gap-4">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-destructive/10 border border-destructive/20 shrink-0">
               <ShieldAlert className="w-4 h-4 text-destructive" />
             </span>
+            <div>
+              <p className="text-2xl font-bold font-mono leading-none text-destructive">
+                {activeCount}
+              </p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-1">
+                Active
+              </p>
+            </div>
           </div>
-          <p className="text-3xl font-bold font-mono text-destructive">
-            {activeCount}
-          </p>
-        </div>
-        <div className="glass-panel card-lift rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
-              Critical
-            </p>
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+          <div className="px-6 py-5 flex items-center gap-4">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-yellow-500/10 border border-yellow-500/20 shrink-0">
               <Bell className="w-4 h-4 text-yellow-500" />
             </span>
+            <div>
+              <p className="text-2xl font-bold font-mono leading-none">
+                {criticalCount}
+              </p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-1">
+                Critical
+              </p>
+            </div>
           </div>
-          <p className="text-3xl font-bold font-mono text-destructive">
-            {criticalCount}
-          </p>
-        </div>
-        <div className="glass-panel card-lift rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
-              Resolved
-            </p>
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+          <div className="px-6 py-5 flex items-center gap-4">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 shrink-0">
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
             </span>
+            <div>
+              <p className="text-2xl font-bold font-mono leading-none text-emerald-500">
+                {resolvedCount}
+              </p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-1">
+                Resolved
+              </p>
+            </div>
           </div>
-          <p className="text-3xl font-bold font-mono text-emerald-500">
-            {resolvedCount}
-          </p>
         </div>
       </div>
 
       {/* Alerts table */}
-      <div className="glass-panel rounded-2xl overflow-hidden">
+      <div className="glass-panel rounded-2xl overflow-hidden animate-fade-in-up stagger-2">
         <div className="px-5 py-4 border-b border-border flex items-center gap-2">
           <Bell className="w-4 h-4 text-muted-foreground" />
           <h3 className="font-semibold text-sm">Alert History</h3>
         </div>
         {alerts.length === 0 ? (
           <div className="px-5 py-16 text-center">
-            <p className="text-sm text-muted-foreground">No alerts yet.</p>
-            <p className="text-xs text-muted-foreground/60 mt-1">
-              Alerts fire when a budget rule threshold is crossed.
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+            </div>
+            <p className="text-sm font-semibold text-foreground">All clear</p>
+            <p className="text-xs text-muted-foreground mt-1.5 max-w-[260px] mx-auto leading-relaxed">
+              No alerts triggered yet. Budget rules fire here when a threshold is crossed.
             </p>
           </div>
         ) : (

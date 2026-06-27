@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth/use-session";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import type { PersonalPlan, CorporatePlan, PlansResponse } from "@/lib/queries/public";
 import type { Invoice, PaymentMethodInfo, UsageData } from "@/lib/queries/billing";
+import { BACKEND_URL } from "@/config";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -51,7 +52,16 @@ const glassCard: React.CSSProperties = {
 type Interval = "monthly" | "yearly";
 type LoadingPlan = null | "plus" | "pro";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "https://frugal-66tx.onrender.com";
+const PRICE_IDS: Record<string, Record<string, string>> = {
+  plus: {
+    monthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PLUS_MONTHLY ?? "",
+    yearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PLUS_YEARLY ?? "",
+  },
+  pro: {
+    monthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY ?? "",
+    yearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY ?? "",
+  },
+};
 
 const PLAN_NAMES: Record<string, string> = {
   free: "Free",
@@ -155,9 +165,8 @@ function UsageBar({ label, used, limit }: { label: string; used: number; limit: 
           <div className="h-full w-full rounded-full bg-primary/15" />
         ) : (
           <div
-            className={`h-full rounded-full transition-all duration-500 ${
-              danger ? "bg-red-500" : "bg-primary"
-            }`}
+            className={`h-full rounded-full transition-all duration-500 ${danger ? "bg-red-500" : "bg-primary"
+              }`}
             style={{ width: `${pct}%` }}
           />
         )}
@@ -179,12 +188,12 @@ function BillingClientInner({
   paymentMethod,
 }: BillingClientProps) {
   const searchParams = useSearchParams();
-  const { data: session } = useSession();
+  const { user } = useSession();
   const [interval, setInterval] = useState<Interval>("monthly");
   const [loading, setLoading] = useState<LoadingPlan>(null);
   const [portalLoading, setPortalLoading] = useState(false);
 
-  const backendToken = session?.backendToken;
+  const backendToken = undefined;
   const isCorporate = CORPORATE_PLANS.has(currentPlan);
   const planMeta = getPlanMeta(currentPlan, plans);
 
@@ -199,26 +208,28 @@ function BillingClientInner({
       toast.error("Session expired. Please sign in again.");
       return;
     }
+    const priceId = PRICE_IDS[planId]?.[interval] ?? "";
+    if (!priceId) {
+      toast.error("Stripe price not configured. Contact support.");
+      return;
+    }
     setLoading(planId);
     try {
-      const res = await fetch(`${BACKEND_URL}/api/billing/checkout`, {
+      const res = await fetch(`${BACKEND_URL}/api/v1/billing/checkout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${backendToken}`,
         },
         body: JSON.stringify({
-          plan: planId,
+          priceId,
           successUrl: `${window.location.origin}/settings/billing?success=1`,
           cancelUrl: `${window.location.origin}/settings/billing`,
         }),
       });
-      const json = (await res.json()) as {
-        data?: { url?: string };
-        error?: { message?: string };
-      };
+      const json = (await res.json()) as { url?: string; error?: { message?: string } };
       if (!res.ok) throw new Error(json.error?.message ?? "Checkout failed");
-      window.location.assign(json.data!.url!);
+      window.location.assign(json.url!);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Checkout failed");
       setLoading(null);
@@ -232,7 +243,7 @@ function BillingClientInner({
     }
     setPortalLoading(true);
     try {
-      const res = await fetch(`${BACKEND_URL}/api/billing/portal`, {
+      const res = await fetch(`${BACKEND_URL}/api/v1/billing/portal`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -240,12 +251,9 @@ function BillingClientInner({
         },
         body: JSON.stringify({ returnUrl: `${window.location.origin}/settings/billing` }),
       });
-      const json = (await res.json()) as {
-        data?: { url?: string };
-        error?: { message?: string };
-      };
+      const json = (await res.json()) as { url?: string; error?: { message?: string } };
       if (!res.ok) throw new Error(json.error?.message ?? "Portal unavailable");
-      window.location.assign(json.data!.url!);
+      window.location.assign(json.url!);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Portal unavailable");
       setPortalLoading(false);
@@ -256,7 +264,7 @@ function BillingClientInner({
   const corporatePlans = plans?.corporate ?? [];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-5">
+    <div className="mx-auto space-y-5 w-full">
 
       {/* ── 1. Subscription Overview ─────────────────────────────────────── */}
       <div className="grid sm:grid-cols-2 gap-5">
@@ -360,11 +368,10 @@ function BillingClientInner({
                 <button
                   key={v}
                   onClick={() => setInterval(v)}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all capitalize ${
-                    interval === v
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all capitalize ${interval === v
                       ? "bg-white/[0.10] text-foreground border border-white/[0.10]"
                       : "text-muted-foreground hover:text-foreground"
-                  }`}
+                    }`}
                 >
                   {v}
                   {v === "yearly" && (
@@ -390,14 +397,14 @@ function BillingClientInner({
                     style={
                       p.featured
                         ? {
-                            background:
-                              "linear-gradient(145deg, oklch(0.97 0 0 / 0.95) 0%, oklch(0.92 0 0 / 0.9) 100%)",
-                            border: "1px solid oklch(1 0 0 / 0.3)",
-                          }
+                          background:
+                            "linear-gradient(145deg, oklch(0.97 0 0 / 0.95) 0%, oklch(0.92 0 0 / 0.9) 100%)",
+                          border: "1px solid oklch(1 0 0 / 0.3)",
+                        }
                         : {
-                            background: "oklch(1 0 0 / 0.03)",
-                            border: "1px solid oklch(1 0 0 / 0.07)",
-                          }
+                          background: "oklch(1 0 0 / 0.03)",
+                          border: "1px solid oklch(1 0 0 / 0.07)",
+                        }
                     }
                   >
                     <div className="flex items-center justify-between mb-4">
@@ -405,11 +412,10 @@ function BillingClientInner({
                         {p.name}
                       </h4>
                       <span
-                        className={`text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border ${
-                          p.featured
+                        className={`text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded-md border ${p.featured
                             ? "text-background/70 bg-black/10 border-black/20"
                             : p.badgeClass
-                        }`}
+                          }`}
                       >
                         {p.badge}
                       </span>
@@ -418,25 +424,22 @@ function BillingClientInner({
                     <div className="mb-4">
                       <div className="flex items-baseline gap-1">
                         <span
-                          className={`text-2xl font-bold font-mono ${
-                            p.featured ? "text-background" : ""
-                          }`}
+                          className={`text-2xl font-bold font-mono ${p.featured ? "text-background" : ""
+                            }`}
                         >
                           {price === 0 ? "$0" : `$${price}`}
                         </span>
                         <span
-                          className={`text-xs ${
-                            p.featured ? "text-background/60" : "text-muted-foreground"
-                          }`}
+                          className={`text-xs ${p.featured ? "text-background/60" : "text-muted-foreground"
+                            }`}
                         >
                           {price === 0 ? "/ forever" : "/mo"}
                         </span>
                       </div>
                       {interval === "yearly" && p.yearlySaving > 0 && (
                         <p
-                          className={`text-xs mt-0.5 ${
-                            p.featured ? "text-background/60" : "text-emerald-400"
-                          }`}
+                          className={`text-xs mt-0.5 ${p.featured ? "text-background/60" : "text-emerald-400"
+                            }`}
                         >
                           Save ${p.yearlySaving}/yr
                         </p>
@@ -451,33 +454,30 @@ function BillingClientInner({
                         }
                       }}
                       size="sm"
-                      className={`w-full rounded-xl h-9 text-xs font-semibold mb-4 ${
-                        p.featured
+                      className={`w-full rounded-xl h-9 text-xs font-semibold mb-4 ${p.featured
                           ? "bg-background text-foreground hover:bg-background/90"
                           : isCurrent
-                          ? "bg-white/5 text-muted-foreground border border-white/[0.08] cursor-default"
-                          : "bg-white/5 hover:bg-white/10 text-foreground border border-white/[0.08]"
-                      }`}
+                            ? "bg-white/5 text-muted-foreground border border-white/[0.08] cursor-default"
+                            : "bg-white/5 hover:bg-white/10 text-foreground border border-white/[0.08]"
+                        }`}
                     >
                       {loading === p.id
                         ? "Loading…"
                         : isCurrent
-                        ? "Current Plan"
-                        : p.ctaLabel}
+                          ? "Current Plan"
+                          : p.ctaLabel}
                     </Button>
 
                     <ul className="space-y-1.5 flex-1">
                       {p.features.map((f) => (
                         <li
                           key={f}
-                          className={`flex items-start gap-2 text-xs ${
-                            p.featured ? "text-background/80" : "text-muted-foreground"
-                          }`}
+                          className={`flex items-start gap-2 text-xs ${p.featured ? "text-background/80" : "text-muted-foreground"
+                            }`}
                         >
                           <Check
-                            className={`w-3 h-3 shrink-0 mt-0.5 ${
-                              p.featured ? "text-background/50" : "text-primary"
-                            }`}
+                            className={`w-3 h-3 shrink-0 mt-0.5 ${p.featured ? "text-background/50" : "text-primary"
+                              }`}
                           />
                           {f}
                         </li>
@@ -540,14 +540,14 @@ function BillingClientInner({
                     style={
                       isCurrent
                         ? {
-                            background:
-                              "linear-gradient(145deg, oklch(0.97 0 0 / 0.95) 0%, oklch(0.92 0 0 / 0.9) 100%)",
-                            border: "1px solid oklch(1 0 0 / 0.3)",
-                          }
+                          background:
+                            "linear-gradient(145deg, oklch(0.97 0 0 / 0.95) 0%, oklch(0.92 0 0 / 0.9) 100%)",
+                          border: "1px solid oklch(1 0 0 / 0.3)",
+                        }
                         : {
-                            background: "oklch(1 0 0 / 0.03)",
-                            border: "1px solid oklch(1 0 0 / 0.07)",
-                          }
+                          background: "oklch(1 0 0 / 0.03)",
+                          border: "1px solid oklch(1 0 0 / 0.07)",
+                        }
                     }
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -563,16 +563,14 @@ function BillingClientInner({
                       )}
                     </div>
                     <p
-                      className={`text-xl font-bold font-mono mb-0.5 ${
-                        isCurrent ? "text-background" : ""
-                      }`}
+                      className={`text-xl font-bold font-mono mb-0.5 ${isCurrent ? "text-background" : ""
+                        }`}
                     >
                       {p.price}
                     </p>
                     <p
-                      className={`text-xs mb-3 ${
-                        isCurrent ? "text-background/60" : "text-muted-foreground"
-                      }`}
+                      className={`text-xs mb-3 ${isCurrent ? "text-background/60" : "text-muted-foreground"
+                        }`}
                     >
                       {p.seats}
                     </p>
@@ -580,14 +578,12 @@ function BillingClientInner({
                       {p.features.slice(0, 4).map((f) => (
                         <li
                           key={f}
-                          className={`flex items-start gap-1.5 text-[11px] ${
-                            isCurrent ? "text-background/75" : "text-muted-foreground"
-                          }`}
+                          className={`flex items-start gap-1.5 text-[11px] ${isCurrent ? "text-background/75" : "text-muted-foreground"
+                            }`}
                         >
                           <Check
-                            className={`w-3 h-3 shrink-0 mt-0.5 ${
-                              isCurrent ? "text-background/50" : "text-primary"
-                            }`}
+                            className={`w-3 h-3 shrink-0 mt-0.5 ${isCurrent ? "text-background/50" : "text-primary"
+                              }`}
                           />
                           {f}
                         </li>
@@ -631,9 +627,13 @@ function BillingClientInner({
         </div>
 
         {invoices.length === 0 ? (
-          <div className="px-5 py-10 text-center">
-            <p className="text-sm text-muted-foreground">
-              No invoices yet — they&apos;ll appear here after your first payment.
+          <div className="px-5 py-12 text-center">
+            <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mx-auto mb-3">
+              <Receipt className="w-5 h-5 text-muted-foreground/40" />
+            </div>
+            <p className="text-sm font-semibold text-foreground">No invoices yet</p>
+            <p className="text-xs text-muted-foreground mt-1.5 max-w-[260px] mx-auto leading-relaxed">
+              They&apos;ll appear here after your first payment.
             </p>
           </div>
         ) : (
@@ -655,9 +655,8 @@ function BillingClientInner({
                 {invoices.map((inv, i) => (
                   <tr
                     key={inv.id}
-                    className={`hover:bg-white/[0.02] transition-colors ${
-                      i < invoices.length - 1 ? "border-b border-white/[0.04]" : ""
-                    }`}
+                    className={`hover:bg-white/[0.02] transition-colors ${i < invoices.length - 1 ? "border-b border-white/[0.04]" : ""
+                      }`}
                   >
                     <td className="px-5 py-3.5 text-xs text-muted-foreground whitespace-nowrap">
                       {formatDate(inv.date)}
@@ -776,8 +775,8 @@ function BillingClientInner({
                 {portalLoading
                   ? "Opening…"
                   : paymentMethod
-                  ? "Update Payment Method"
-                  : "Add Payment Method"}
+                    ? "Update Payment Method"
+                    : "Add Payment Method"}
                 <ExternalLink className="w-3 h-3 opacity-40" />
               </Button>
               <p className="text-[11px] text-muted-foreground/50">

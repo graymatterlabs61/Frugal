@@ -37,7 +37,7 @@ export default function CookiesPage() {
       title={
         <>
           Legal <br />
-          <em className="text-[#4a2a1a] italic font-light">and</em> Policies
+          <em className="text-primary/50 italic font-light">and</em> Policies
         </>
       }
       subtitle="Transparent and comprehensive documentation regarding data processing, cookie usage, and financial transactions at Frugal."

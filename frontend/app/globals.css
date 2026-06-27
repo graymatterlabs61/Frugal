@@ -150,6 +150,13 @@
   html {
     @apply font-sans;
     scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
   }
 }
 
@@ -517,6 +524,51 @@
     oklch(0.55 0.22 32 / 0.02) 60%,
     transparent 100%
   );
+}
+
+/* ── Section eyebrow label ──────────────────────────────── */
+.section-eyebrow {
+  font-family: 'Ethnocentric', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #FF500B;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+/* ── Gradient heading — orange on a word/phrase ─────────── */
+.gradient-heading {
+  background: linear-gradient(135deg, #FF7733 0%, #FF500B 55%, #CC4008 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Nav link hover underline (landing nav) ─────────────── */
+.nav-link-hover {
+  position: relative;
+}
+.nav-link-hover::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  width: 0;
+  height: 1px;
+  background: #FF500B;
+  transform: translateX(-50%);
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link-hover:hover::after {
+  width: 60%;
+}
+
+/* ── Stat number display ────────────────────────────────── */
+.stat-display {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.02em;
 }
 
 /* ── Legal ambient orb ──────────────────────────────────── */

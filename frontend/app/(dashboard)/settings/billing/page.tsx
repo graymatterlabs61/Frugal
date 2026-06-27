@@ -1,53 +1,81 @@
 import { requireSession } from "@/lib/auth/session";
-import { apiClient, ApiError } from "@/lib/api";
-import { fetchPlans } from "@/lib/queries/public";
-import type { Invoice, PaymentMethodInfo, UsageData } from "@/lib/queries/billing";
+import { apiClient } from "@/lib/api";
+import { staticPlans } from "@/lib/data/plans";
+import { PLAN_LIMITS } from "@/lib/tier";
+import type { Invoice } from "@/lib/queries/billing";
+import type { UsageData } from "@/lib/queries/billing";
 import BillingClient from "./BillingClient";
 
-interface SubscriptionData {
-  plan: string;
-  stripeCustomerId: string | null;
-  stripeSubscriptionId: string | null;
+interface StripeInvoice {
+  id: string;
+  created: number;
+  description: string | null;
+  amount_due: number;
+  currency: string;
+  status: string | null;
+  invoice_pdf: string | null;
+  lines?: { data?: Array<{ description?: string | null }> };
+}
+
+function mapInvoice(inv: StripeInvoice): Invoice {
+  return {
+    id: inv.id,
+    date: inv.created,
+    description:
+      inv.description ??
+      inv.lines?.data?.[0]?.description ??
+      "Frugal Subscription",
+    amount: inv.amount_due,
+    currency: inv.currency,
+    status: inv.status ?? "unknown",
+    pdfUrl: inv.invoice_pdf ?? null,
+  };
 }
 
 export default async function BillingPage() {
   const session = await requireSession();
-  const token = session.backendToken;
+  const token = undefined;
 
-  let currentPlan = "free";
+  let currentPlan = session.plan ?? "free";
   let hasStripeCustomer = false;
 
   try {
-    const sub = await apiClient.get<SubscriptionData>("/api/billing/subscription", token);
-    currentPlan = sub.plan ?? "free";
-    hasStripeCustomer = !!sub.stripeCustomerId;
-  } catch (err) {
-    if (!(err instanceof ApiError)) {
-      // unexpected non-HTTP error — default to free
-    }
+    const data = await apiClient.get<{
+      user: { plan: string; stripeCustomerId: string | null };
+    }>("/api/v1/auth/me", token);
+    currentPlan = data.user.plan ?? currentPlan;
+    hasStripeCustomer = !!data.user.stripeCustomerId;
+  } catch {
+    // fall through — use session plan
   }
 
-  const [plansData, invoicesResult, usageResult, paymentMethodResult] = await Promise.all([
-    fetchPlans().catch(() => null),
-    apiClient
-      .get<{ invoices: Invoice[] }>("/api/billing/invoices", token)
-      .catch(() => null),
-    apiClient
-      .get<UsageData>("/api/billing/usage", token)
-      .catch(() => null),
-    apiClient
-      .get<PaymentMethodInfo | null>("/api/billing/payment-method", token)
-      .catch(() => null),
-  ]);
+  const invoicesResult = await apiClient
+    .get<{ invoices: StripeInvoice[] }>("/api/v1/billing/invoices", token)
+    .catch(() => null);
+
+  const invoices: Invoice[] = (invoicesResult?.invoices ?? []).map(mapInvoice);
+
+  // Derive usage from plan limits
+  const planKey = currentPlan as keyof typeof PLAN_LIMITS;
+  const limits = PLAN_LIMITS[planKey] ?? PLAN_LIMITS.free;
+  const usage: UsageData = {
+    connections: 0,
+    projects: 0,
+    limits: {
+      connections: limits.connections === Infinity ? -1 : limits.connections,
+      projects: limits.projects === Infinity ? -1 : limits.projects,
+    },
+    plan: currentPlan,
+  };
 
   return (
     <BillingClient
       currentPlan={currentPlan}
       hasStripeCustomer={hasStripeCustomer}
-      plans={plansData}
-      invoices={invoicesResult?.invoices ?? []}
-      usage={usageResult}
-      paymentMethod={paymentMethodResult ?? null}
+      plans={staticPlans}
+      invoices={invoices}
+      usage={usage}
+      paymentMethod={null}
     />
   );
 }

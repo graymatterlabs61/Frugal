@@ -1,18 +1,28 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowUpRight, Plus, Zap, TrendingUp } from "lucide-react";
+import {
+  ArrowUpRight,
+  Plus,
+  Zap,
+  TrendingUp,
+  FolderOpen,
+  CheckCircle2,
+  AlertTriangle,
+  Plug,
+} from "lucide-react";
 import { requireSession } from "@/lib/auth/session";
 import { SpendChart } from "@/components/dashboard/SpendChart";
 import { RangeToggle } from "@/components/dashboard/RangeToggle";
 import { BurnRateGauge } from "@/components/dashboard/BurnRateGauge";
 import { StatValue } from "@/components/dashboard/StatValue";
-import { MagicCard } from "@/components/ui/magic/magic-card";
 import {
-  getDashboardStats,
-  getDailySpend,
+  getDashboardSummary,
+  getSpendChart,
   getTopProjects,
   getRecentAlerts,
+  getProjects,
+  getConnections,
 } from "@/lib/queries/dashboard";
 import { getHistoryDays } from "@/lib/tier";
 import { ExitPopup } from "@/components/landing/ExitPopup";
@@ -38,16 +48,15 @@ export default async function DashboardPage({
 }: {
   searchParams: Promise<{ days?: string }>;
 }) {
-  let session: { id: string; email: string; backendToken: string | undefined };
+  let session: { id: string; email: string; name: string | null; plan: string };
   try {
     session = await requireSession();
   } catch {
     redirect("/login");
   }
 
-  const token = session.backendToken;
-
-  const userPlan = "free"; // plan comes from Express backend; default to free for display
+  const token = undefined;
+  const userPlan = session.plan ?? "free";
 
   const params = await searchParams;
   const rawDays = Number(params?.days ?? "7");
@@ -62,60 +71,70 @@ export default async function DashboardPage({
 
   const name = session.email.split("@")[0] ?? "there";
 
-  const [stats, spendData, topProjects, recentAlerts] = await Promise.all([
-    getDashboardStats(session.id, token),
-    getDailySpend(session.id, finalDays, token),
-    getTopProjects(session.id, token),
-    getRecentAlerts(session.id, 5, token),
-  ]);
+  const [summary, spendData, topProjects, allAlerts, allProjects, allConnections] =
+    await Promise.all([
+      getDashboardSummary(token),
+      getSpendChart(finalDays, token),
+      getTopProjects(finalDays, token),
+      getRecentAlerts(100, token),
+      getProjects(token),
+      getConnections(token),
+    ]);
 
-  // 7-day rolling burn rate
+  const recentAlerts = allAlerts.slice(0, 5);
+
+  const stats = {
+    monthlySpend: summary.totalSpendThisMonth,
+    activeProjects: allProjects.length,
+    connectionCount: allConnections.length,
+    alertCount: allAlerts.filter((a) => a.status === "active").length,
+  };
+
   const last7 = spendData.slice(-7);
-  const last7Sum = last7.reduce((acc, row) => {
-    return (
-      acc +
-      Object.entries(row)
-        .filter(([k]) => k !== "date")
-        .reduce((s, [, v]) => s + (typeof v === "number" ? v : 0), 0)
-    );
-  }, 0);
+  const last7Sum = last7.reduce((acc, row) => acc + row.costUsd, 0);
   const burnRateDaily = last7.length > 0 ? last7Sum / 7 : 0;
   const projectedMonthly = burnRateDaily * 30;
 
+  const now = new Date();
+  const dayOfMonth = now.getDate();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const monthPct = Math.round((dayOfMonth / daysInMonth) * 100);
+
   return (
     <div className="space-y-5">
-      {/* ── Header ───────────────────────────────────────── */}
-      <div className="flex items-start justify-between gap-4">
+      {/* ── Greeting ─────────────────────────────────────── */}
+      <div className="flex items-end justify-between gap-4 animate-fade-in-up">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Hey {name} — AI spend for{" "}
-            {new Date().toLocaleString("en-US", {
-              month: "long",
-              year: "numeric",
-            })}
-            .
+          <p className="section-eyebrow">Overview</p>
+          <h1 className="text-2xl font-bold tracking-tight leading-snug">
+            {name}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {now.toLocaleString("en-US", { month: "long", year: "numeric" })}
+            <span className="mx-2 text-muted-foreground/30">·</span>
+            <span className="font-mono">{monthPct}%</span> of month elapsed
           </p>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 pb-0.5">
           <Link
             href="/projects"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-all shadow-[0_4px_20px_rgba(255,80,11,0.35)]"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-all shadow-[0_4px_20px_rgba(255,80,11,0.30)]"
           >
             <Plus className="w-4 h-4" />
-            New Project
+            New project
           </Link>
         </div>
       </div>
 
-      {/* ── Stat cards ───────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Accent card */}
-        <div className="card-lift relative overflow-hidden rounded-3xl p-5 bg-gradient-to-br from-[#FF500B] to-[#b83b08] text-white shadow-[0_8px_32px_rgba(255,80,11,0.3)]">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.18),_transparent_65%)]" />
+      {/* ── Stats: asymmetric 3-column layout ───────────── */}
+      <div className="grid lg:grid-cols-[1fr_1fr_1fr] gap-4 animate-fade-in-up stagger-1">
+
+        {/* Primary: Monthly Spend */}
+        <div className="relative overflow-hidden rounded-3xl p-6 bg-gradient-to-br from-[#FF500B] to-[#b83b08] text-white shadow-[0_8px_40px_rgba(255,80,11,0.28)] card-lift">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent_65%)]" />
           <div className="relative">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-white/65">
+            <div className="flex items-start justify-between mb-5">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-white/60">
                 Monthly Spend
               </p>
               <Link href="/projects">
@@ -124,73 +143,120 @@ export default async function DashboardPage({
                 </div>
               </Link>
             </div>
-            <p className="text-4xl font-bold font-mono">
+            <p className="text-5xl font-bold font-mono leading-none">
               $<StatValue value={stats.monthlySpend} decimalPlaces={2} />
             </p>
-            <div className="flex items-center gap-1.5 mt-2.5">
-              <TrendingUp className="w-3 h-3 text-white/70" />
-              <span className="text-[11px] text-white/70">
-                Calendar month to date
-              </span>
+            <div className="mt-5 pt-4 border-t border-white/20">
+              <div className="flex items-center justify-between text-xs mb-2">
+                <span className="text-white/60">Projected at current rate</span>
+                <span className="font-mono font-semibold">
+                  ${projectedMonthly.toFixed(2)}
+                </span>
+              </div>
+              <div className="h-1 rounded-full bg-white/20 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-white/70"
+                  style={{ width: `${Math.min(100, monthPct)}%` }}
+                />
+              </div>
+              <p className="text-[10px] text-white/50 mt-1.5 flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" />
+                {dayOfMonth} of {daysInMonth} days
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Glass cards */}
-        {(
-          [
-            {
-              label: "Active Projects",
-              value: stats.activeProjects,
-              sub: `${stats.connectionCount} connection${stats.connectionCount !== 1 ? "s" : ""}`,
-              href: "/projects",
-            },
-            {
-              label: "API Connections",
-              value: stats.connectionCount,
-              sub: "Across all projects",
-              href: "/projects",
-            },
-            {
-              label: "Budget Alerts",
-              value: stats.alertCount,
-              sub: stats.alertCount > 0 ? "Needs attention" : "All clear",
-              href: "/alerts",
-              urgent: stats.alertCount > 0,
-            },
-          ] as const
-        ).map((card) => (
-          <MagicCard
-            key={card.label}
-            className="glass-panel card-lift rounded-3xl p-5 cursor-default"
-            gradientColor="rgba(255,80,11,0.08)"
-            gradientOpacity={0.6}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                {card.label}
-              </p>
-              <Link href={card.href}>
-                <div className="w-7 h-7 rounded-full border border-border flex items-center justify-center hover:border-white/30 transition-colors">
-                  <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground" />
-                </div>
-              </Link>
+        {/* Secondary: Projects + Connections stacked */}
+        <div className="flex flex-col gap-4">
+          <Link href="/projects" className="flex-1 glass-panel card-lift rounded-3xl p-5 flex items-center gap-4 hover:border-white/20 transition-all group">
+            <div className="w-10 h-10 rounded-2xl bg-white/[0.06] border border-white/[0.10] flex items-center justify-center shrink-0 group-hover:bg-primary/10 group-hover:border-primary/20 transition-colors">
+              <FolderOpen className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
-            <p
-              className={`text-4xl font-bold font-mono ${"urgent" in card && card.urgent ? "text-destructive" : ""}`}
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70 mb-1">
+                Active Projects
+              </p>
+              <p className="text-3xl font-bold font-mono leading-none">
+                <StatValue value={stats.activeProjects} />
+              </p>
+            </div>
+            <ArrowUpRight className="w-4 h-4 text-muted-foreground/40 shrink-0 group-hover:text-primary/60 transition-colors" />
+          </Link>
+
+          <Link href="/projects" className="flex-1 glass-panel card-lift rounded-3xl p-5 flex items-center gap-4 hover:border-white/20 transition-all group">
+            <div className="w-10 h-10 rounded-2xl bg-white/[0.06] border border-white/[0.10] flex items-center justify-center shrink-0 group-hover:bg-primary/10 group-hover:border-primary/20 transition-colors">
+              <Plug className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70 mb-1">
+                API Connections
+              </p>
+              <p className="text-3xl font-bold font-mono leading-none">
+                <StatValue value={stats.connectionCount} />
+              </p>
+            </div>
+            <ArrowUpRight className="w-4 h-4 text-muted-foreground/40 shrink-0 group-hover:text-primary/60 transition-colors" />
+          </Link>
+        </div>
+
+        {/* Alert status: conditional styling */}
+        <Link
+          href="/alerts"
+          className={`relative overflow-hidden glass-panel card-lift rounded-3xl p-6 flex flex-col justify-between hover:border-white/20 transition-all group ${
+            stats.alertCount > 0 ? "ring-1 ring-destructive/30 border-destructive/20" : ""
+          }`}
+        >
+          <div className="flex items-start justify-between">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
+              Budget Alerts
+            </p>
+            <div
+              className={`w-7 h-7 rounded-full flex items-center justify-center ${
+                stats.alertCount > 0
+                  ? "bg-destructive/10"
+                  : "bg-emerald-500/10"
+              }`}
             >
-              <StatValue value={card.value} />
+              <ArrowUpRight
+                className={`w-3.5 h-3.5 ${
+                  stats.alertCount > 0 ? "text-destructive/70" : "text-emerald-500/70"
+                }`}
+              />
+            </div>
+          </div>
+
+          <div className="mt-auto">
+            <p
+              className={`text-5xl font-bold font-mono leading-none ${
+                stats.alertCount > 0 ? "text-destructive" : "text-foreground"
+              }`}
+            >
+              <StatValue value={stats.alertCount} />
             </p>
-            <p className="text-[11px] text-muted-foreground mt-2.5">
-              {card.sub}
-            </p>
-          </MagicCard>
-        ))}
+            <div className="flex items-center gap-1.5 mt-4">
+              {stats.alertCount > 0 ? (
+                <>
+                  <AlertTriangle className="w-3.5 h-3.5 text-destructive/70" />
+                  <span className="text-xs text-destructive/80 font-medium">
+                    {stats.alertCount} need{stats.alertCount === 1 ? "s" : ""} attention
+                  </span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500/70" />
+                  <span className="text-xs text-emerald-500/80 font-medium">
+                    All clear
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        </Link>
       </div>
 
-      {/* ── Middle row: Spend chart + Top Projects ────────── */}
-      <div className="grid lg:grid-cols-5 gap-4">
-        {/* Chart — 3/5 */}
+      {/* ── Chart + Top Projects ──────────────────────────── */}
+      <div className="grid lg:grid-cols-5 gap-4 animate-fade-in-up stagger-2">
         <div className="lg:col-span-3 glass-panel card-hover-tint rounded-3xl p-5">
           <div className="flex items-center justify-between mb-5">
             <div>
@@ -206,7 +272,6 @@ export default async function DashboardPage({
           <SpendChart data={spendData} days={days} />
         </div>
 
-        {/* Top Projects — 2/5 */}
         <div className="lg:col-span-2 glass-panel card-hover-tint rounded-3xl p-5 flex flex-col">
           <div className="flex items-center justify-between mb-5">
             <h3 className="font-semibold">Top Projects</h3>
@@ -220,45 +285,54 @@ export default async function DashboardPage({
           </div>
 
           {topProjects.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center">
-              <p className="text-sm text-muted-foreground">
-                No project spend yet.
-              </p>
+            <div className="flex-1 flex flex-col items-center justify-center gap-3 py-6">
+              <div className="w-10 h-10 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center">
+                <FolderOpen className="w-5 h-5 text-muted-foreground/50" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-semibold text-foreground">No spend yet</p>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed max-w-[200px]">
+                  Create a project and connect an API key to start tracking.
+                </p>
+              </div>
+              <Link
+                href="/projects"
+                className="text-xs text-primary font-semibold hover:underline mt-1"
+              >
+                Create project →
+              </Link>
             </div>
           ) : (
             <div className="flex flex-col gap-4 flex-1">
               {topProjects.map((p) => {
                 const pct =
                   p.budgetLimit !== null
-                    ? Math.min(
-                      100,
-                      Math.round((p.monthlySpend / p.budgetLimit) * 100),
-                    )
+                    ? Math.min(100, Math.round((p.monthlySpend / p.budgetLimit) * 100))
                     : null;
                 return (
                   <Link key={p.id} href={`/projects/${p.id}`} className="block group">
                     <div className="flex items-center justify-between text-sm mb-1.5">
-                      <span className="font-semibold group-hover:text-primary transition-colors truncate max-w-[120px]">
+                      <span className="font-semibold group-hover:text-primary transition-colors truncate max-w-[120px] font-mono">
                         {p.name}
                       </span>
                       <span className="font-mono text-xs font-semibold shrink-0">
                         ${p.monthlySpend.toFixed(2)}
                         {p.budgetLimit !== null && (
                           <span className="text-muted-foreground font-normal">
-                            {" "}
-                            / ${p.budgetLimit}
+                            {" "}/ ${p.budgetLimit}
                           </span>
                         )}
                       </span>
                     </div>
                     <div className="h-1.5 rounded-full bg-white/6 overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all ${pct !== null && pct >= 100
+                        className={`h-full rounded-full transition-all ${
+                          pct !== null && pct >= 100
                             ? "bg-destructive"
                             : pct !== null && pct >= 80
                               ? "bg-yellow-500"
                               : "bg-primary"
-                          }`}
+                        }`}
                         style={{ width: pct !== null ? `${pct}%` : "0%" }}
                       />
                     </div>
@@ -280,9 +354,8 @@ export default async function DashboardPage({
         </div>
       </div>
 
-      {/* ── Bottom row: Alerts + Burn Rate ───────────────── */}
-      <div className="grid lg:grid-cols-5 gap-4">
-        {/* Recent Alerts — 3/5 */}
+      {/* ── Recent Alerts + Burn Rate ─────────────────────── */}
+      <div className="grid lg:grid-cols-5 gap-4 animate-fade-in-up stagger-3">
         <div className="lg:col-span-3 glass-panel card-hover-tint rounded-3xl p-5">
           <div className="flex items-center justify-between mb-5">
             <h3 className="font-semibold">Recent Alerts</h3>
@@ -295,11 +368,16 @@ export default async function DashboardPage({
           </div>
 
           {recentAlerts.length === 0 ? (
-            <div className="py-10 text-center">
-              <p className="text-sm text-muted-foreground">No alerts yet.</p>
-              <p className="text-xs text-muted-foreground/60 mt-1">
-                Fires when a budget threshold is crossed.
-              </p>
+            <div className="py-8 flex flex-col items-center gap-3 text-center">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">All clear</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Fires when a budget threshold is crossed.
+                </p>
+              </div>
             </div>
           ) : (
             <div className="space-y-2">
@@ -309,7 +387,9 @@ export default async function DashboardPage({
                   className="flex items-start gap-3 p-3 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
                 >
                   <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-bold font-mono uppercase tracking-wider border shrink-0 mt-0.5 ${severityStyles[a.severity] ?? severityStyles.info}`}
+                    className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-bold font-mono uppercase tracking-wider border shrink-0 mt-0.5 ${
+                      severityStyles[a.severity] ?? severityStyles.info
+                    }`}
                   >
                     {a.severity}
                   </span>
@@ -328,10 +408,8 @@ export default async function DashboardPage({
           )}
         </div>
 
-        {/* Burn Rate — 2/5 */}
         <div className="lg:col-span-2 glass-panel card-hover-tint rounded-3xl p-5 flex flex-col">
           <h3 className="font-semibold mb-4">Burn Rate</h3>
-
           <div className="flex-1 flex flex-col items-center justify-center py-2">
             <BurnRateGauge
               spent={stats.monthlySpend}
@@ -342,8 +420,6 @@ export default async function DashboardPage({
               7-day rolling average
             </p>
           </div>
-
-          {/* Breakdown */}
           <div className="space-y-2.5 pt-4 border-t border-white/6">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">This month</span>
@@ -369,7 +445,7 @@ export default async function DashboardPage({
 
       {/* ── CTA (no projects) ────────────────────────────── */}
       {stats.activeProjects === 0 && (
-        <div className="glass-panel cta-gradient rounded-3xl p-8 flex items-center gap-5 border-primary/25 shadow-[0_0_40px_rgba(255,80,11,0.08)]">
+        <div className="glass-panel cta-gradient rounded-3xl p-8 flex items-center gap-5 border-primary/25 shadow-[0_0_40px_rgba(255,80,11,0.08)] animate-fade-in-up stagger-4">
           <div className="w-12 h-12 rounded-2xl bg-primary/15 border border-primary/25 flex items-center justify-center shrink-0">
             <Zap className="w-6 h-6 text-primary" />
           </div>

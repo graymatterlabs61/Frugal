@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth/use-session";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -40,7 +40,7 @@ function Toggle({
 }
 
 export function SettingsForm({ userName, userEmail }: SettingsFormProps) {
-  const { data: session } = useSession();
+  const { user } = useSession();
   const [name, setName] = useState(userName);
   const [saving, setSaving] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -53,7 +53,7 @@ export function SettingsForm({ userName, userEmail }: SettingsFormProps) {
     e.preventDefault();
     setSaving(true);
     try {
-      await apiClient.patch("/api/auth/me", { fullName: name }, session?.backendToken);
+      await apiClient.patch("/api/auth/me", { fullName: name }, undefined);
       toast.success("Profile updated");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to save");
@@ -78,7 +78,7 @@ export function SettingsForm({ userName, userEmail }: SettingsFormProps) {
         </div>
         <form className="p-5 space-y-4" onSubmit={handleSaveProfile}>
           <div className="space-y-1.5">
-            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
               Full Name
             </label>
             <Input
@@ -89,7 +89,7 @@ export function SettingsForm({ userName, userEmail }: SettingsFormProps) {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
               Email
             </label>
             <Input
@@ -147,7 +147,7 @@ export function SettingsForm({ userName, userEmail }: SettingsFormProps) {
         </div>
         <form className="p-5 space-y-4" onSubmit={handleChangePassword}>
           <div className="space-y-1.5">
-            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
               New Password
             </label>
             <PasswordInput
@@ -159,7 +159,7 @@ export function SettingsForm({ userName, userEmail }: SettingsFormProps) {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
               Confirm New Password
             </label>
             <PasswordInput

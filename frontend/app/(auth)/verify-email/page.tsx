@@ -39,19 +39,19 @@ function VerifyEmailContent() {
   return (
     <AuthLayout showcase={<ShowcaseVerifyEmail />}>
       <div className="flex flex-col space-y-6">
-        <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+        <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center animate-fade-in-scale">
           <Mail className="w-7 h-7 text-primary" />
         </div>
 
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight mb-3">
+        <div className="animate-fade-in-up stagger-1">
+          <h1 className="text-4xl font-bold tracking-tight mb-2">
             Check your{" "}
             <span className="font-serif italic font-normal gradient-text-warm">inbox</span>
           </h1>
-          <p className="text-muted-foreground text-lg max-w-sm">
+          <p className="text-muted-foreground">
             {email ? (
               <>
-                We sent a verification link to{" "}
+                Verification link sent to{" "}
                 <span className="text-foreground font-medium">{email}</span>.
               </>
             ) : (
@@ -60,7 +60,7 @@ function VerifyEmailContent() {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-5 py-5 space-y-3">
+        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-5 py-5 space-y-3 animate-fade-in-up stagger-2">
           {["Open your email client", "Click the verification link", "You'll land on your dashboard"].map(
             (step, i) => (
               <div key={i} className="flex items-center gap-3">
@@ -73,7 +73,7 @@ function VerifyEmailContent() {
           )}
         </div>
 
-        <p className="text-xs text-muted-foreground/60 text-center">
+        <p className="text-xs text-muted-foreground/60 text-center animate-fade-in-up stagger-3">
           Check your spam folder if it doesn&apos;t arrive within a minute.
         </p>
 
@@ -82,7 +82,7 @@ function VerifyEmailContent() {
             variant="outline"
             onClick={handleResend}
             disabled={resending || resent}
-            className="h-11 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 text-sm transition-all duration-200"
+            className="h-11 rounded-xl border-white/[0.10] bg-white/[0.03] hover:bg-white/[0.07] hover:border-white/[0.18] text-sm transition-all duration-200 animate-fade-in-up stagger-4"
           >
             {resending ? (
               <>
@@ -100,15 +100,15 @@ function VerifyEmailContent() {
           </Button>
         )}
 
-        <div className="text-center pt-2">
+        <p className="text-center animate-fade-in-up stagger-4">
           <Link
             href="/login"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Back to sign in
           </Link>
-        </div>
+        </p>
       </div>
     </AuthLayout>
   );

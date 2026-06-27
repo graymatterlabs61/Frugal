@@ -72,21 +72,22 @@ export function FinalCTA() {
         }
       />
       <div className="p-8 md:p-14">
-        <h2 className="text-left text-neutral-700 dark:text-neutral-200 text-xl md:text-3xl tracking-tight font-medium">
-          Stop paying for AI <span className="font-bold text-black dark:text-white">you can&apos;t see</span>.
+        <h2 className="text-left text-foreground text-2xl md:text-4xl tracking-tight font-bold leading-tight max-w-2xl">
+          Stop paying for AI{" "}
+          <span className="text-primary">you can&apos;t see</span>.
         </h2>
-        <p className="text-left text-neutral-600 mt-4 max-w-lg dark:text-neutral-200 text-base md:text-lg tracking-tight font-medium">
-          Whether you&apos;re a solo dev protecting a side project or a team lead managing AI spend across 20 engineers — Frugal gives you the visibility and control you need.
+        <p className="text-left text-muted-foreground mt-5 max-w-lg text-base md:text-lg leading-relaxed">
+          Whether you&apos;re a solo dev protecting a side project or a team lead managing AI spend across 20 engineers, Frugal gives you the visibility and control you need.
         </p>
-        <div className="flex items-start sm:items-center flex-col sm:flex-row sm:gap-4">
-          <Link href="/signup" className="mt-8">
+        <div className="flex items-start sm:items-center flex-col sm:flex-row gap-4 mt-8">
+          <Link href="/wishlist">
             <ShimmerButton
               background="rgba(255,80,11,1)"
               shimmerColor="#ffffff"
               borderRadius="8px"
               className="text-base font-semibold gap-2"
             >
-              See your AI spend now
+              Join wishlist — 25% off launch
               <svg
                 stroke="currentColor"
                 fill="currentColor"
@@ -106,7 +107,10 @@ export function FinalCTA() {
               </svg>
             </ShimmerButton>
           </Link>
-          <a href="mailto:support@getfrugal.dev" className="mt-8 flex space-x-2 items-center group text-base px-4 py-2 rounded-lg text-black dark:text-white border border-neutral-300 dark:border-neutral-700 shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset] hover:border-neutral-400 dark:hover:border-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+          <a
+            href="mailto:support@getfrugal.dev"
+            className="flex items-center gap-2 group text-sm font-medium px-4 py-2.5 rounded-lg text-foreground border border-white/[0.12] bg-white/[0.04] hover:border-white/[0.22] hover:bg-white/[0.08] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
             <span>Talk to us</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -118,7 +122,7 @@ export function FinalCTA() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-black dark:text-white group-hover:translate-x-1 stroke-[1px] h-3 w-3 mt-0.5 transition-transform duration-200"
+              className="group-hover:translate-x-1 stroke-[1px] h-3 w-3 mt-0.5 transition-transform duration-200"
             >
               <path d="M15.02 19.52c-2.341 .736 -5 .606 -7.32 -.52l-4.7 1l1.3 -3.9c-2.324 -3.437 -1.426 -7.872 2.1 -10.374c3.526 -2.501 8.59 -2.296 11.845 .48c1.649 1.407 2.575 3.253 2.742 5.152"></path>
               <path d="M19 22v.01"></path>

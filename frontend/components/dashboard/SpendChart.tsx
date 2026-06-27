@@ -11,18 +11,6 @@ import {
 } from "recharts";
 import type { SpendRow } from "@/lib/queries/dashboard";
 
-const PROVIDER_COLORS: Record<string, string> = {
-  openai:    "#10a37f",
-  anthropic: "#d97706",
-  replicate: "#ea2805",
-  falai:     "#ec0648",
-  gemini:    "#4285f4",
-  groq:      "#f55036",
-  mistral:   "#fa520f",
-};
-
-const PROVIDERS = Object.keys(PROVIDER_COLORS);
-
 interface SpendChartProps {
   data: SpendRow[];
   days: number;
@@ -45,12 +33,9 @@ function CustomTooltip({
 }) {
   if (!active || !payload?.length) return null;
 
-  const nonZero = payload.filter((p) => p.value > 0);
-  if (nonZero.length === 0) return null;
+  const total = payload.reduce((sum, p) => sum + (p.value ?? 0), 0);
+  if (total === 0) return null;
 
-  const total = nonZero.reduce((sum, p) => sum + p.value, 0);
-
-  // Format date label
   const formatted = label
     ? new Date(label + "T00:00:00").toLocaleDateString("en-US", {
         month: "short",
@@ -59,22 +44,10 @@ function CustomTooltip({
     : label;
 
   return (
-    <div className="bg-card border border-border rounded-xl px-3 py-2 shadow-xl min-w-[140px]">
+    <div className="bg-card border border-border rounded-xl px-3 py-2 shadow-xl min-w-[120px]">
       <p className="text-xs text-muted-foreground mb-1.5">{formatted}</p>
-      {nonZero.map((p) => (
-        <div key={p.dataKey} className="flex items-center justify-between gap-4 text-xs mb-0.5">
-          <span className="flex items-center gap-1.5">
-            <span
-              className="inline-block w-2 h-2 rounded-full"
-              style={{ backgroundColor: p.color }}
-            />
-            <span className="capitalize">{p.dataKey}</span>
-          </span>
-          <span className="font-mono font-medium">${p.value.toFixed(4)}</span>
-        </div>
-      ))}
-      <div className="border-t border-border/50 mt-1.5 pt-1.5 flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">Total</span>
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">Spend</span>
         <span className="font-mono font-bold">${total.toFixed(4)}</span>
       </div>
     </div>
@@ -82,12 +55,7 @@ function CustomTooltip({
 }
 
 export function SpendChart({ data, days: _days }: SpendChartProps) {
-  // Empty state: no data or all zeroes
-  const hasData =
-    data.length > 0 &&
-    data.some((row) =>
-      PROVIDERS.some((p) => typeof row[p] === "number" && (row[p] as number) > 0),
-    );
+  const hasData = data.length > 0 && data.some((row) => row.costUsd > 0);
 
   if (!hasData) {
     return (
@@ -122,18 +90,12 @@ export function SpendChart({ data, days: _days }: SpendChartProps) {
           tickFormatter={(v: number) => `$${v}`}
         />
         <Tooltip content={<CustomTooltip />} />
-        {PROVIDERS.map((provider, index) => {
-          const isLast = index === PROVIDERS.length - 1;
-          return (
-            <Bar
-              key={provider}
-              dataKey={provider}
-              stackId="spend"
-              fill={PROVIDER_COLORS[provider]}
-              radius={isLast ? [2, 2, 0, 0] : [0, 0, 0, 0]}
-            />
-          );
-        })}
+        <Bar
+          dataKey="costUsd"
+          stackId="spend"
+          fill="#FF500B"
+          radius={[2, 2, 0, 0]}
+        />
       </BarChart>
     </ResponsiveContainer>
   );

@@ -119,8 +119,8 @@ export default function TermsPage() {
       <LegalSection id="payment-protocol" num={3} title="Payment Protocol">
         <p>
           Frugal offers various subscription tiers for individual developers and
-          large-scale enterprises. Our billing is handled through verified
-          processors including Stripe and Lemon Squeezy.
+          large-scale enterprises. Our billing is handled through Stripe, a PCI
+          DSS Level 1 certified payment processor.
         </p>
 
         <LegalList>

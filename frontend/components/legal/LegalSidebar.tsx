@@ -119,20 +119,20 @@ export function LegalSidebar({ sections, variant = "legal" }: SidebarProps) {
 
       <div>
         <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground/50">
-          Compliance
+          Security
         </h3>
         <ul className="flex flex-col gap-3 px-1 text-xs font-medium text-muted-foreground/70">
           <li className="flex items-center gap-3">
             <svg className="h-3.5 w-3.5 text-emerald-500/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-            GDPR Compliant
+            AES-256 Encryption
           </li>
           <li className="flex items-center gap-3">
             <svg className="h-3.5 w-3.5 text-emerald-500/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-            SOC 2 Type II
+            TLS/HTTPS in Transit
           </li>
           <li className="flex items-center gap-3">
             <svg className="h-3.5 w-3.5 text-emerald-500/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-            Privacy Shield
+            GDPR Practices
           </li>
         </ul>
       </div>
