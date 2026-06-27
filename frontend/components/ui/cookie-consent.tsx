@@ -13,7 +13,7 @@ export function CookieConsent() {
     if (consent === "granted") {
       // Apply consent for returning users
       (window as any).dataLayer = (window as any).dataLayer || [];
-      function gtag(){(window as any).dataLayer.push(arguments);}
+      function gtag(..._args: any[]) {(window as any).dataLayer.push(arguments);}
       gtag("consent", "update", {
         ad_storage: "granted",
         analytics_storage: "granted",
