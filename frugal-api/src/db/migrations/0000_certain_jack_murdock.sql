@@ -170,6 +170,7 @@ ALTER TABLE "usage_records" ADD CONSTRAINT "usage_records_user_id_users_id_fk" F
 CREATE INDEX "idx_alert_log_project_id" ON "alert_log" USING btree ("project_id");--> statement-breakpoint
 CREATE INDEX "idx_alert_log_user_id" ON "alert_log" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "idx_alert_log_triggered_at" ON "alert_log" USING btree ("triggered_at");--> statement-breakpoint
+CREATE INDEX "idx_alert_log_rule_id" ON "alert_log" USING btree ("rule_id");--> statement-breakpoint
 CREATE INDEX "idx_api_connections_user_id" ON "api_connections" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "idx_api_connections_project_id" ON "api_connections" USING btree ("project_id");--> statement-breakpoint
 CREATE INDEX "idx_budget_rules_project_id" ON "budget_rules" USING btree ("project_id");--> statement-breakpoint
@@ -185,6 +186,7 @@ CREATE INDEX "idx_projects_user_id" ON "projects" USING btree ("user_id");--> st
 CREATE INDEX "idx_projects_org_id" ON "projects" USING btree ("org_id");--> statement-breakpoint
 CREATE INDEX "idx_proxy_requests_org_id" ON "proxy_requests" USING btree ("org_id");--> statement-breakpoint
 CREATE INDEX "idx_proxy_requests_member_user_id" ON "proxy_requests" USING btree ("member_user_id");--> statement-breakpoint
+CREATE INDEX "idx_proxy_requests_project_id" ON "proxy_requests" USING btree ("project_id");--> statement-breakpoint
 CREATE INDEX "idx_proxy_requests_created_at" ON "proxy_requests" USING btree ("created_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "uq_usage_records_conn_date_model" ON "usage_records" USING btree ("connection_id","date","model");--> statement-breakpoint
 CREATE INDEX "idx_usage_records_user_id" ON "usage_records" USING btree ("user_id");--> statement-breakpoint

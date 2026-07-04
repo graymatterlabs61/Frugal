@@ -196,6 +196,7 @@ export const proxyRequests = pgTable(
   (t) => [
     index('idx_proxy_requests_org_id').on(t.orgId),
     index('idx_proxy_requests_member_user_id').on(t.memberUserId),
+    index('idx_proxy_requests_project_id').on(t.projectId),
     index('idx_proxy_requests_created_at').on(t.createdAt),
   ],
 );
@@ -252,6 +253,7 @@ export const alertLog = pgTable(
     index('idx_alert_log_project_id').on(t.projectId),
     index('idx_alert_log_user_id').on(t.userId),
     index('idx_alert_log_triggered_at').on(t.triggeredAt),
+    index('idx_alert_log_rule_id').on(t.ruleId),
   ],
 );
 

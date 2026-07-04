@@ -1,5 +1,5 @@
 {
-  "id": "21632164-455e-4be6-863c-9a4ac43bf7b1",
+  "id": "b35c411a-539f-4e52-a9b3-d3c932625cd0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -132,6 +132,21 @@
           "columns": [
             {
               "expression": "triggered_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_alert_log_rule_id": {
+          "name": "idx_alert_log_rule_id",
+          "columns": [
+            {
+              "expression": "rule_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1163,6 +1178,21 @@
           "columns": [
             {
               "expression": "member_user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_proxy_requests_project_id": {
+          "name": "idx_proxy_requests_project_id",
+          "columns": [
+            {
+              "expression": "project_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
