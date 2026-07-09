@@ -92,4 +92,36 @@ describe('errorHandler', () => {
       error: { code: 'VALIDATION_ERROR', message: 'bad input', details: [{ field: 'email' }] },
     });
   });
+
+  it('passes through exposable 4xx http-errors (body-parser style)', () => {
+    const res = mockRes();
+    const err = Object.assign(new Error('request entity too large'), {
+      status: 413,
+      expose: true,
+    });
+    errorHandler(err, req, res, next);
+    expect(res.status).toHaveBeenCalledWith(413);
+    expect(res.json).toHaveBeenCalledWith({
+      error: { code: 'REQUEST_ERROR', message: 'request entity too large' },
+    });
+  });
+
+  it('does not leak message or skip 500 for status-bearing 5xx errors', () => {
+    const res = mockRes();
+    const err = Object.assign(new Error('db creds invalid at 10.0.0.5'), { status: 500 });
+    errorHandler(err, req, res, next);
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: { code: 'INTERNAL_ERROR', message: 'Internal server error' },
+    });
+  });
+
+  it('handles non-Error throws without crashing', () => {
+    const res = mockRes();
+    errorHandler('oops' as unknown as Error, req, res, next);
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: { code: 'INTERNAL_ERROR', message: 'Internal server error' },
+    });
+  });
 });
