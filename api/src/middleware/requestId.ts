@@ -1,17 +1,9 @@
-import type { Request, Response, NextFunction } from 'express';
-import { randomUUID } from 'crypto';
-import * as Sentry from '@sentry/node';
+import { randomUUID } from 'node:crypto';
+import type { RequestHandler } from 'express';
 
-declare global {
-  namespace Express {
-    interface Request {
-      id: string;
-    }
-  }
-}
-
-export function requestId(req: Request, _res: Response, next: NextFunction): void {
-  req.id = (req.headers['x-request-id'] as string | undefined) ?? randomUUID();
-  Sentry.setTag('request_id', req.id);
+export const requestId: RequestHandler = (req, res, next) => {
+  const incoming = req.header('x-request-id');
+  req.id = incoming && incoming.length <= 128 ? incoming : randomUUID();
+  res.setHeader('X-Request-Id', req.id);
   next();
-}
+};

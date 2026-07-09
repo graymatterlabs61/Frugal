@@ -1,52 +1,49 @@
 export class AppError extends Error {
-  constructor(
-    public readonly code: string,
-    message: string,
-    public readonly statusCode: number = 500,
-    public readonly details?: unknown,
-  ) {
+  readonly statusCode: number;
+  readonly code: string;
+  readonly details?: unknown;
+
+  constructor(message: string, statusCode = 500, code = 'INTERNAL_ERROR', details?: unknown) {
     super(message);
-    this.name = this.constructor.name;
-    Error.captureStackTrace(this, this.constructor);
+    this.name = new.target.name;
+    this.statusCode = statusCode;
+    this.code = code;
+    if (details !== undefined) this.details = details;
   }
 }
 
 export class ValidationError extends AppError {
   constructor(message: string, details?: unknown) {
-    super('VALIDATION_ERROR', message, 400, details);
+    super(message, 400, 'VALIDATION_ERROR', details);
   }
 }
 
 export class UnauthorizedError extends AppError {
   constructor(message = 'Unauthorized') {
-    super('UNAUTHORIZED', message, 401);
+    super(message, 401, 'UNAUTHORIZED');
   }
 }
 
 export class ForbiddenError extends AppError {
   constructor(message = 'Forbidden') {
-    super('FORBIDDEN', message, 403);
+    super(message, 403, 'FORBIDDEN');
   }
 }
 
 export class NotFoundError extends AppError {
   constructor(message = 'Not found') {
-    super('NOT_FOUND', message, 404);
+    super(message, 404, 'NOT_FOUND');
   }
 }
 
 export class ConflictError extends AppError {
-  constructor(message: string) {
-    super('CONFLICT', message, 409);
+  constructor(message = 'Conflict') {
+    super(message, 409, 'CONFLICT');
   }
 }
 
 export class RateLimitError extends AppError {
   constructor(message = 'Too many requests') {
-    super('RATE_LIMIT_EXCEEDED', message, 429);
+    super(message, 429, 'RATE_LIMITED');
   }
-}
-
-export function isAppError(error: unknown): error is AppError {
-  return error instanceof AppError;
 }

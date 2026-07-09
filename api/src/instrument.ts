@@ -1,15 +1,16 @@
 import * as Sentry from '@sentry/node';
-import { config } from '@/config/unifiedConfig';
+import { config } from './config/unifiedConfig.js';
 
 Sentry.init({
   dsn: config.sentry.dsn,
+  enabled: Boolean(config.sentry.dsn) && config.env === 'production',
   environment: config.env,
-  tracesSampleRate: config.isProduction ? 0.1 : 1.0,
+  tracesSampleRate: 0.1,
   beforeSend(event) {
-    // Scrub sensitive fields from error payloads
-    if (event.request?.headers) {
-      delete event.request.headers['authorization'];
-      delete event.request.headers['cookie'];
+    // spec §8: API keys + emails scrubbed from error payloads
+    if (event.user) {
+      delete event.user.email;
+      delete event.user.ip_address;
     }
     return event;
   },

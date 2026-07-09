@@ -1,49 +1,35 @@
-import { createCipheriv, createDecipheriv, randomBytes, timingSafeEqual } from 'crypto';
-import { config } from '@/config/unifiedConfig';
+import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
+import { config } from '../config/unifiedConfig.js';
 
 const ALGORITHM = 'aes-256-gcm';
-const IV_LENGTH = 12;   // 96-bit IV for GCM
-const TAG_LENGTH = 16;
+const IV_LENGTH = 12; // NIST-recommended for GCM
 
-function getKey(): Buffer {
+function key(): Buffer {
   return Buffer.from(config.encryption.key, 'hex');
 }
 
+/** Returns `iv(hex):ciphertext(base64):authTag(hex)` per spec §8. */
 export function encrypt(plaintext: string): string {
   const iv = randomBytes(IV_LENGTH);
-  const key = getKey();
-  const cipher = createCipheriv(ALGORITHM, key, iv);
-
-  const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
+  const cipher = createCipheriv(ALGORITHM, key(), iv);
+  const ciphertext = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
   const authTag = cipher.getAuthTag();
-
-  // Format: hex(iv):base64(ciphertext):hex(authTag)
-  return `${iv.toString('hex')}:${encrypted.toString('base64')}:${authTag.toString('hex')}`;
+  return `${iv.toString('hex')}:${ciphertext.toString('base64')}:${authTag.toString('hex')}`;
 }
 
-export function decrypt(encoded: string): string {
-  const parts = encoded.split(':');
-  if (parts.length !== 3) throw new Error('Invalid encrypted format');
-
-  const [ivHex, ciphertextB64, authTagHex] = parts;
-  const iv = Buffer.from(ivHex, 'hex');
-  const ciphertext = Buffer.from(ciphertextB64, 'base64');
-  const authTag = Buffer.from(authTagHex, 'hex');
-  const key = getKey();
-
-  const decipher = createDecipheriv(ALGORITHM, key, iv);
-  decipher.setAuthTag(authTag);
-
-  return Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString('utf8');
-}
-
-export function constantTimeEqual(a: string, b: string): boolean {
-  const aBuf = Buffer.from(a);
-  const bBuf = Buffer.from(b);
-  if (aBuf.length !== bBuf.length) return false;
-  return timingSafeEqual(aBuf, bBuf);
-}
-
-export function extractSuffix(apiKey: string): string {
-  return apiKey.slice(-4);
+export function decrypt(payload: string): string {
+  try {
+    const parts = payload.split(':');
+    if (parts.length !== 3) throw new Error('bad format');
+    const [ivHex, ctB64, tagHex] = parts as [string, string, string];
+    const decipher = createDecipheriv(ALGORITHM, key(), Buffer.from(ivHex, 'hex'));
+    decipher.setAuthTag(Buffer.from(tagHex, 'hex'));
+    const plaintext = Buffer.concat([
+      decipher.update(Buffer.from(ctB64, 'base64')),
+      decipher.final(),
+    ]);
+    return plaintext.toString('utf8');
+  } catch {
+    throw new Error('Decryption failed');
+  }
 }

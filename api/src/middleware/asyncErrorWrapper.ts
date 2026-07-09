@@ -1,9 +1,9 @@
-import type { Request, Response, NextFunction, RequestHandler } from 'express';
+import type { NextFunction, Request, RequestHandler, Response } from 'express';
 
-export function asyncErrorWrapper(
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<void>,
-): RequestHandler {
+type AsyncHandler = (req: Request, res: Response, next: NextFunction) => Promise<unknown>;
+
+export function asyncErrorWrapper(fn: AsyncHandler): RequestHandler {
   return (req, res, next) => {
-    fn(req, res, next).catch(next);
+    Promise.resolve(fn(req, res, next)).catch(next);
   };
 }

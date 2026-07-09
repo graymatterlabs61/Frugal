@@ -1,30 +1,19 @@
-import app from './app';
-import { config } from '@/config/unifiedConfig';
-import { logger } from '@/utils/logger';
-import { startPollingWorker } from '@/workers/pollingWorker';
-import { startAlertDispatcher } from '@/workers/alertDispatcher';
-import { registerScheduledJobs } from '@/workers/scheduler';
+import './instrument.js';
+import { createApp } from './app.js';
+import { config } from './config/unifiedConfig.js';
+import { logger } from './utils/logger.js';
 
-const pollingWorker = startPollingWorker();
-const alertWorker = startAlertDispatcher();
+const app = createApp();
 
-const server = app.listen(config.server.port, async () => {
-  logger.info(`frugal-api running on port ${config.server.port} [${config.env}]`);
-  await registerScheduledJobs();
+const server = app.listen(config.port, () => {
+  logger.info({ port: config.port, env: config.env }, 'frugal-api listening');
 });
 
-// Graceful shutdown — drain BullMQ workers before closing the HTTP server
-const shutdown = (): void => {
-  logger.info('Shutting down...');
-  void Promise.all([pollingWorker.close(), alertWorker.close()]).then(() => {
-    server.close(() => {
-      logger.info('HTTP server closed');
-      process.exit(0);
-    });
-  });
-};
+function shutdown(signal: string) {
+  logger.info({ signal }, 'shutting down');
+  server.close(() => process.exit(0));
+  setTimeout(() => process.exit(1), 10_000).unref();
+}
 
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
-
-export default server;
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
