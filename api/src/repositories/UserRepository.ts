@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../db/client.js';
 import { users, type User, type NewUser } from '../db/schema.js';
+import { NotFoundError } from '../utils/errors.js';
 
 export class UserRepository {
   async findByEmail(email: string): Promise<User | undefined> {
@@ -29,6 +30,7 @@ export class UserRepository {
       .set({ ...data, updatedAt: new Date() })
       .where(eq(users.id, id))
       .returning();
-    return user!;
+    if (!user) throw new NotFoundError('User not found');
+    return user;
   }
 }

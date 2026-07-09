@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { UserRepository } from '../../src/repositories/UserRepository.js';
+import { NotFoundError } from '../../src/utils/errors.js';
 
 describe('UserRepository (requires a reachable Postgres via DATABASE_URL)', () => {
   const repo = new UserRepository();
@@ -30,5 +31,11 @@ describe('UserRepository (requires a reachable Postgres via DATABASE_URL)', () =
     const updated = await repo.update(created.id, { fullName: 'New Name' });
     expect(updated.fullName).toBe('New Name');
     expect(updated.updatedAt.getTime()).toBeGreaterThan(created.updatedAt.getTime());
+  });
+
+  it('throws NotFoundError when updating an unknown id', async () => {
+    await expect(repo.update(randomUUID(), { fullName: 'Nobody' })).rejects.toThrow(
+      NotFoundError,
+    );
   });
 });
