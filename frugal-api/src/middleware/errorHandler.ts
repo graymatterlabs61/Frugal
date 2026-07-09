@@ -1,4 +1,4 @@
-import type { ErrorRequestHandler } from 'express';
+﻿import type { ErrorRequestHandler } from 'express';
 import { ZodError } from 'zod';
 import * as Sentry from '@sentry/node';
 import { AppError } from '../utils/errors.js';
@@ -22,6 +22,12 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
         details: err.issues.map((i) => ({ path: i.path.join('.'), message: i.message })),
       },
     });
+    return;
+  }
+
+  // Handle Express built-in errors like PayloadTooLargeError (status 413)
+  if ('status' in err && typeof err.status === 'number') {
+    res.status(err.status).json({ error: { code: 'REQUEST_ERROR', message: err.message || 'Request error' } });
     return;
   }
 
