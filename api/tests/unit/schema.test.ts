@@ -36,6 +36,24 @@ describe('db schema', () => {
     expect(actual).toEqual(expected);
   });
 
+  it('types the 10 user-FK columns as text, matching better-auth\'s text-typed users.id', () => {
+    const fkColumns = [
+      schema.organizations.ownerId,
+      schema.orgMembers.userId,
+      schema.projects.userId,
+      schema.apiConnections.userId,
+      schema.usageRecords.userId,
+      schema.ingestEvents.userId,
+      schema.proxyRequests.memberUserId,
+      schema.budgetRules.userId,
+      schema.alertLog.userId,
+      schema.notifications.userId,
+    ];
+    for (const column of fkColumns) {
+      expect(column.columnType).toBe('PgText');
+    }
+  });
+
   it('defines the 7 enums from spec §5', () => {
     expect(schema.planEnum.enumValues).toEqual([
       'free', 'plus', 'pro', 'corp_starter', 'corp_growth', 'corp_scale', 'enterprise',
