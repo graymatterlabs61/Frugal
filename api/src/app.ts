@@ -7,6 +7,7 @@ import { config } from './config/unifiedConfig.js';
 import { requestId } from './middleware/requestId.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { healthRoutes } from './routes/healthRoutes.js';
+import { projectRoutes } from './routes/projectRoutes.js';
 
 export function createApp() {
   const app = express();
@@ -27,7 +28,9 @@ export function createApp() {
 
   app.use('/health', healthRoutes);
 
-  // Plans 3–6 mount domain routers here under /api/v1/
+  app.use('/api/v1/projects', projectRoutes);
+
+  // Plans 4–6 mount domain routers here under /api/v1/
 
   app.use((_req, res) => {
     res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Route not found' } });
