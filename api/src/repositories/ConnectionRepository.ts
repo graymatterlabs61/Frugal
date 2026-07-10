@@ -60,6 +60,11 @@ export const ConnectionRepository = {
     userId: string,
     data: { label?: string | undefined; isActive?: boolean | undefined },
   ) {
+    // ponytail: empty patch has no columns to SET, which is a Postgres syntax
+    // error — treat it as a no-op and return the current row instead.
+    if (Object.keys(data).length === 0) {
+      return this.findByIdForUser(id, userId);
+    }
     const [row] = await db
       .update(apiConnections)
       .set(data)

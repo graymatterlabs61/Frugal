@@ -84,6 +84,17 @@ describe('connections routes (requires a real Postgres via DATABASE_URL)', () =>
     expect(JSON.stringify(res.body)).not.toContain('sk-test-1234567890');
   });
 
+  it('no-ops an empty-body PATCH and returns the current connection', async () => {
+    const res = await request(app)
+      .patch(`/api/v1/connections/${connectionId}`)
+      .set('Cookie', cookie)
+      .send({});
+    expect(res.status).toBe(200);
+    expect(res.body.connection.label).toBe('Renamed');
+    expect(res.body.connection.isActive).toBe(false);
+    expect(res.body.connection.apiKeyEncrypted).toBeUndefined();
+  });
+
   it('lists connections without leaking the key or its ciphertext', async () => {
     const res = await request(app).get('/api/v1/connections').set('Cookie', cookie);
     expect(res.status).toBe(200);
