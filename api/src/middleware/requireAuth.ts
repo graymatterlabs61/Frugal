@@ -10,5 +10,8 @@ export async function requireAuth(req: Request, _res: Response, next: NextFuncti
     return;
   }
   req.userId = session.user.id;
+  if (session.user.plan != null) {
+    req.userPlan = session.user.plan;
+  }
   next();
 }

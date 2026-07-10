@@ -3,6 +3,7 @@ declare global {
     interface Request {
       id: string;
       userId?: string;
+      userPlan?: string;
     }
   }
 }
