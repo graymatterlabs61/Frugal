@@ -2,16 +2,17 @@ import { Resend } from 'resend';
 import { config } from '../config/unifiedConfig.js';
 import { logger } from './logger.js';
 
-const SUBJECTS: Record<'sign-in' | 'email-verification' | 'forget-password', string> = {
+const SUBJECTS: Record<'sign-in' | 'email-verification' | 'forget-password' | 'change-email', string> = {
   'sign-in': 'Your Frugal sign-in code',
   'email-verification': 'Verify your Frugal email',
   'forget-password': 'Your Frugal password reset code',
+  'change-email': 'Confirm your new Frugal email address',
 };
 
 export async function sendOtpEmail(params: {
   to: string;
   otp: string;
-  purpose: 'sign-in' | 'email-verification' | 'forget-password';
+  purpose: 'sign-in' | 'email-verification' | 'forget-password' | 'change-email';
 }): Promise<void> {
   const { to, otp, purpose } = params;
 
