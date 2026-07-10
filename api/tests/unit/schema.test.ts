@@ -1,11 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { getTableName } from 'drizzle-orm';
 import * as schema from '../../src/db/schema.js';
+import * as authSchema from '../../src/db/authSchema.js';
 
 describe('db schema', () => {
-  it('defines all 11 tables from spec §5', () => {
+  it('re-exports better-auth\'s users table for FK references', () => {
+    expect(getTableName(authSchema.users)).toBe('users');
+  });
+
+  it('defines the 10 domain tables from spec §5 (users now owned by better-auth)', () => {
     const expected = [
-      'users',
       'organizations',
       'org_members',
       'projects',
@@ -18,7 +22,6 @@ describe('db schema', () => {
       'notifications',
     ];
     const actual = [
-      schema.users,
       schema.organizations,
       schema.orgMembers,
       schema.projects,

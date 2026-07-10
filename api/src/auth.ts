@@ -5,6 +5,7 @@ import { importPKCS8, SignJWT } from 'jose';
 import { db } from './db/client.js';
 import { config } from './config/unifiedConfig.js';
 import { sendOtpEmail } from './utils/email.js';
+import * as authSchema from './db/authSchema.js';
 
 async function generateAppleClientSecret(
   clientId: string,
@@ -25,7 +26,7 @@ async function generateAppleClientSecret(
 }
 
 export const auth = betterAuth({
-  database: drizzleAdapter(db, { provider: 'pg', usePlural: true }),
+  database: drizzleAdapter(db, { provider: 'pg', usePlural: true, schema: authSchema }),
   baseURL: config.betterAuth.url,
   secret: config.betterAuth.secret,
   emailAndPassword: { enabled: true },

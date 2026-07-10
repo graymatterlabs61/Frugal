@@ -14,6 +14,7 @@ import {
   index,
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
+import { users } from './authSchema.js';
 
 // ---- Enums (spec §5) ----
 export const planEnum = pgEnum('plan_enum', [
@@ -30,26 +31,12 @@ export const ruleActionEnum = pgEnum('rule_action_enum', ['alert', 'block', 'thr
 export const alertStatusEnum = pgEnum('alert_status_enum', ['active', 'acknowledged', 'resolved']);
 export const orgRoleEnum = pgEnum('org_role_enum', ['owner', 'admin', 'member', 'viewer']);
 
-// ---- Auth domain ----
-export const users = pgTable('users', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  email: text('email').notNull().unique(),
-  fullName: text('full_name'),
-  passwordHash: text('password_hash'),
-  googleId: text('google_id').unique(),
-  plan: planEnum('plan').notNull().default('free'),
-  stripeCustomerId: text('stripe_customer_id'),
-  stripeSubscriptionId: text('stripe_subscription_id'),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-});
-
 export const organizations = pgTable(
   'organizations',
   {
     id: uuid('id').primaryKey().defaultRandom(),
     name: text('name').notNull(),
-    ownerId: uuid('owner_id')
+    ownerId: text('owner_id')
       .notNull()
       .references(() => users.id),
     plan: planEnum('plan').notNull().default('corp_starter'),
@@ -68,7 +55,7 @@ export const orgMembers = pgTable(
     orgId: uuid('org_id')
       .notNull()
       .references(() => organizations.id, { onDelete: 'cascade' }),
-    userId: uuid('user_id')
+    userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     role: orgRoleEnum('role').notNull(),
@@ -85,7 +72,7 @@ export const projects = pgTable(
   'projects',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+    userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
     orgId: uuid('org_id').references(() => organizations.id, { onDelete: 'cascade' }),
     name: text('name').notNull(),
     description: text('description'),
@@ -102,7 +89,7 @@ export const apiConnections = pgTable(
   'api_connections',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id')
+    userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     projectId: uuid('project_id')
@@ -131,7 +118,7 @@ export const usageRecords = pgTable(
     connectionId: uuid('connection_id')
       .notNull()
       .references(() => apiConnections.id, { onDelete: 'cascade' }),
-    userId: uuid('user_id')
+    userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     date: date('date').notNull(),
@@ -153,7 +140,7 @@ export const ingestEvents = pgTable(
   'ingest_events',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id')
+    userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     endUserId: text('end_user_id').notNull(),
@@ -180,7 +167,7 @@ export const proxyRequests = pgTable(
     orgId: uuid('org_id')
       .notNull()
       .references(() => organizations.id, { onDelete: 'cascade' }),
-    memberUserId: uuid('member_user_id')
+    memberUserId: text('member_user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     projectId: uuid('project_id').references(() => projects.id),
@@ -209,7 +196,7 @@ export const budgetRules = pgTable(
     projectId: uuid('project_id')
       .notNull()
       .references(() => projects.id, { onDelete: 'cascade' }),
-    userId: uuid('user_id')
+    userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     budgetWindow: budgetWindowEnum('budget_window').notNull(),
@@ -233,7 +220,7 @@ export const alertLog = pgTable(
     projectId: uuid('project_id')
       .notNull()
       .references(() => projects.id, { onDelete: 'cascade' }),
-    userId: uuid('user_id')
+    userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     ruleId: uuid('rule_id').references(() => budgetRules.id, { onDelete: 'set null' }),
@@ -261,7 +248,7 @@ export const notifications = pgTable(
   'notifications',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id')
+    userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     type: text('type').notNull(),
