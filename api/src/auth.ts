@@ -73,6 +73,7 @@ export const auth = betterAuth({
     },
   },
   rateLimit: {
+    enabled: true, // better-auth only enables this by default in production
     customRules: {
       '/sign-in/email': { window: 900, max: 5 }, // spec §8: 5 attempts / 15 min
     },
