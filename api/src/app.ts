@@ -1,6 +1,8 @@
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import { toNodeHandler } from 'better-auth/node';
+import { auth } from './auth.js';
 import { config } from './config/unifiedConfig.js';
 import { requestId } from './middleware/requestId.js';
 import { errorHandler } from './middleware/errorHandler.js';
@@ -18,11 +20,14 @@ export function createApp() {
     }),
   );
   app.use(requestId);
+
+  app.use('/api/auth', toNodeHandler(auth));
+
   app.use(express.json({ limit: '256kb' }));
 
   app.use('/health', healthRoutes);
 
-  // Plans 2–6 mount domain routers here under /api/v1/
+  // Plans 3–6 mount domain routers here under /api/v1/
 
   app.use((_req, res) => {
     res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Route not found' } });
