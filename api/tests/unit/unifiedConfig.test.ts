@@ -6,8 +6,8 @@ const validEnv = {
   PORT: '4001',
   DATABASE_URL: 'postgres://u:p@host/db',
   REDIS_URL: 'rediss://host:6379',
-  JWT_SECRET: 'x'.repeat(32),
-  JWT_EXPIRES_IN_SECONDS: '604800',
+  BETTER_AUTH_SECRET: 'x'.repeat(32),
+  BETTER_AUTH_URL: 'http://localhost:3000',
   ENCRYPTION_KEY: 'ab'.repeat(32),
   CORS_ORIGINS: 'https://app.frugal.dev, https://frugal.dev',
 };
@@ -18,7 +18,8 @@ describe('loadConfig', () => {
     expect(c.env).toBe('test');
     expect(c.port).toBe(4001);
     expect(c.database.url).toBe('postgres://u:p@host/db');
-    expect(c.auth.jwtExpiresInSeconds).toBe(604800);
+    expect(c.betterAuth.secret).toBe('x'.repeat(32));
+    expect(c.betterAuth.url).toBe('http://localhost:3000');
     expect(c.cors.origins).toEqual(['https://app.frugal.dev', 'https://frugal.dev']);
     expect(c.stripe.secretKey).toBeUndefined();
   });
@@ -28,8 +29,10 @@ describe('loadConfig', () => {
     expect(() => loadConfig(rest)).toThrow(/DATABASE_URL/);
   });
 
-  it('rejects a short JWT_SECRET', () => {
-    expect(() => loadConfig({ ...validEnv, JWT_SECRET: 'short' })).toThrow(/JWT_SECRET/);
+  it('rejects a short BETTER_AUTH_SECRET', () => {
+    expect(() => loadConfig({ ...validEnv, BETTER_AUTH_SECRET: 'short' })).toThrow(
+      /BETTER_AUTH_SECRET/,
+    );
   });
 
   it('rejects a non-64-hex ENCRYPTION_KEY', () => {
@@ -41,5 +44,38 @@ describe('loadConfig', () => {
     const c = loadConfig(rest);
     expect(c.port).toBe(3000);
     expect(c.cors.origins).toEqual([]);
+  });
+
+  it('leaves all social-provider fields undefined when their env vars are absent', () => {
+    const c = loadConfig(validEnv);
+    expect(c.google.clientId).toBeUndefined();
+    expect(c.google.clientSecret).toBeUndefined();
+    expect(c.github.clientId).toBeUndefined();
+    expect(c.apple.clientId).toBeUndefined();
+    expect(c.apple.privateKey).toBeUndefined();
+  });
+
+  it('picks up social-provider env vars when present', () => {
+    const c = loadConfig({
+      ...validEnv,
+      GOOGLE_CLIENT_ID: 'g-id',
+      GOOGLE_CLIENT_SECRET: 'g-secret',
+      GITHUB_CLIENT_ID: 'h-id',
+      GITHUB_CLIENT_SECRET: 'h-secret',
+      APPLE_CLIENT_ID: 'a-id',
+      APPLE_TEAM_ID: 'a-team',
+      APPLE_KEY_ID: 'a-key',
+      APPLE_PRIVATE_KEY: 'a-pk',
+      APPLE_APP_BUNDLE_IDENTIFIER: 'com.frugal.app',
+    });
+    expect(c.google).toEqual({ clientId: 'g-id', clientSecret: 'g-secret' });
+    expect(c.github).toEqual({ clientId: 'h-id', clientSecret: 'h-secret' });
+    expect(c.apple).toEqual({
+      clientId: 'a-id',
+      teamId: 'a-team',
+      keyId: 'a-key',
+      privateKey: 'a-pk',
+      appBundleIdentifier: 'com.frugal.app',
+    });
   });
 });

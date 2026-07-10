@@ -7,8 +7,8 @@ const envSchema = z.object({
   DATABASE_POOL_URL: z.string().min(1).optional(),
   REDIS_URL: z.string().min(1, 'REDIS_URL is required'),
   REDIS_TOKEN: z.string().optional(),
-  JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
-  JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(604800),
+  BETTER_AUTH_SECRET: z.string().min(32, 'BETTER_AUTH_SECRET must be at least 32 characters'),
+  BETTER_AUTH_URL: z.string().min(1, 'BETTER_AUTH_URL is required'),
   ENCRYPTION_KEY: z
     .string()
     .regex(/^[0-9a-fA-F]{64}$/, 'ENCRYPTION_KEY must be 32 bytes hex (64 hex chars)'),
@@ -23,6 +23,14 @@ const envSchema = z.object({
   SENTRY_DSN: z.string().optional(),
   CORS_ORIGINS: z.string().default(''),
   GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  GITHUB_CLIENT_ID: z.string().optional(),
+  GITHUB_CLIENT_SECRET: z.string().optional(),
+  APPLE_CLIENT_ID: z.string().optional(),
+  APPLE_TEAM_ID: z.string().optional(),
+  APPLE_KEY_ID: z.string().optional(),
+  APPLE_PRIVATE_KEY: z.string().optional(),
+  APPLE_APP_BUNDLE_IDENTIFIER: z.string().optional(),
 });
 
 export interface AppConfig {
@@ -30,7 +38,7 @@ export interface AppConfig {
   port: number;
   database: { url: string; poolUrl: string | undefined };
   redis: { url: string; token: string | undefined };
-  auth: { jwtSecret: string; jwtExpiresInSeconds: number };
+  betterAuth: { secret: string; url: string };
   encryption: { key: string };
   cors: { origins: string[] };
   sentry: { dsn: string | undefined };
@@ -43,7 +51,15 @@ export interface AppConfig {
     priceProYearly: string | undefined;
   };
   resend: { apiKey: string | undefined; fromAddress: string | undefined };
-  google: { clientId: string | undefined };
+  google: { clientId: string | undefined; clientSecret: string | undefined };
+  github: { clientId: string | undefined; clientSecret: string | undefined };
+  apple: {
+    clientId: string | undefined;
+    teamId: string | undefined;
+    keyId: string | undefined;
+    privateKey: string | undefined;
+    appBundleIdentifier: string | undefined;
+  };
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv): AppConfig {
@@ -60,7 +76,7 @@ export function loadConfig(env: NodeJS.ProcessEnv): AppConfig {
     port: e.PORT,
     database: { url: e.DATABASE_URL, poolUrl: e.DATABASE_POOL_URL },
     redis: { url: e.REDIS_URL, token: e.REDIS_TOKEN },
-    auth: { jwtSecret: e.JWT_SECRET, jwtExpiresInSeconds: e.JWT_EXPIRES_IN_SECONDS },
+    betterAuth: { secret: e.BETTER_AUTH_SECRET, url: e.BETTER_AUTH_URL },
     encryption: { key: e.ENCRYPTION_KEY },
     cors: {
       origins: e.CORS_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean),
@@ -75,7 +91,15 @@ export function loadConfig(env: NodeJS.ProcessEnv): AppConfig {
       priceProYearly: e.STRIPE_PRICE_PRO_YEARLY,
     },
     resend: { apiKey: e.RESEND_API_KEY, fromAddress: e.RESEND_FROM_ADDRESS },
-    google: { clientId: e.GOOGLE_CLIENT_ID },
+    google: { clientId: e.GOOGLE_CLIENT_ID, clientSecret: e.GOOGLE_CLIENT_SECRET },
+    github: { clientId: e.GITHUB_CLIENT_ID, clientSecret: e.GITHUB_CLIENT_SECRET },
+    apple: {
+      clientId: e.APPLE_CLIENT_ID,
+      teamId: e.APPLE_TEAM_ID,
+      keyId: e.APPLE_KEY_ID,
+      privateKey: e.APPLE_PRIVATE_KEY,
+      appBundleIdentifier: e.APPLE_APP_BUNDLE_IDENTIFIER,
+    },
   };
 }
 
