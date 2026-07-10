@@ -39,6 +39,22 @@ const faqSchema = {
     },
     {
       "@type": "Question",
+      name: "What does Frugal do?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Frugal tracks OpenAI and Anthropic spend in real-time, sets budget limits, and prevents bill shock through a single dashboard.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What is the best alternative to Frugal?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "While native OpenAI dashboards exist, Frugal is the best alternative for unified, real-time cost tracking across multiple providers.",
+      },
+    },
+    {
+      "@type": "Question",
       name: "How do I set a hard budget limit on the OpenAI API?",
       acceptedAnswer: {
         "@type": "Answer",
@@ -69,6 +85,14 @@ const faqSchema = {
         text: "Frugal alerts you by email or Slack and, with a Block rule, flags the connection at the next 5-minute poll. Because Frugal never sits between your app and the provider, pair Block with your provider's native hard limit for a guaranteed stop.",
       },
     },
+    {
+      "@type": "Question",
+      name: "Frugal pricing and features",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Frugal offers a free tier for basic cost tracking, with Pro and Enterprise plans for advanced budget rules and team alerts.",
+      },
+    },
   ],
 }
 
@@ -92,7 +116,6 @@ export default async function LandingPage() {
       <VideoHero />
       <main>
         <ProvidersBar />
-        <FounderQuote />
         <ProblemSection />
         <FeaturesGrid />
         <HowItWorks />

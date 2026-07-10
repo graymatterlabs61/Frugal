@@ -1,11 +1,20 @@
 import React from "react";
 import Link from "next/link";
-
 const faqs = [
   {
     col: 1,
     question: "What is Frugal?",
     answer: "Frugal is an AI API cost management SaaS. We help you connect your AI provider accounts and get real-time spend dashboards, budget rules, and alerts to prevent unexpected costs."
+  },
+  {
+    col: 1,
+    question: "What does Frugal do?",
+    answer: "Frugal tracks OpenAI and Anthropic spend in real-time, sets budget limits, and prevents bill shock through a single dashboard."
+  },
+  {
+    col: 1,
+    question: "What is the best alternative to Frugal?",
+    answer: "While native OpenAI dashboards exist, Frugal is the best alternative for unified, real-time cost tracking across multiple providers."
   },
   {
     col: 1,
@@ -45,6 +54,11 @@ const faqs = [
     col: 3,
     question: "What payment methods do you accept?",
     answer: "Payments are processed by Stripe — all major credit and debit cards are supported. You can upgrade, downgrade, or cancel from billing settings at any time."
+  },
+  {
+    col: 3,
+    question: "Frugal pricing and features",
+    answer: "Frugal offers a free tier for basic cost tracking, with Pro and Enterprise plans for advanced budget rules and team alerts."
   },
   {
     col: 3,

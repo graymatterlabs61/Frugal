@@ -15,17 +15,17 @@ const fontSans = Geist({ subsets: ["latin"], variable: "--font-sans" })
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 const siteUrl = "https://getfrugal.dev"
-const siteTitle = "AI API Cost Management: Track Spend & Stop Bill Shock"
+const siteTitle = "Stop OpenAI Bill Shock | Frugal AI API Cost Management"
 const siteDescription =
-  "Transform your AI API cost management by tracking OpenAI and Anthropic spend in real time. Set limits, prevent massive overages, and start free today."
+  "Stop AI bill shock before it happens. Frugal centralizes your OpenAI and Anthropic spend tracking with real-time alerts. Start free today."
 
 const ogTitle = "Stop OpenAI Bill Shock | Frugal AI API Cost Management"
 const ogDescription =
-  "Centralize your LLM spend monitoring with Frugal. Set strict budgets for OpenAI, Anthropic, and Replicate, and get instant Slack alerts before you're charged."
+  "Shipping fast doesn't have to mean giant AI bills. Frugal centralizes your OpenAI and Anthropic spend with real-time alerts before you're overcharged."
 
-const twitterTitle = "Stop OpenAI Bill Shock with Frugal"
+const twitterTitle = "Stop OpenAI Bill Shock | Frugal"
 const twitterDescription =
-  "Don't wait for your monthly invoice to discover you've overspent. Frugal provides real-time API cost tracking, budget alerts, and complete peace of mind for developers building with AI."
+  "Shipping fast doesn't have to mean giant AI bills. Frugal centralizes your OpenAI and Anthropic spend with real-time alerts before you're overcharged."
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -112,6 +112,11 @@ const structuredData = {
       name: "Frugal",
       url: siteUrl,
       logo: `${siteUrl}/logo.svg`,
+      founder: {
+        "@type": "Person",
+        name: "Nilesh Kumar",
+        url: "https://x.com/neilkumaroff"
+      },
       contactPoint: {
         "@type": "ContactPoint",
         email: "support@getfrugal.dev",
