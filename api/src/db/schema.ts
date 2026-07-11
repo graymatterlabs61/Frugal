@@ -263,3 +263,5 @@ export const notifications = pgTable(
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Provider = (typeof providerEnum.enumValues)[number];
+export type BudgetWindow = (typeof budgetWindowEnum.enumValues)[number];
+export type RuleAction = (typeof ruleActionEnum.enumValues)[number];
