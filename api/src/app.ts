@@ -10,6 +10,7 @@ import { healthRoutes } from './routes/healthRoutes.js';
 import { projectRoutes } from './routes/projectRoutes.js';
 import { connectionRoutes } from './routes/connectionRoutes.js';
 import { budgetRuleRoutes } from './routes/budgetRuleRoutes.js';
+import { alertRoutes } from './routes/alertRoutes.js';
 
 export function createApp() {
   const app = express();
@@ -33,8 +34,9 @@ export function createApp() {
   app.use('/api/v1/projects', projectRoutes);
   app.use('/api/v1/connections', connectionRoutes);
   app.use('/api/v1/budget-rules', budgetRuleRoutes);
+  app.use('/api/v1/alerts', alertRoutes);
 
-  // Plan 4 continues below (alerts, notifications); Plans 5–6 mount their own routers here
+  // Plan 4 continues below (notifications); Plans 5–6 mount their own routers here
 
   app.use((_req, res) => {
     res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Route not found' } });

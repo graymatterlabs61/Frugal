@@ -265,3 +265,4 @@ export type NewUser = typeof users.$inferInsert;
 export type Provider = (typeof providerEnum.enumValues)[number];
 export type BudgetWindow = (typeof budgetWindowEnum.enumValues)[number];
 export type RuleAction = (typeof ruleActionEnum.enumValues)[number];
+export type AlertStatus = (typeof alertStatusEnum.enumValues)[number];
