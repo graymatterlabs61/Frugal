@@ -12,6 +12,8 @@ import { connectionRoutes } from './routes/connectionRoutes.js';
 import { budgetRuleRoutes } from './routes/budgetRuleRoutes.js';
 import { alertRoutes } from './routes/alertRoutes.js';
 import { notificationRoutes } from './routes/notificationRoutes.js';
+import { billingRoutes } from './routes/billingRoutes.js';
+import { billingWebhookRoutes } from './routes/billingWebhookRoutes.js';
 
 export function createApp() {
   const app = express();
@@ -28,6 +30,9 @@ export function createApp() {
 
   app.use('/api/auth', toNodeHandler(auth));
 
+  // raw body required for Stripe signature verification — must precede express.json()
+  app.use('/api/v1/billing/webhook', billingWebhookRoutes);
+
   app.use(express.json({ limit: '256kb' }));
 
   app.use('/health', healthRoutes);
@@ -37,8 +42,9 @@ export function createApp() {
   app.use('/api/v1/budget-rules', budgetRuleRoutes);
   app.use('/api/v1/alerts', alertRoutes);
   app.use('/api/v1/notifications', notificationRoutes);
+  app.use('/api/v1/billing', billingRoutes);
 
-  // Plans 5–6 mount domain routers here under /api/v1/
+  // Plan 5 (poll) and Plan 6 mount their own routers here
 
   app.use((_req, res) => {
     res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Route not found' } });
