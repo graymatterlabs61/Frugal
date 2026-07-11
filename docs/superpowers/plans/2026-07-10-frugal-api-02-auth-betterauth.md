@@ -628,6 +628,7 @@ git commit -m "feat(api): better-auth instance — email/password, Google/GitHub
 - Modify: `src/db/schema.ts` (remove the hand-written `users` table; import `users` from `./authSchema.js` instead; reconcile the 10 FK columns' types if Task 4 found `authSchema.users.id` is `text` not `uuid`)
 - Modify: `src/db/client.ts` (merge `schema.ts` + `authSchema.ts` into one schema object)
 - Modify: `src/auth.ts` (pass the generated schema into `drizzleAdapter` for full type safety)
+- Modify: `drizzle.config.ts` (point `schema` at both files — `drizzle-kit generate` only reads what this config names, so without this edit it stays blind to `authSchema.ts`'s tables and silently produces a migration that drops `users` without recreating anything)
 - Modify: `tests/unit/schema.test.ts`
 - Regenerate: `src/db/migrations/*` (via `drizzle-kit generate`)
 
@@ -658,7 +659,23 @@ import { users } from './authSchema.js';
 
 (If `authSchema.users.id` is already `uuid`, skip this — the existing columns are already correct and no edit is needed.)
 
-- [ ] **Step 2: Modify `src/db/client.ts`**
+- [ ] **Step 2: Modify `drizzle.config.ts`** — point it at both schema files
+
+```ts
+import { defineConfig } from 'drizzle-kit';
+
+export default defineConfig({
+  schema: ['./src/db/schema.ts', './src/db/authSchema.ts'],
+  out: './src/db/migrations',
+  dialect: 'postgresql',
+  dbCredentials: {
+    // drizzle-kit runs outside the app; direct env read is acceptable here
+    url: process.env.DATABASE_URL ?? '',
+  },
+});
+```
+
+- [ ] **Step 3: Modify `src/db/client.ts`**
 
 ```ts
 import { drizzle } from 'drizzle-orm/postgres-js';
@@ -676,7 +693,7 @@ export const db = drizzle(client, { schema: { ...schema, ...authSchema } });
 export type Db = typeof db;
 ```
 
-- [ ] **Step 3: Modify `src/auth.ts`** — add the schema import and pass it to the adapter
+- [ ] **Step 4: Modify `src/auth.ts`** — add the schema import and pass it to the adapter
 
 Add near the top:
 ```ts
@@ -688,7 +705,7 @@ Change the `database` line:
   database: drizzleAdapter(db, { provider: 'pg', usePlural: true, schema: authSchema }),
 ```
 
-- [ ] **Step 4: Update `tests/unit/schema.test.ts`**
+- [ ] **Step 5: Update `tests/unit/schema.test.ts`**
 
 Replace the `users` assertions (the old test expected 11 our-own tables including `users`; now `users` lives in `authSchema.ts` and the domain schema has 10 tables):
 
@@ -749,25 +766,25 @@ describe('db schema', () => {
 });
 ```
 
-- [ ] **Step 5: Regenerate the migration and apply it to the test database**
+- [ ] **Step 6: Regenerate the migration and apply it to the test database**
 
 ```bash
-npm run db:generate
 set -a; source .env; set +a
+npm run db:generate
 npm run db:migrate
 ```
 
-Expected: a new migration file appears under `src/db/migrations/`, reflecting the dropped/altered old `users` table, the new `users`/`sessions`/`accounts`/`verifications` tables, and (if applicable) the 10 FK column type changes. `db:migrate` applies it to the Neon test branch referenced by `.env`'s `DATABASE_URL` without error.
+Expected: `db:generate` now sees both schema files (per Step 2's config fix) and produces one migration reflecting the dropped old `users` table, the new `users`/`sessions`/`accounts`/`verifications` tables, and (if applicable) the 10 FK column type changes — all in the same migration, not a partial one. Sanity-check before applying: `grep -c "CREATE TABLE" src/db/migrations/*.sql` should show 4 new tables (users, sessions, accounts, verifications) alongside the 10 pre-existing ones being altered, not just drops. `db:migrate` applies it to the Neon test branch referenced by `.env`'s `DATABASE_URL` without error.
 
-- [ ] **Step 6: Run the full suite**
+- [ ] **Step 7: Run the full suite**
 
 Run: `npx vitest run tests/unit/schema.test.ts tests/unit/auth.test.ts; npm run typecheck`
 Expected: PASS, typecheck exit 0
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
-git add src/db/schema.ts src/db/client.ts src/auth.ts tests/unit/schema.test.ts src/db/migrations
+git add src/db/schema.ts src/db/client.ts src/auth.ts drizzle.config.ts tests/unit/schema.test.ts src/db/migrations
 git commit -m "feat(api): merge better-auth schema into the domain schema, migrate test DB"
 ```
 

@@ -1,6 +1,6 @@
-import { eq, and, count } from 'drizzle-orm';
+import { eq, and, count, inArray, notInArray } from 'drizzle-orm';
 import { db } from '../db/client.js';
-import { apiConnections, projects, type Provider } from '../db/schema.js';
+import { apiConnections, projects, type Provider, type ConnectionStatus } from '../db/schema.js';
 
 export const ConnectionRepository = {
   async listForUser(userId: string) {
@@ -29,6 +29,37 @@ export const ConnectionRepository = {
       .from(apiConnections)
       .where(and(eq(apiConnections.id, id), eq(apiConnections.userId, userId)));
     return row;
+  },
+
+  async listPollableForUser(userId: string) {
+    return db
+      .select()
+      .from(apiConnections)
+      .where(
+        and(
+          eq(apiConnections.userId, userId),
+          eq(apiConnections.isActive, true),
+          inArray(apiConnections.provider, ['openai', 'anthropic']),
+          notInArray(apiConnections.status, ['invalid', 'blocked']),
+        ),
+      );
+  },
+
+  async listAllPollable() {
+    return db
+      .select()
+      .from(apiConnections)
+      .where(
+        and(
+          eq(apiConnections.isActive, true),
+          inArray(apiConnections.provider, ['openai', 'anthropic']),
+          notInArray(apiConnections.status, ['invalid', 'blocked']),
+        ),
+      );
+  },
+
+  async markPollResult(id: string, status: ConnectionStatus, lastPolledAt: Date): Promise<void> {
+    await db.update(apiConnections).set({ status, lastPolledAt }).where(eq(apiConnections.id, id));
   },
 
   async create(

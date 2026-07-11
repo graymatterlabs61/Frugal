@@ -1,4 +1,5 @@
 # Frugal
+
 > Frugal is an AI API cost management SaaS that tracks OpenAI, Anthropic, Replicate, and fal.ai spend in real-time, sets hard budget limits, and prevents bill shock.
 
 ## Main sections

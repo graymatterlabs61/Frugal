@@ -1,4 +1,5 @@
 # Frugal Backend — Design Spec
+
 **Date:** 2026-06-25
 **Author:** Nilesh Kumar (via brainstorming session)
 **Status:** Approved — ready for implementation planning
@@ -10,6 +11,7 @@
 Frugal is an AI API cost management SaaS. Developers and companies connect AI provider accounts (OpenAI, Anthropic, Replicate, fal.ai, Gemini); Frugal tracks unified spend per project, enforces budget rules, and fires alerts before limits are hit.
 
 **Two customer segments:**
+
 - **Personal** — solo developers, solo founders, engineering managers. No code change required. Frugal polls provider usage APIs every 5 minutes.
 - **Corporate** — companies giving AI access to employees or embedding AI in products. Proxy gateway sits between team tooling and providers. Real-time enforcement, per-employee attribution.
 
@@ -17,13 +19,13 @@ Frugal is an AI API cost management SaaS. Developers and companies connect AI pr
 
 ## 2. V1 Providers
 
-| Provider | Personal (polling) | Corporate (proxy) |
-|---|---|---|
-| OpenAI | ✅ | ✅ |
-| Anthropic | ✅ | ✅ |
-| Google Gemini | ✅ | ✅ |
-| Replicate | ✅ | ✅ |
-| fal.ai | ✅ | ✅ |
+| Provider      | Personal (polling) | Corporate (proxy) |
+| ------------- | ------------------ | ----------------- |
+| OpenAI        | ✅                 | ✅                |
+| Anthropic     | ✅                 | ✅                |
+| Google Gemini | ✅                 | ✅                |
+| Replicate     | ✅                 | ✅                |
+| fal.ai        | ✅                 | ✅                |
 
 ---
 
@@ -36,6 +38,7 @@ Handles all auth, business logic, dashboard data, billing, and background worker
 **Stack:** Express + TypeScript + Drizzle ORM + Neon (Postgres) + Redis (Upstash) + BullMQ + Zod + JWT + Argon2id + Pino + Sentry + Vitest
 
 **Responsibilities:**
+
 - Auth (email/password + Google OAuth)
 - Projects, connections, budget rules, alerts CRUD
 - Dashboard aggregation queries
@@ -53,6 +56,7 @@ Corporate-only real-time request forwarder. Scales independently.
 **Stack:** Express + TypeScript + Redis (shared) + Neon (shared, PgBouncer connection string) + Pino + Sentry
 
 **Responsibilities:**
+
 - Receive AI requests from corporate employee tooling
 - Verify org JWT, check org membership (Redis cache, 30s TTL)
 - Check budget rules (Redis cache, 60s TTL, invalidated on rule change)
@@ -62,6 +66,7 @@ Corporate-only real-time request forwarder. Scales independently.
 - Async: push usage event to BullMQ for alert check
 
 **Hardening (99% reliability):**
+
 - **Circuit breaker:** if provider unreachable, fail open (pass request through directly) not fail closed
 - **PgBouncer:** all proxy DB writes use Neon's pooled connection string
 - **Redis budget cache:** `budget:rule:{projectId}` 60s TTL, invalidated immediately on rule PATCH/DELETE
@@ -73,29 +78,29 @@ Corporate-only real-time request forwarder. Scales independently.
 
 ### Personal Plans
 
-| | Free | Plus | Pro |
-|---|---|---|---|
-| Price | $0 | $19/mo ($15/yr) | $49/mo ($39/yr) |
-| Projects | 1 | 5 | Unlimited |
-| Connections | 1 | 3 | Unlimited |
-| History | 7 days | 90 days | 365 days |
-| Events/mo | 50K | 1M | Unlimited |
-| Budget action | — | Alert + Block | Alert + Block |
-| Alerts | Email | Email + Slack | Email + Slack + Webhook |
-| Per-user attribution | ❌ | ❌ | ✅ |
-| Programmatic API | ❌ | ❌ | ✅ |
+|                      | Free   | Plus            | Pro                     |
+| -------------------- | ------ | --------------- | ----------------------- |
+| Price                | $0     | $19/mo ($15/yr) | $49/mo ($39/yr)         |
+| Projects             | 1      | 5               | Unlimited               |
+| Connections          | 1      | 3               | Unlimited               |
+| History              | 7 days | 90 days         | 365 days                |
+| Events/mo            | 50K    | 1M              | Unlimited               |
+| Budget action        | —      | Alert + Block   | Alert + Block           |
+| Alerts               | Email  | Email + Slack   | Email + Slack + Webhook |
+| Per-user attribution | ❌     | ❌              | ✅                      |
+| Programmatic API     | ❌     | ❌              | ✅                      |
 
 ### Corporate Plans (waitlist, Q3 2026)
 
-| | Starter | Growth | Scale | Enterprise |
-|---|---|---|---|---|
-| Price | $79/mo | $199/mo | $499/mo | Custom |
-| Seats | 10 | 25 | 100 | Unlimited |
-| Enforcement | Proxy real-time | Proxy real-time | Proxy real-time | Proxy real-time |
-| Budget action | Alert + Block + Throttle | Alert + Block + Throttle | Alert + Block + Throttle | Alert + Block + Throttle |
-| Per-user attribution | ✅ | ✅ | ✅ | ✅ |
-| Audit log export | ❌ | ❌ | ✅ | ✅ |
-| SSO (SAML) | ❌ | ❌ | ✅ | ✅ |
+|                      | Starter                  | Growth                   | Scale                    | Enterprise               |
+| -------------------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ |
+| Price                | $79/mo                   | $199/mo                  | $499/mo                  | Custom                   |
+| Seats                | 10                       | 25                       | 100                      | Unlimited                |
+| Enforcement          | Proxy real-time          | Proxy real-time          | Proxy real-time          | Proxy real-time          |
+| Budget action        | Alert + Block + Throttle | Alert + Block + Throttle | Alert + Block + Throttle | Alert + Block + Throttle |
+| Per-user attribution | ✅                       | ✅                       | ✅                       | ✅                       |
+| Audit log export     | ❌                       | ❌                       | ✅                       | ✅                       |
+| SSO (SAML)           | ❌                       | ❌                       | ✅                       | ✅                       |
 
 ### Corporate Org Roles
 
@@ -412,6 +417,7 @@ GET    /proxy/health
 ## 8. Security
 
 ### API Key Storage
+
 - Validate key against provider on POST (live test call, read-only scope)
 - AES-256-GCM encrypt immediately: `iv:ciphertext:authTag` (hex:base64:hex)
 - Store only encrypted blob + last 4 chars suffix
@@ -420,6 +426,7 @@ GET    /proxy/health
 - Decrypt only inside polling worker
 
 ### Auth
+
 - Argon2id: `memoryCost:65536, timeCost:3, parallelism:4`
 - JWT: HS256, 7-day expiry, `httpOnly` cookie
 - Constant-time rejection on login (dummy hash verify)
@@ -427,6 +434,7 @@ GET    /proxy/health
 - Rate limit: `POST /auth/login` → 5 attempts / 15 min per IP (Redis sliding window)
 
 ### Request Security
+
 - Helmet (CSP, HSTS, X-Frame-Options, XSS filter)
 - CORS: whitelist dashboard domain + proxy domain only
 - Zod `.strict()` on all request bodies (reject unknown fields)
@@ -434,6 +442,7 @@ GET    /proxy/health
 - Body size limit: `express.json({ limit: '256kb' })`
 
 ### Proxy Security (corporate)
+
 - Every proxy request requires org JWT — no anonymous forwarding
 - Org membership verified every request (Redis, 30s TTL)
 - Logs: model + tokens + cost + timestamp + `member_user_id`
@@ -441,11 +450,13 @@ GET    /proxy/health
 - Rate limit per org member: 100 req / 10s (Redis sliding window)
 
 ### Tier Enforcement
+
 - Every protected route reads plan from JWT, checks `PLAN_LIMITS`
 - Server-side enforcement is authoritative — client UI gating is UX only
 - Corp-only routes (`/orgs/*`, `/proxy/*`) → 403 for non-corp plans
 
 ### Infra
+
 - All secrets via env vars, never hardcoded
 - Neon: SSL enforced, connection string never logged
 - Redis: TLS (Upstash enforces)
@@ -458,15 +469,15 @@ GET    /proxy/health
 
 ### Error Classes
 
-| Class | HTTP | Trigger |
-|---|---|---|
-| `ValidationError` | 400 | Zod parse failure |
-| `UnauthorizedError` | 401 | Bad/expired JWT |
-| `ForbiddenError` | 403 | Wrong tier or wrong org |
-| `NotFoundError` | 404 | Resource not found |
-| `ConflictError` | 409 | Duplicate email, duplicate resource |
-| `RateLimitError` | 429 | Rate limit hit |
-| `AppError` | 500 | Unexpected (logged to Sentry) |
+| Class               | HTTP | Trigger                             |
+| ------------------- | ---- | ----------------------------------- |
+| `ValidationError`   | 400  | Zod parse failure                   |
+| `UnauthorizedError` | 401  | Bad/expired JWT                     |
+| `ForbiddenError`    | 403  | Wrong tier or wrong org             |
+| `NotFoundError`     | 404  | Resource not found                  |
+| `ConflictError`     | 409  | Duplicate email, duplicate resource |
+| `RateLimitError`    | 429  | Rate limit hit                      |
+| `AppError`          | 500  | Unexpected (logged to Sentry)       |
 
 **Response shape:** `{ error: { code, message, details? } }`
 
@@ -480,6 +491,7 @@ Circuit breaker open: 503 + `Retry-After` header.
 ## 10. Testing Strategy
 
 ### Unit Tests (Vitest)
+
 - `authService`: register, login, timing attack resistance
 - `budgetChecker`: threshold logic, 1-hour dedup window
 - `encryption`: encrypt → decrypt roundtrip, tamper detection
@@ -487,6 +499,7 @@ Circuit breaker open: 503 + `Retry-After` header.
 - Provider modules: mock HTTP, parse usage response correctly
 
 ### Integration Tests (Vitest + Supertest, real Neon test DB)
+
 - Full auth flow: register → login → me
 - Project + connection CRUD with tier limits enforced
 - Polling worker → `usage_records` upsert idempotency
@@ -494,11 +507,13 @@ Circuit breaker open: 503 + `Retry-After` header.
 - Stripe webhook handlers: `checkout.session.completed`, `customer.subscription.deleted`
 
 ### Proxy Tests
+
 - Budget blocked → 429 (Redis mock)
 - Circuit breaker open → 503
 - Valid request → forwarded + `proxy_requests` row written
 
 ### CI (GitHub Actions)
+
 ```
 typecheck → lint → test → build
 Block merge on any failure
@@ -510,7 +525,7 @@ Block merge on any failure
 
 ```
 frugal-api/
-  src/
+
     config/           unified config (env vars, validated with Zod)
     controllers/      thin request/response handlers
     services/         business logic
@@ -528,7 +543,7 @@ frugal-api/
     integration/
 
 frugal-proxy/
-  src/
+
     middleware/       orgAuth, budgetCheck, rateLimitPerMember
     forwarders/       one file per provider
     utils/            circuitBreaker, logger
