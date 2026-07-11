@@ -17,7 +17,7 @@ const PLAN_LIMITS: Record<PlanTier, { projects: number; connections: number }> =
   enterprise: { projects: Infinity, connections: Infinity },
 };
 
-function isPlanTier(value: string): value is PlanTier {
+export function isPlanTier(value: string): value is PlanTier {
   return value in PLAN_LIMITS;
 }
 
