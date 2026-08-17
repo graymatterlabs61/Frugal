@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "https://frugal-66tx.onrender.com";
+import { BACKEND_URL } from "@/config";
 
 export interface PersonalPlan {
   id: string;

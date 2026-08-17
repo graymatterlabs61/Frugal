@@ -7,9 +7,8 @@ import { AuthLayout } from "@/components/auth/AuthLayout";
 import { ShowcaseVerifyEmail } from "@/components/auth/ShowcaseVerifyEmail";
 import { Button } from "@/components/ui/button";
 import { Mail, ArrowLeft, RefreshCw } from "lucide-react";
+import { authClient } from "@/lib/auth/client";
 import { toast } from "sonner";
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "https://frugal-66tx.onrender.com";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -20,20 +19,14 @@ function VerifyEmailContent() {
   const handleResend = async () => {
     if (!email) return;
     setResending(true);
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/auth/resend-verification`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      if (!res.ok) throw new Error("Failed to resend");
+    const { error } = await authClient.sendVerificationEmail({ email });
+    if (error) {
+      toast.error("Failed to resend. Try again.");
+    } else {
       setResent(true);
       toast.success("Verification email resent!");
-    } catch {
-      toast.error("Failed to resend. Try again.");
-    } finally {
-      setResending(false);
     }
+    setResending(false);
   };
 
   return (

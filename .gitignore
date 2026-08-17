@@ -92,3 +92,4 @@ frugal-*.md
 .cache/
 tmp/
 temp/
+.playwright-mcp/

@@ -8,9 +8,8 @@ import { ShowcaseResetPassword } from "@/components/auth/ShowcaseResetPassword";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, ArrowLeft } from "lucide-react";
+import { authClient } from "@/lib/auth/client";
 import { toast } from "sonner";
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "https://frugal-66tx.onrender.com";
 
 function ResetPasswordContent() {
   const searchParams = useSearchParams();
@@ -31,22 +30,14 @@ function ResetPasswordContent() {
       return;
     }
     setLoading(true);
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/auth/reset-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
-      });
-      if (!res.ok) {
-        const body = (await res.json().catch(() => ({}))) as { error?: { message?: string } };
-        throw new Error(body.error?.message ?? "Reset failed");
-      }
-      setDone(true);
-    } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Password reset failed");
-    } finally {
+    const { error } = await authClient.resetPassword({ newPassword: password, token });
+    if (error) {
+      toast.error(error.message ?? "Password reset failed");
       setLoading(false);
+      return;
     }
+    setDone(true);
+    setLoading(false);
   };
 
   if (!token) {

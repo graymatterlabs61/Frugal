@@ -1,6 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { emailOTP } from 'better-auth/plugins';
+import { bearer, emailOTP } from 'better-auth/plugins';
 import { importPKCS8, SignJWT } from 'jose';
 import { db } from './db/client.js';
 import { config } from './config/unifiedConfig.js';
@@ -31,6 +31,7 @@ export const auth = betterAuth({
   secret: config.betterAuth.secret,
   emailAndPassword: { enabled: true },
   plugins: [
+    bearer(),
     emailOTP({
       async sendVerificationOTP({ email, otp, type }) {
         await sendOtpEmail({ to: email, otp, purpose: type });

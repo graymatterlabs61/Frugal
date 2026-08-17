@@ -1,4 +1,5 @@
 import React from "react"
+import * as motion from "motion/react-client"
 import { LegalSidebar, type LegalSectionItem } from "./LegalSidebar"
 import { MarketingNav } from "@/components/landing/MarketingNav"
 
@@ -87,7 +88,14 @@ type LegalSectionProps = {
 
 export function LegalSection({ id, num, title, children }: LegalSectionProps) {
   return (
-    <section id={id} className="relative scroll-mt-24">
+    <motion.section
+      id={id}
+      className="relative scroll-mt-24"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       {/* Number and Title */}
       <div className="mb-10 flex items-baseline gap-4">
         <span className="font-serif text-5xl md:text-6xl italic text-[#4a2a1a] font-light translate-y-1 md:translate-y-2">
@@ -97,12 +105,12 @@ export function LegalSection({ id, num, title, children }: LegalSectionProps) {
           {title}
         </h2>
       </div>
-      
+
       {/* Content */}
       <div className="space-y-6 text-sm md:text-[15px] leading-loose text-muted-foreground/90 font-light">
         {children}
       </div>
-    </section>
+    </motion.section>
   )
 }
 

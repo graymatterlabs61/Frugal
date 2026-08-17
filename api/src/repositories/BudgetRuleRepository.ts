@@ -18,6 +18,14 @@ export const BudgetRuleRepository = {
     return row;
   },
 
+  /** System-side (not user-scoped) — budgetChecker evaluates every active rule for a project. */
+  async listActiveForProject(projectId: string) {
+    return db
+      .select()
+      .from(budgetRules)
+      .where(and(eq(budgetRules.projectId, projectId), eq(budgetRules.isActive, true)));
+  },
+
   async create(
     userId: string,
     data: {

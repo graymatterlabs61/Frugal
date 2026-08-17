@@ -1,6 +1,3 @@
-import { redirect } from "next/navigation";
-
-// Auth pages are locked during pre-launch. All traffic goes to /wishlist.
-export default function AuthGroupLayout() {
-  redirect("/wishlist");
+export default function AuthGroupLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }

@@ -7,9 +7,7 @@ import { ShowcaseForgotPassword } from "@/components/auth/ShowcaseForgotPassword
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "https://frugal-66tx.onrender.com";
+import { authClient } from "@/lib/auth/client";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -19,24 +17,13 @@ export default function ForgotPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/auth/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      if (!res.ok) {
-        const body = (await res.json().catch(() => ({}))) as { error?: { message?: string } };
-        throw new Error(body.error?.message ?? "Request failed");
-      }
-      setSent(true);
-    } catch {
-      // Always show success to prevent email enumeration
-      setSent(true);
-      toast.info("If that email exists, a reset link is on its way.");
-    } finally {
-      setLoading(false);
-    }
+    await authClient.requestPasswordReset({
+      email,
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    // Always show success to prevent email enumeration
+    setSent(true);
+    setLoading(false);
   };
 
   return (

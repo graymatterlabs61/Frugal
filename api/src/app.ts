@@ -15,6 +15,8 @@ import { notificationRoutes } from './routes/notificationRoutes.js';
 import { billingRoutes } from './routes/billingRoutes.js';
 import { billingWebhookRoutes } from './routes/billingWebhookRoutes.js';
 import { pollRoutes } from './routes/pollRoutes.js';
+import { dashboardRoutes } from './routes/dashboardRoutes.js';
+import { ingestRoutes } from './routes/ingestRoutes.js';
 
 export function createApp() {
   const app = express();
@@ -45,8 +47,10 @@ export function createApp() {
   app.use('/api/v1/notifications', notificationRoutes);
   app.use('/api/v1/billing', billingRoutes);
   app.use('/api/v1/poll', pollRoutes);
+  app.use('/api/v1/dashboard', dashboardRoutes);
+  app.use('/api/v1/ingest', ingestRoutes);
 
-  // Plan 6 mounts its own router here under /api/v1/
+  // Organizations (corporate, waitlisted) mounts its own router here under /api/v1/
 
   app.use((_req, res) => {
     res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Route not found' } });

@@ -82,14 +82,14 @@ export function VideoHero() {
                   ))}
                 </div>
 
-                <Link href="/wishlist" className="w-full">
+                <Link href="/signup" className="w-full">
                   <ShimmerButton
                     background="rgba(255,80,11,1)"
                     shimmerColor="#ffffff"
                     borderRadius="12px"
                     className="w-full text-sm font-semibold py-3.5 gap-2"
                   >
-                    Join wishlist — 25% off
+                    Get started free
                     <ArrowRight size={16} />
                   </ShimmerButton>
                 </Link>

@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }]
   },
+  experimental: {
+    optimizePackageImports: ["lucide-react", "@phosphor-icons/react", "@lobehub/icons"],
+  },
   images: {
     remotePatterns: [
       {

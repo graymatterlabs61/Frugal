@@ -80,14 +80,14 @@ export function FinalCTA() {
           Whether you&apos;re a solo dev protecting a side project or a team lead managing AI spend across 20 engineers, Frugal gives you the visibility and control you need.
         </p>
         <div className="flex items-start sm:items-center flex-col sm:flex-row gap-4 mt-8">
-          <Link href="/wishlist">
+          <Link href="/signup">
             <ShimmerButton
               background="rgba(255,80,11,1)"
               shimmerColor="#ffffff"
               borderRadius="8px"
               className="text-base font-semibold gap-2"
             >
-              Join wishlist — 25% off launch
+              Get started free
               <svg
                 stroke="currentColor"
                 fill="currentColor"

@@ -1,11 +1,6 @@
-// ─── Environment Toggle ────────────────────────────────────────────────────────
-// Comment/uncomment the line you want. One must be active at a time.
-
-// Local dev (frontend: localhost:3000, backend: localhost:4000)
-export const BACKEND_URL = "http://localhost:4000";
-
-// Production (Render backend)
-// export const BACKEND_URL = "https://frugal-66tx.onrender.com";
+// ─── Backend URL ───────────────────────────────────────────────────────────────
+// Set NEXT_PUBLIC_BACKEND_URL in .env.local; falls back to the Render deploy.
+export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "https://frugal-66tx.onrender.com";
 
 // ─── Stripe Mode ───────────────────────────────────────────────────────────────
 // false = test keys, true = live keys

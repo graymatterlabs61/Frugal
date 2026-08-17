@@ -22,4 +22,10 @@ export const NotificationRepository = {
       .set({ readAt: new Date() })
       .where(and(eq(notifications.userId, userId), isNull(notifications.readAt)));
   },
+
+  /** System-side — budgetChecker writes these; no HTTP endpoint creates them. */
+  async create(data: { userId: string; type: string; title: string; message: string }) {
+    const [row] = await db.insert(notifications).values(data).returning();
+    return row!;
+  },
 };

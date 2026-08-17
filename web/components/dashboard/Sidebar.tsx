@@ -35,7 +35,7 @@ function LayoutSidebarIcon({ size = 18, className }: { size?: number; className?
   );
 }
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
+import { signOut } from "@/lib/auth/client";
 import { toast } from "sonner";
 import {
   Tooltip,
@@ -114,13 +114,12 @@ export function Sidebar({
 
   const handleSignOut = async () => {
     setUserMenuOpen(false);
-    try {
-      const supabase = createClient();
-      await supabase.auth.signOut();
-      window.location.href = "/login";
-    } catch {
+    const { error } = await signOut();
+    if (error) {
       toast.error("Sign out failed");
+      return;
     }
+    window.location.href = "/login";
   };
 
   const initial = (userName || userEmail || "U")[0].toUpperCase();
