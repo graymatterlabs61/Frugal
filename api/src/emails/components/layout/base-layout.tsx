@@ -52,7 +52,10 @@ export function BaseLayout({ preview, children, unsubscribeUrl }: BaseLayoutProp
           @media only screen and (max-width: 620px) {
             .e-card { padding:26px 22px !important; }
             .e-h1 { font-size:25px !important; line-height:33px !important; }
-            .e-figure { font-size:24px !important; }
+            /* Three figures side by side at 375px need to come down a long
+               way before they stop colliding. */
+            .e-figure { font-size:17px !important; letter-spacing:-0.02em !important; }
+            .e-statlabel { font-size:9px !important; letter-spacing:0.06em !important; }
           }
         `}</style>
       </Head>

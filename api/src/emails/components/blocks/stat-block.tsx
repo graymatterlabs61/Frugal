@@ -30,7 +30,9 @@ export function StatBlock({ stats }: { stats: Stat[] }) {
               <Row>
                 {stats.map((s) => (
                   <Column key={s.label} style={styles.col}>
-                    <Text style={styles.label}>{s.label}</Text>
+                    <Text className="e-statlabel" style={styles.label}>
+                      {s.label}
+                    </Text>
                     <Text
                       className="e-figure"
                       style={{ ...styles.value, color: valueColor[s.tone ?? 'default'] }}
@@ -60,6 +62,9 @@ const styles = {
     padding: `18px 20px 14px`,
   },
   col: {
+    // Gutter so adjacent figures never touch; the last column's trailing
+    // padding is absorbed by the cell padding.
+    paddingRight: '14px',
     verticalAlign: 'top' as const,
   },
   label: {
