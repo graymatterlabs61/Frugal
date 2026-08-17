@@ -79,10 +79,12 @@ mkdirSync(join(outDir, 'email'), { recursive: true });
 
 // Images are referenced absolutely so they resolve in a real inbox; for local
 // preview, copy them in and point at the copy so the layout renders complete.
-copyFileSync(
-  join(process.cwd(), '..', 'web', 'public', 'email', 'logo@4x.png'),
-  join(outDir, 'email', 'logo@4x.png'),
-);
+for (const asset of ['logo@4x.png', 'x@4x.png', 'linkedin@4x.png', 'instagram@4x.png']) {
+  copyFileSync(
+    join(process.cwd(), '..', 'web', 'public', 'email', asset),
+    join(outDir, 'email', asset),
+  );
+}
 
 for (const [name, payload] of Object.entries(SAMPLES)) {
   const html = (await renderEmail(payload)).replaceAll(`${SITE_URL}/email/`, './email/');

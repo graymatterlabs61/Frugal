@@ -15,6 +15,16 @@ import type { ReactNode } from 'react';
 import { color, font, space, SITE_URL } from '../../lib/tokens.js';
 import { bgAttr } from '../../lib/html-attrs.js';
 
+/**
+ * Social links. Hrefs are placeholders until the accounts exist — update them
+ * here and every template picks the change up.
+ */
+const SOCIALS = [
+  { name: 'X', icon: 'x', href: 'https://x.com/' },
+  { name: 'LinkedIn', icon: 'linkedin', href: 'https://www.linkedin.com/' },
+  { name: 'Instagram', icon: 'instagram', href: 'https://www.instagram.com/' },
+] as const;
+
 interface BaseLayoutProps {
   /** Inbox preview line, shown next to the subject. Always set it deliberately. */
   preview: string;
@@ -72,18 +82,34 @@ export function BaseLayout({ preview, children, hero, unsubscribeUrl }: BaseLayo
           {/* Logo is a PNG with the page background baked in, not an SVG: no
               email client renders SVG, and a baked background beats relying on
               alpha compositing in Outlook. */}
+          {/* Logo and wordmark as one lockup. Centred via a shrink-to-fit
+              table rather than text-align, so the pair stays together
+              instead of the mark centring independently of the name. */}
           <Section style={styles.header}>
             <Row>
               <Column align="center">
-                <Link href={SITE_URL}>
-                  <Img
-                    src={`${SITE_URL}/email/logo@4x.png`}
-                    width="46"
-                    height="34"
-                    alt="Frugal"
-                    style={styles.logo}
-                  />
-                </Link>
+                <table role="presentation" cellPadding={0} cellSpacing={0} border={0}>
+                  <tbody>
+                    <tr>
+                      <td style={styles.logoCell}>
+                        <Link href={SITE_URL}>
+                          <Img
+                            src={`${SITE_URL}/email/logo@4x.png`}
+                            width="38"
+                            height="28"
+                            alt=""
+                            style={styles.logo}
+                          />
+                        </Link>
+                      </td>
+                      <td style={styles.wordmarkCell}>
+                        <Link href={SITE_URL} style={styles.wordmark}>
+                          Frugal
+                        </Link>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </Column>
             </Row>
           </Section>
@@ -140,6 +166,32 @@ export function BaseLayout({ preview, children, hero, unsubscribeUrl }: BaseLayo
               </Link>
               {' — a person reads every message.'}
             </Text>
+
+            {/* Shrink-to-fit table centred by the wrapping Section, so the
+                icon row stays a tight group at any width. */}
+            <Row>
+              <Column align="center">
+                <table role="presentation" cellPadding={0} cellSpacing={0} border={0}>
+                  <tbody>
+                    <tr>
+                      {SOCIALS.map((s) => (
+                        <td key={s.name} style={styles.socialCell}>
+                          <Link href={s.href}>
+                            <Img
+                              src={`${SITE_URL}/email/${s.icon}@4x.png`}
+                              width="20"
+                              height="20"
+                              alt={s.name}
+                              style={styles.socialIcon}
+                            />
+                          </Link>
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+              </Column>
+            </Row>
             <Text style={styles.footerLinks}>
               <Link href={`${SITE_URL}/dashboard`} style={styles.footerLink}>
                 Dashboard
@@ -195,8 +247,15 @@ const styles = {
     verticalAlign: 'middle' as const,
     width: '44px',
   },
+  logoCell: {
+    paddingRight: '9px',
+    verticalAlign: 'middle' as const,
+  },
   logo: {
     display: 'block' as const,
+  },
+  wordmarkCell: {
+    verticalAlign: 'middle' as const,
   },
   wordmarkCol: {
     verticalAlign: 'middle' as const,
@@ -262,8 +321,14 @@ const styles = {
     color: color.textMuted,
     textDecoration: 'underline',
   },
+  socialCell: {
+    padding: '0 7px',
+  },
+  socialIcon: {
+    display: 'block' as const,
+  },
   footerLinks: {
-    margin: `0 0 14px`,
+    margin: `18px 0 14px`,
     textAlign: 'center' as const,
   },
   footerLink: {
