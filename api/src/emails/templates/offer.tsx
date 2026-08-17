@@ -47,7 +47,7 @@ export function OfferEmail({
       </Hero>
 
       {code ? (
-        <Text className="e-text e-subtle e-border" style={styles.code}>
+        <Text style={styles.code}>
           {code}
         </Text>
       ) : null}
@@ -56,7 +56,7 @@ export function OfferEmail({
 
       {points?.length ? (
         <>
-          <Text className="e-text" style={styles.sectionTitle}>
+          <Text style={styles.sectionTitle}>
             What you get
           </Text>
           {points.map((p) => (
@@ -83,7 +83,7 @@ export function offerText({ heading, body, ctaLabel, ctaUrl, code, points }: Off
 
 const styles = {
   code: {
-    backgroundColor: '#fafafa',
+    backgroundColor: color.surfaceRaised,
     border: `1px dashed ${color.border}`,
     borderRadius: '8px',
     color: color.text,

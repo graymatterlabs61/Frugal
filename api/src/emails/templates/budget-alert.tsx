@@ -3,6 +3,7 @@ import { BaseLayout } from '../components/layout/base-layout.js';
 import { Button } from '../components/layout/button.js';
 import { Hero } from '../components/blocks/hero.js';
 import { StatBlock } from '../components/blocks/stat-block.js';
+import { ProgressBar } from '../components/blocks/progress-bar.js';
 import { color, space, SITE_URL } from '../lib/tokens.js';
 
 export interface BudgetAlertEmailProps {
@@ -32,13 +33,22 @@ export function BudgetAlertEmail({
   const throttled = actionTaken === 'throttle';
   const over = spendAtTrigger >= limitUsd;
 
+  // Split so the trailing fragment renders serif-italic, matching the
+  // landing page's headline treatment.
   const heading = blocked
-    ? `${projectName} was blocked at its budget limit`
+    ? `${projectName} was`
     : throttled
-      ? `${projectName} is being throttled`
+      ? `${projectName} is being`
       : over
-        ? `${projectName} is over budget`
-        : `${projectName} is at ${pct}% of budget`;
+        ? `${projectName} is`
+        : `${projectName} is at`;
+  const accent = blocked
+    ? 'blocked'
+    : throttled
+      ? 'throttled'
+      : over
+        ? 'over budget'
+        : `${pct}% of budget`;
 
   return (
     <BaseLayout
@@ -47,6 +57,7 @@ export function BudgetAlertEmail({
       <Hero
         eyebrow={blocked ? 'Connection blocked' : over ? 'Over budget' : 'Budget threshold'}
         heading={heading}
+        accent={accent}
         tone={blocked || over ? 'danger' : 'warning'}
       >
         {blocked
@@ -55,6 +66,8 @@ export function BudgetAlertEmail({
             ? 'Your budget rule fired at the last poll and this connection is being throttled.'
             : 'Your spend crossed the threshold on this budget rule. Nothing has been blocked — this is a heads-up.'}
       </Hero>
+
+      <ProgressBar percent={pct} tone={over ? 'danger' : 'warning'} />
 
       <StatBlock
         stats={[
@@ -66,7 +79,7 @@ export function BudgetAlertEmail({
 
       <Button href={`${SITE_URL}/dashboard`}>View dashboard</Button>
 
-      <Text className="e-muted" style={styles.notice}>
+      <Text style={styles.notice}>
         Frugal polls provider usage every 5 minutes, so figures can lag actual
         spend by up to that long. For a hard stop, pair this rule with your
         provider&apos;s own spending limit.

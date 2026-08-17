@@ -7,9 +7,10 @@
  * look right. Sample props here double as the canonical "what does this
  * template expect" reference.
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { renderEmail, type EmailPayload } from './lib/render.js';
+import { SITE_URL } from './lib/tokens.js';
 
 const SAMPLES: Record<string, EmailPayload> = {
   welcome: { type: 'welcome', props: { name: 'Alex' } },
@@ -72,10 +73,17 @@ const SAMPLES: Record<string, EmailPayload> = {
 };
 
 const outDir = join(process.cwd(), 'emails-preview');
-mkdirSync(outDir, { recursive: true });
+mkdirSync(join(outDir, 'email'), { recursive: true });
+
+// Images are referenced absolutely so they resolve in a real inbox; for local
+// preview, copy them in and point at the copy so the layout renders complete.
+copyFileSync(
+  join(process.cwd(), '..', 'web', 'public', 'email', 'logo@4x.png'),
+  join(outDir, 'email', 'logo@4x.png'),
+);
 
 for (const [name, payload] of Object.entries(SAMPLES)) {
-  const html = await renderEmail(payload);
+  const html = (await renderEmail(payload)).replaceAll(`${SITE_URL}/email/`, './email/');
   writeFileSync(join(outDir, `${name}.html`), html);
   console.log(`  ${name}.html`);
 }

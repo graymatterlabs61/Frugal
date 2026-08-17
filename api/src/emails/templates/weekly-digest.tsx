@@ -46,7 +46,7 @@ export function WeeklyDigestEmail({
       preview={`${usd(totalUsd)} across ${providers.length} provider${providers.length === 1 ? '' : 's'} — ${periodLabel}`}
       {...(unsubscribeUrl ? { unsubscribeUrl } : {})}
     >
-      <Hero eyebrow={`Weekly digest · ${periodLabel}`} heading="Your AI spend this week">
+      <Hero eyebrow={`Weekly digest · ${periodLabel}`} heading="Your AI spend" accent="this week">
         Here&apos;s where your API spend landed over the past seven days.
       </Hero>
 
@@ -69,19 +69,19 @@ export function WeeklyDigestEmail({
 
       {top.length > 0 ? (
         <>
-          <Text className="e-text" style={styles.sectionTitle}>
+          <Text style={styles.sectionTitle}>
             By provider
           </Text>
           <Section>
             {top.map((p, i) => (
               <Row key={p.provider}>
                 <Column>
-                  <Text className="e-text" style={styles.rowLabel}>
+                  <Text style={styles.rowLabel}>
                     {p.provider}
                   </Text>
                 </Column>
                 <Column style={styles.amountCol}>
-                  <Text className="e-text" style={styles.rowAmount}>
+                  <Text style={styles.rowAmount}>
                     {usd(p.costUsd)}
                   </Text>
                 </Column>
@@ -92,7 +92,7 @@ export function WeeklyDigestEmail({
           <Divider spacing={space.md} />
         </>
       ) : (
-        <Text className="e-muted" style={styles.empty}>
+        <Text style={styles.empty}>
           No usage recorded this week.
         </Text>
       )}

@@ -42,21 +42,21 @@ export function ConnectionFailedEmail({
       </Hero>
 
       {reason ? (
-        <Text className="e-muted e-subtle e-border" style={styles.reason}>
+        <Text style={styles.reason}>
           Provider response: {reason}
         </Text>
       ) : null}
 
       <Button href={`${SITE_URL}/connections`}>Fix connection</Button>
 
-      <Text className="e-text" style={styles.sectionTitle}>
+      <Text style={styles.sectionTitle}>
         Common causes
       </Text>
       <FeatureRow glyph="·" title="The API key was rotated or revoked" />
       <FeatureRow glyph="·" title="The key lost the permission needed to read usage" />
       <FeatureRow glyph="·" title="Billing lapsed on the provider account" />
 
-      <Text className="e-muted" style={styles.notice}>
+      <Text style={styles.notice}>
         We&apos;ll keep retrying and email you once polling recovers. You
         won&apos;t get this alert again for the same connection while it stays
         broken.
@@ -92,7 +92,7 @@ export function connectionFailedText({
 
 const styles = {
   reason: {
-    backgroundColor: '#fafafa',
+    backgroundColor: color.surfaceRaised,
     border: `1px solid ${color.border}`,
     borderRadius: '8px',
     color: color.textMuted,

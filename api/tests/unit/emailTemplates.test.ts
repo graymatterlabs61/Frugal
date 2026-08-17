@@ -64,11 +64,13 @@ describe('email templates', () => {
     expect(html).not.toContain('[object Object]');
   });
 
-  it('OTP email shows the code and offers no clickable link to phish', async () => {
+  it('OTP email shows the code and has no call-to-action button', async () => {
     const html = await renderEmail({ type: 'verify-otp', props: { code: '482913' } });
     expect(html).toContain('482913');
-    // Only the footer's own links should be present — no CTA into the app
-    expect(html).not.toContain('/dashboard');
+    // A code-only email should give a phishing lookalike nothing to imitate:
+    // standard footer nav is fine, a primary CTA button is not. The button is
+    // the only element painted in the brand orange.
+    expect(html).not.toContain(`background-color:${'#FF500B'}`);
   });
 
   it('password reset embeds the token URL in both button and fallback', async () => {

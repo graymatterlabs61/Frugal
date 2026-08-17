@@ -14,16 +14,15 @@ export function Button({ href, children, variant = 'primary' }: ButtonProps) {
     <REButton
       href={href}
       style={{
-        backgroundColor: isPrimary ? color.primary : 'transparent',
-        border: isPrimary ? 'none' : `1px solid ${color.border}`,
+        backgroundColor: isPrimary ? color.primary : color.surfaceRaised,
+        border: isPrimary ? `1px solid ${color.primary}` : `1px solid ${color.borderStrong}`,
         borderRadius: '8px',
         color: isPrimary ? color.primaryFg : color.text,
         display: 'inline-block',
         fontSize: '15px',
         fontWeight: 600,
         lineHeight: '20px',
-        // react-email renders padding into a table for Outlook; keep it explicit
-        padding: '12px 24px',
+        padding: '13px 26px',
         textDecoration: 'none',
         margin: `${space.sm} 0`,
       }}

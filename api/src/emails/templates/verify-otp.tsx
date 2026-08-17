@@ -19,14 +19,14 @@ export interface VerifyOtpEmailProps {
 export function VerifyOtpEmail({ code, expiresInMinutes = 5 }: VerifyOtpEmailProps) {
   return (
     <BaseLayout preview={`${code} is your Frugal verification code`}>
-      <Hero eyebrow="Verify your email" heading="Enter this code to continue">
+      <Hero eyebrow="Verify your email" heading="Enter this code to" accent="continue">
         Type this code into the verification screen you already have open. It
         expires in {expiresInMinutes} minutes.
       </Hero>
 
       <CodeBlock code={code} />
 
-      <Text className="e-muted" style={styles.notice}>
+      <Text style={styles.notice}>
         Frugal staff will never ask you for this code. If you didn&apos;t try to
         sign up or verify an email, you can ignore this message — nothing
         happens until the code is used.

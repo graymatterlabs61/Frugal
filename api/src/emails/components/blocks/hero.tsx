@@ -1,37 +1,47 @@
 import { Heading, Text } from '@react-email/components';
 import type { ReactNode } from 'react';
-import { color, space } from '../../lib/tokens.js';
+import { color, font, space } from '../../lib/tokens.js';
 
 interface HeroProps {
-  /** Small uppercase label above the heading (optional). */
+  /** Small uppercase label above the heading. */
   eyebrow?: string;
   heading: string;
+  /**
+   * Trailing fragment rendered in serif italic, mirroring the landing page's
+   * headline treatment ("Stop getting surprised *by AI bills*"). Georgia is
+   * universally available, so this needs no webfont.
+   */
+  accent?: string;
   children?: ReactNode;
   tone?: 'default' | 'danger' | 'warning' | 'success';
 }
 
-const eyebrowColor = {
+const toneColor = {
   default: color.primary,
   danger: color.danger,
   warning: color.warning,
   success: color.success,
 } as const;
 
-export function Hero({ eyebrow, heading, children, tone = 'default' }: HeroProps) {
+export function Hero({ eyebrow, heading, accent, children, tone = 'default' }: HeroProps) {
   return (
     <>
       {eyebrow ? (
-        <Text style={{ ...styles.eyebrow, color: eyebrowColor[tone] }}>{eyebrow}</Text>
-      ) : null}
-      {/* h1 per email a11y: screen readers rely on real heading levels */}
-      <Heading as="h1" className="e-text" style={styles.heading}>
-        {heading}
-      </Heading>
-      {children ? (
-        <Text className="e-muted" style={styles.body}>
-          {children}
+        <Text style={{ ...styles.eyebrow, color: toneColor[tone] }}>
+          <span style={styles.eyebrowDot}>●</span> {eyebrow}
         </Text>
       ) : null}
+      {/* Real h1 — screen readers rely on heading levels, not font size */}
+      <Heading as="h1" className="e-h1" style={styles.heading}>
+        {heading}
+        {accent ? (
+          <>
+            {' '}
+            <span style={styles.accent}>{accent}</span>
+          </>
+        ) : null}
+      </Heading>
+      {children ? <Text style={styles.body}>{children}</Text> : null}
     </>
   );
 }
@@ -40,22 +50,33 @@ const styles = {
   eyebrow: {
     fontSize: '11px',
     fontWeight: 700,
-    letterSpacing: '0.1em',
-    margin: `0 0 ${space.sm}`,
+    letterSpacing: '0.12em',
+    margin: `0 0 ${space.md}`,
     textTransform: 'uppercase' as const,
+  },
+  eyebrowDot: {
+    fontSize: '8px',
+    verticalAlign: 'middle' as const,
   },
   heading: {
     color: color.text,
-    fontSize: '24px',
-    fontWeight: 700,
-    letterSpacing: '-0.02em',
-    lineHeight: '32px',
+    fontFamily: font.sans,
+    fontSize: '28px',
+    fontWeight: 600,
+    letterSpacing: '-0.025em',
+    lineHeight: '36px',
     margin: `0 0 ${space.md}`,
+  },
+  accent: {
+    color: color.text,
+    fontFamily: font.serif,
+    fontStyle: 'italic' as const,
+    fontWeight: 400,
   },
   body: {
     color: color.textMuted,
     fontSize: '15px',
-    lineHeight: '24px',
+    lineHeight: '25px',
     margin: `0 0 ${space.lg}`,
   },
 } as const;

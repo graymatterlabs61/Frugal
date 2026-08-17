@@ -13,7 +13,7 @@ export interface PasswordResetEmailProps {
 export function PasswordResetEmail({ url, expiresInMinutes = 60 }: PasswordResetEmailProps) {
   return (
     <BaseLayout preview="Reset your Frugal password — link expires in 1 hour.">
-      <Hero eyebrow="Password reset" heading="Set a new password">
+      <Hero eyebrow="Password reset" heading="Set a new" accent="password">
         Click below to choose a new password for your Frugal account. This link
         expires in {expiresInMinutes} minutes and can only be used once.
       </Hero>
@@ -21,7 +21,7 @@ export function PasswordResetEmail({ url, expiresInMinutes = 60 }: PasswordReset
       <Button href={url}>Reset password</Button>
 
       {/* Plain URL fallback — some corporate clients strip or rewrite button hrefs */}
-      <Text className="e-muted" style={styles.fallback}>
+      <Text style={styles.fallback}>
         Button not working? Paste this into your browser:
         <br />
         <Link href={url} style={styles.link}>
@@ -29,7 +29,7 @@ export function PasswordResetEmail({ url, expiresInMinutes = 60 }: PasswordReset
         </Link>
       </Text>
 
-      <Text className="e-muted" style={styles.notice}>
+      <Text style={styles.notice}>
         If you didn&apos;t request a reset, ignore this email — your password
         stays as it is. Someone may have entered your address by mistake.
       </Text>

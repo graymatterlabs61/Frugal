@@ -4,7 +4,6 @@ import { color, space } from '../../lib/tokens.js';
 export function Divider({ spacing = space.lg }: { spacing?: string }) {
   return (
     <Hr
-      className="e-hr"
       style={{
         borderColor: color.border,
         borderStyle: 'solid',

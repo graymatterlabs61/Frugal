@@ -18,14 +18,14 @@ export interface VerifyLinkEmailProps {
 export function VerifyLinkEmail({ url, expiresInHours = 24 }: VerifyLinkEmailProps) {
   return (
     <BaseLayout preview="Confirm your email address to activate your Frugal account.">
-      <Hero eyebrow="Verify your email" heading="Confirm your email address">
+      <Hero eyebrow="Verify your email" heading="Confirm your" accent="email address">
         One click and your Frugal account is active. This link expires in{' '}
         {expiresInHours} hours.
       </Hero>
 
       <Button href={url}>Verify email address</Button>
 
-      <Text className="e-muted" style={styles.fallback}>
+      <Text style={styles.fallback}>
         Button not working? Paste this into your browser:
         <br />
         <Link href={url} style={styles.link}>
@@ -33,7 +33,7 @@ export function VerifyLinkEmail({ url, expiresInHours = 24 }: VerifyLinkEmailPro
         </Link>
       </Text>
 
-      <Text className="e-muted" style={styles.notice}>
+      <Text style={styles.notice}>
         If you didn&apos;t create a Frugal account, ignore this email — no
         account is activated until this link is used.
       </Text>

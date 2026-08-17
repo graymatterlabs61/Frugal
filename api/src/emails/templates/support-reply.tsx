@@ -29,10 +29,10 @@ export function SupportReplyEmail({ name, message, reference }: SupportReplyEmai
         anything.
       </Hero>
 
-      <Text className="e-muted" style={styles.label}>
+      <Text style={styles.label}>
         What you sent{reference ? ` · ${reference}` : ''}
       </Text>
-      <Text className="e-muted e-subtle e-border" style={styles.quote}>
+      <Text style={styles.quote}>
         {message}
       </Text>
     </BaseLayout>
@@ -65,7 +65,7 @@ const styles = {
     textTransform: 'uppercase' as const,
   },
   quote: {
-    backgroundColor: '#fafafa',
+    backgroundColor: color.surfaceRaised,
     border: `1px solid ${color.border}`,
     borderRadius: '8px',
     color: color.textMuted,

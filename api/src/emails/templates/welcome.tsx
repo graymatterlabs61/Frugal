@@ -15,38 +15,39 @@ export interface WelcomeEmailProps {
  * a welcome email that sells is a marketing email and needs consent handling).
  */
 export function WelcomeEmail({ name }: WelcomeEmailProps) {
-  const greeting = name ? `Welcome, ${name}.` : 'Welcome to Frugal.';
+  const greeting = name ? 'Welcome,' : 'Welcome to';
+  const greetingAccent = name ? `${name}.` : 'Frugal.';
 
   return (
     <BaseLayout preview="Your Frugal account is ready — connect your first provider.">
-      <Hero eyebrow="Account ready" heading={greeting}>
+      <Hero eyebrow="Account ready" heading={greeting} accent={greetingAccent}>
         Your email is verified and your account is live. Frugal watches your AI
         provider spend and tells you before a bill gets out of hand.
       </Hero>
 
       <Button href={`${SITE_URL}/dashboard`}>Go to dashboard</Button>
 
-      <Text className="e-text" style={styles.sectionTitle}>
+      <Text style={styles.sectionTitle}>
         Getting set up
       </Text>
 
       <FeatureRow
-        glyph="1."
+        glyph="1"
         title="Connect a provider"
         description="Add a read-only API key for OpenAI, Anthropic, Replicate, or fal.ai. Keys are encrypted with AES-256 before storage."
       />
       <FeatureRow
-        glyph="2."
+        glyph="2"
         title="Set a budget rule"
         description="Pick a monthly limit. Frugal checks your spend against it every 5 minutes."
       />
       <FeatureRow
-        glyph="3."
+        glyph="3"
         title="Get alerted"
         description="We email you when spend crosses your threshold — before the invoice, not after."
       />
 
-      <Text className="e-muted" style={styles.footnote}>
+      <Text style={styles.footnote}>
         Frugal never sits between your app and the provider, so connecting adds
         no latency to your API calls.
       </Text>

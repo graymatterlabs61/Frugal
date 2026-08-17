@@ -1,44 +1,52 @@
 /**
- * Email design tokens.
+ * Email design tokens — dark, matching getfrugal.dev.
  *
- * Hex only — email clients don't support oklch(), which the web app uses.
- * Values mirror web/app/globals.css: primary #FF500B, dark surfaces in the
- * 270-hue family. Light base with dark-mode overrides in base-layout, since
- * Outlook's Word engine ignores @media and would render a dark-only email as
- * light background + light text.
+ * Hex only (email clients don't support the oklch() the web app uses), and the
+ * dark palette is hard-coded rather than living behind a prefers-color-scheme
+ * query: Outlook's Word engine ignores @media entirely, so a query-driven dark
+ * theme renders there as light background + light text. Hard-coding means every
+ * client shows the same thing.
  */
 export const color = {
   primary: '#FF500B',
-  primaryDark: '#e04409',
+  primaryHover: '#ff6a30',
   primaryFg: '#ffffff',
+  /** Orange at low alpha, pre-flattened over `surface` — email has no alpha blending in Outlook. */
+  primarySoft: '#2a1710',
+  primaryBorder: '#4a2415',
 
-  // Light (default)
-  bg: '#f4f4f5',
-  surface: '#ffffff',
-  text: '#18181b',
-  textMuted: '#52525b',
+  /** Page background, behind the card. */
+  bg: '#050508',
+  /** Card / panel background. */
+  surface: '#101016',
+  /** Inset panels (code blocks, quotes) — one step up from surface. */
+  surfaceRaised: '#181820',
+
+  text: '#f4f4f5',
+  textMuted: '#a1a1aa',
   textSubtle: '#71717a',
-  border: '#e4e4e7',
 
-  // Dark (media-query overrides)
-  bgDark: '#09090f',
-  surfaceDark: '#121218',
-  textDark: '#f4f4f5',
-  textMutedDark: '#a1a1aa',
-  borderDark: '#27272e',
+  border: '#26262e',
+  borderStrong: '#35353f',
 
-  // Semantic
-  danger: '#dc2626',
-  dangerBg: '#fef2f2',
-  warning: '#d97706',
-  warningBg: '#fffbeb',
-  success: '#059669',
-  successBg: '#ecfdf5',
+  danger: '#f87171',
+  dangerSoft: '#2a1414',
+  dangerBorder: '#4a1f1f',
+  warning: '#fbbf24',
+  warningSoft: '#2a2010',
+  success: '#34d399',
+  successSoft: '#0f2a20',
 } as const;
 
 export const font = {
   sans: "'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
-  mono: "'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+  /**
+   * Serif italic accent, mirroring the landing page's headline treatment.
+   * Instrument Serif is the site's face and loads via @import where supported;
+   * Georgia is the fallback for Gmail, which strips webfonts.
+   */
+  serif: "'Instrument Serif', Georgia, 'Times New Roman', Times, serif",
+  mono: "'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Courier New', monospace",
 } as const;
 
 export const space = {

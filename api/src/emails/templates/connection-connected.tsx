@@ -39,7 +39,7 @@ export function ConnectionConnectedEmail({
       <Button href={`${SITE_URL}/dashboard`}>View dashboard</Button>
 
       {!recovered ? (
-        <Text className="e-muted" style={styles.notice}>
+        <Text style={styles.notice}>
           First figures can take a few minutes to appear, and some providers
           report usage on a delay of their own. Set a budget rule next so
           there&apos;s a threshold to alert on.
