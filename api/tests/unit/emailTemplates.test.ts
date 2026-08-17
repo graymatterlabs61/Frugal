@@ -132,6 +132,51 @@ describe('email templates', () => {
     expect(html.toLowerCase()).toContain('not being tracked');
   });
 
+  it('digest bars scale to the largest provider, not the total', async () => {
+    const html = await renderEmail({
+      type: 'weekly-digest',
+      props: {
+        periodLabel: 'Aug 11 – Aug 17',
+        totalUsd: 300,
+        providers: [
+          { provider: 'OpenAI', costUsd: 200 },
+          { provider: 'Anthropic', costUsd: 100 },
+        ],
+      },
+    });
+    // Top provider fills the track; half-sized one is half of it
+    expect(html).toContain('width="100%"');
+    expect(html).toContain('width="50%"');
+  });
+
+  it('a near-zero provider still renders a visible bar', async () => {
+    const html = await renderEmail({
+      type: 'weekly-digest',
+      props: {
+        periodLabel: 'Aug 11 – Aug 17',
+        totalUsd: 1000.5,
+        providers: [
+          { provider: 'OpenAI', costUsd: 1000 },
+          { provider: 'fal.ai', costUsd: 0.5 },
+        ],
+      },
+    });
+    // 0.05% would round to a 0-width cell and vanish; floored to 2%
+    expect(html).toContain('width="2%"');
+    expect(html).not.toContain('width="0%"');
+  });
+
+  it('hero band figure carries the payload for data emails', async () => {
+    const html = await renderEmail({
+      type: 'budget-alert',
+      props: { projectName: 'Prod API', spendAtTrigger: 842.1, limitUsd: 1000 },
+    });
+    // Gradient with a solid bgcolor beneath it, so Outlook degrades to flat
+    // brand colour rather than white
+    expect(html).toContain('linear-gradient');
+    expect(html).toContain('bgcolor="#251a12"');
+  });
+
   it('digest handles a first week with no prior period', async () => {
     const html = await renderEmail({
       type: 'weekly-digest',

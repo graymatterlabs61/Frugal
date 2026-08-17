@@ -19,6 +19,12 @@ interface BaseLayoutProps {
   /** Inbox preview line, shown next to the subject. Always set it deliberately. */
   preview: string;
   children: ReactNode;
+  /**
+   * Full-bleed band rendered above the padded body, edge to edge inside the
+   * card. Passed separately rather than as part of children because it has to
+   * sit outside the padded cell to reach the card edges.
+   */
+  hero?: ReactNode;
   /** Marketing emails must pass an unsubscribe URL (CAN-SPAM / GDPR). */
   unsubscribeUrl?: string;
 }
@@ -30,7 +36,7 @@ interface BaseLayoutProps {
  * card is one table with its own padding, and spacing between blocks comes
  * from explicit spacer rows rather than margins on nested elements.
  */
-export function BaseLayout({ preview, children, unsubscribeUrl }: BaseLayoutProps) {
+export function BaseLayout({ preview, children, hero, unsubscribeUrl }: BaseLayoutProps) {
   return (
     <Html lang="en" dir="ltr">
       <Head>
@@ -56,6 +62,7 @@ export function BaseLayout({ preview, children, unsubscribeUrl }: BaseLayoutProp
                way before they stop colliding. */
             .e-figure { font-size:17px !important; letter-spacing:-0.02em !important; }
             .e-statlabel { font-size:9px !important; letter-spacing:0.06em !important; }
+            .e-display { font-size:34px !important; line-height:40px !important; }
           }
         `}</style>
       </Head>
@@ -67,20 +74,15 @@ export function BaseLayout({ preview, children, unsubscribeUrl }: BaseLayoutProp
               alpha compositing in Outlook. */}
           <Section style={styles.header}>
             <Row>
-              <Column style={styles.logoCol}>
+              <Column align="center">
                 <Link href={SITE_URL}>
                   <Img
                     src={`${SITE_URL}/email/logo@4x.png`}
-                    width="34"
-                    height="25"
+                    width="46"
+                    height="34"
                     alt="Frugal"
                     style={styles.logo}
                   />
-                </Link>
-              </Column>
-              <Column style={styles.wordmarkCol}>
-                <Link href={SITE_URL} style={styles.wordmark}>
-                  Frugal
                 </Link>
               </Column>
             </Row>
@@ -98,8 +100,20 @@ export function BaseLayout({ preview, children, unsubscribeUrl }: BaseLayoutProp
             style={styles.cardTable}
           >
             <tbody>
+              {hero ? (
+                // Zero-padding cell so the band reaches the card edges
+                <tr>
+                  <td style={styles.heroCell} {...bgAttr(color.surface)}>
+                    {hero}
+                  </td>
+                </tr>
+              ) : null}
               <tr>
-                <td className="e-card" style={styles.card} {...bgAttr(color.surface)}>
+                <td
+                  className="e-card"
+                  style={hero ? styles.cardWithHero : styles.card}
+                  {...bgAttr(color.surface)}
+                >
                   {children}
                 </td>
               </tr>
@@ -117,11 +131,14 @@ export function BaseLayout({ preview, children, unsubscribeUrl }: BaseLayoutProp
           </table>
 
           <Section style={styles.footer}>
-            <Text style={styles.footerBrand}>
-              <Link href={SITE_URL} style={styles.footerBrandLink}>
-                Frugal
+            <Text style={styles.footerBrand}>Frugal</Text>
+            <Text style={styles.footerTagline}>Know what your AI is costing you.</Text>
+            <Text style={styles.footerHelp}>
+              Questions? Just reply to this email, or write to{' '}
+              <Link href="mailto:support@getfrugal.dev" style={styles.footerHelpLink}>
+                support@getfrugal.dev
               </Link>
-              <span style={styles.footerTagline}>&nbsp;&nbsp;·&nbsp;&nbsp;AI API cost management</span>
+              {' — a person reads every message.'}
             </Text>
             <Text style={styles.footerLinks}>
               <Link href={`${SITE_URL}/dashboard`} style={styles.footerLink}>
@@ -192,19 +209,25 @@ const styles = {
     textDecoration: 'none',
   },
   cardTable: {
+    // Border and radius live on the table so the hero band can sit flush in
+    // its own row without needing per-cell corner handling. Outlook squares
+    // the corners off, which is a fine degradation.
+    backgroundColor: color.surface,
+    border: `1px solid ${color.border}`,
+    borderRadius: '14px',
+    overflow: 'hidden' as const,
     width: '100%',
+  },
+  heroCell: {
+    padding: 0,
   },
   card: {
     backgroundColor: color.surface,
-    // Left accent stripe instead of a full top bar — reads as brand
-    // furniture rather than a stray line, and survives clients that
-    // collapse a 3px-tall row.
-    borderLeft: `3px solid ${color.primary}`,
-    borderTop: `1px solid ${color.border}`,
-    borderRight: `1px solid ${color.border}`,
-    borderBottom: `1px solid ${color.border}`,
-    borderRadius: '12px',
-    padding: `30px 32px 26px`,
+    padding: `32px 32px 28px`,
+  },
+  cardWithHero: {
+    backgroundColor: color.surface,
+    padding: `26px 32px 28px`,
   },
   spacer: {
     fontSize: '1px',
@@ -215,20 +238,33 @@ const styles = {
     paddingTop: 0,
   },
   footerBrand: {
-    margin: `0 0 12px`,
-  },
-  footerBrandLink: {
-    color: color.textMuted,
-    fontSize: '13px',
-    fontWeight: 600,
-    textDecoration: 'none',
+    color: color.text,
+    fontSize: '26px',
+    fontWeight: 700,
+    letterSpacing: '-0.02em',
+    margin: `0 0 4px`,
+    textAlign: 'center' as const,
   },
   footerTagline: {
+    color: color.textMuted,
+    fontSize: '14px',
+    margin: `0 0 12px`,
+    textAlign: 'center' as const,
+  },
+  footerHelp: {
     color: color.textSubtle,
-    fontSize: '13px',
+    fontSize: '12px',
+    lineHeight: '19px',
+    margin: `0 0 16px`,
+    textAlign: 'center' as const,
+  },
+  footerHelpLink: {
+    color: color.textMuted,
+    textDecoration: 'underline',
   },
   footerLinks: {
     margin: `0 0 14px`,
+    textAlign: 'center' as const,
   },
   footerLink: {
     color: color.textMuted,
@@ -243,5 +279,6 @@ const styles = {
     fontSize: '11px',
     lineHeight: '17px',
     margin: 0,
+    textAlign: 'center' as const,
   },
 } as const;

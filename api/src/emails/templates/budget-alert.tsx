@@ -2,6 +2,7 @@ import { Text } from '@react-email/components';
 import { BaseLayout } from '../components/layout/base-layout.js';
 import { Button } from '../components/layout/button.js';
 import { Hero } from '../components/blocks/hero.js';
+import { HeroBand } from '../components/blocks/hero-band.js';
 import { StatBlock } from '../components/blocks/stat-block.js';
 import { ProgressBar } from '../components/blocks/progress-bar.js';
 import { color, space, SITE_URL } from '../lib/tokens.js';
@@ -50,16 +51,24 @@ export function BudgetAlertEmail({
         ? 'over budget'
         : `${pct}% of budget`;
 
+  const tone = blocked || over ? ('danger' as const) : ('warning' as const);
+  const remaining = limitUsd - spendAtTrigger;
+
   return (
     <BaseLayout
       preview={`${projectName}: ${usd(spendAtTrigger)} of ${usd(limitUsd)} (${pct}%)`}
+      hero={
+        <HeroBand
+          eyebrow={blocked ? 'Connection blocked' : over ? 'Over budget' : 'Budget threshold'}
+          figure={usd(spendAtTrigger)}
+          caption={`of ${usd(limitUsd)} limit · ${pct}% used`}
+          tone={tone}
+        >
+          <ProgressBar percent={pct} tone={tone} />
+        </HeroBand>
+      }
     >
-      <Hero
-        eyebrow={blocked ? 'Connection blocked' : over ? 'Over budget' : 'Budget threshold'}
-        heading={heading}
-        accent={accent}
-        tone={blocked || over ? 'danger' : 'warning'}
-      >
+      <Hero heading={heading} accent={accent}>
         {blocked
           ? 'Your budget rule fired at the last poll and this connection has been blocked. No further spend will be tracked against it until you re-enable it.'
           : throttled
@@ -67,13 +76,15 @@ export function BudgetAlertEmail({
             : 'Your spend crossed the threshold on this budget rule. Nothing has been blocked — this is a heads-up.'}
       </Hero>
 
-      <ProgressBar percent={pct} tone={over ? 'danger' : 'warning'} />
-
       <StatBlock
         stats={[
           { label: 'Spend', value: usd(spendAtTrigger), tone: over ? 'danger' : 'default' },
           { label: 'Limit', value: usd(limitUsd) },
-          { label: 'Used', value: `${pct}%`, tone: over ? 'danger' : 'warning' },
+          {
+            label: over ? 'Over by' : 'Remaining',
+            value: usd(Math.abs(remaining)),
+            tone: over ? 'danger' : 'success',
+          },
         ]}
       />
 

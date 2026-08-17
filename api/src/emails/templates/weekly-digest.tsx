@@ -3,6 +3,8 @@ import { BaseLayout } from '../components/layout/base-layout.js';
 import { Button } from '../components/layout/button.js';
 import { Divider } from '../components/layout/divider.js';
 import { Hero } from '../components/blocks/hero.js';
+import { HeroBand } from '../components/blocks/hero-band.js';
+import { BarChart } from '../components/blocks/bar-chart.js';
 import { StatBlock } from '../components/blocks/stat-block.js';
 import { color, font, space, SITE_URL } from '../lib/tokens.js';
 
@@ -45,56 +47,50 @@ export function WeeklyDigestEmail({
     <BaseLayout
       preview={`${usd(totalUsd)} across ${providers.length} provider${providers.length === 1 ? '' : 's'} — ${periodLabel}`}
       {...(unsubscribeUrl ? { unsubscribeUrl } : {})}
+      hero={
+        <HeroBand
+          eyebrow={`Weekly digest · ${periodLabel}`}
+          figure={usd(totalUsd)}
+          caption={
+            deltaLabel ? `total spend · ${deltaLabel}` : 'total spend across all providers'
+          }
+          tone={deltaPct !== null && deltaPct > 0 ? 'warning' : 'default'}
+        />
+      }
     >
-      <Hero eyebrow={`Weekly digest · ${periodLabel}`} heading="Your AI spend" accent="this week">
+      <Hero heading="Your AI spend" accent="this week">
         Here&apos;s where your API spend landed over the past seven days.
       </Hero>
 
       <StatBlock
         stats={[
-          {
-            label: 'Total spend',
-            value: usd(totalUsd),
-            ...(deltaLabel ? { delta: deltaLabel } : {}),
-            ...(deltaPct !== null && deltaPct > 0 ? { tone: 'warning' as const } : {}),
-          },
           { label: 'Providers', value: String(providers.length) },
           {
             label: 'Alerts',
             value: String(alertCount),
             ...(alertCount > 0 ? { tone: 'danger' as const } : {}),
           },
+          {
+            label: 'Top spend',
+            value: top[0] ? usd(top[0].costUsd) : usd(0),
+          },
         ]}
       />
 
       {top.length > 0 ? (
         <>
-          <Text style={styles.sectionTitle}>
-            By provider
-          </Text>
-          <Section>
-            {top.map((p, i) => (
-              <Row key={p.provider}>
-                <Column>
-                  <Text style={styles.rowLabel}>
-                    {p.provider}
-                  </Text>
-                </Column>
-                <Column style={styles.amountCol}>
-                  <Text style={styles.rowAmount}>
-                    {usd(p.costUsd)}
-                  </Text>
-                </Column>
-                {i < top.length - 1 ? null : null}
-              </Row>
-            ))}
-          </Section>
+          <Text style={styles.sectionTitle}>By provider</Text>
+          <BarChart
+            rows={top.map((p) => ({
+              label: p.provider,
+              value: p.costUsd,
+              display: usd(p.costUsd),
+            }))}
+          />
           <Divider spacing={space.md} />
         </>
       ) : (
-        <Text style={styles.empty}>
-          No usage recorded this week.
-        </Text>
+        <Text style={styles.empty}>No usage recorded this week.</Text>
       )}
 
       <Button href={`${SITE_URL}/dashboard`}>Open dashboard</Button>

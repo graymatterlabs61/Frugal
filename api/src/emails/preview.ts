@@ -43,8 +43,10 @@ const SAMPLES: Record<string, EmailPayload> = {
       totalUsd: 842.1,
       previousUsd: 960.4,
       providers: [
-        { provider: 'OpenAI', costUsd: 420.5 },
-        { provider: 'Anthropic', costUsd: 421.6 },
+        { provider: 'OpenAI', costUsd: 512.4 },
+        { provider: 'Anthropic', costUsd: 218.9 },
+        { provider: 'Replicate', costUsd: 82.3 },
+        { provider: 'fal.ai', costUsd: 28.5 },
       ],
       alertCount: 2,
     },

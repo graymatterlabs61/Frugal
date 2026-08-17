@@ -75,8 +75,11 @@ const styles = {
   },
   body: {
     color: color.textMuted,
-    fontSize: '15px',
-    lineHeight: '25px',
+    // 17/27 rather than 15/25 — body copy at this size reads as something a
+    // person wrote, which is most of the difference between these and a
+    // system notification.
+    fontSize: '17px',
+    lineHeight: '27px',
     margin: `0 0 ${space.lg}`,
   },
 } as const;
