@@ -1,66 +1,49 @@
-import { Resend } from 'resend';
-import { config } from '../config/unifiedConfig.js';
-import { logger } from './logger.js';
+import { sendEmail } from '../emails/lib/send.js';
 
-const SUBJECTS: Record<'sign-in' | 'email-verification' | 'forget-password' | 'change-email', string> = {
-  'sign-in': 'Your Frugal sign-in code',
-  'email-verification': 'Verify your Frugal email',
-  'forget-password': 'Your Frugal password reset code',
-  'change-email': 'Confirm your new Frugal email address',
-};
+/**
+ * Thin wrappers over the template layer (src/emails).
+ *
+ * Signatures are unchanged from the plain-text versions these replaced, so
+ * auth.ts and AlertDispatchService keep working untouched — only what lands in
+ * the inbox changed.
+ */
 
 export async function sendOtpEmail(params: {
   to: string;
   otp: string;
   purpose: 'sign-in' | 'email-verification' | 'forget-password' | 'change-email';
 }): Promise<void> {
-  const { to, otp, purpose } = params;
-
-  if (!config.resend.apiKey || !config.resend.fromAddress) {
-    logger.info({ to, purpose }, 'RESEND_API_KEY not set — skipping OTP email send');
-    return;
-  }
-
-  const resend = new Resend(config.resend.apiKey);
-  await resend.emails.send({
-    from: config.resend.fromAddress,
-    to,
-    subject: SUBJECTS[purpose],
-    text: `Your code is ${otp}. It expires in 5 minutes.`,
+  await sendEmail(params.to, {
+    type: 'verify-otp',
+    props: { code: params.otp, expiresInMinutes: 5 },
   });
 }
 
 export async function sendResetPasswordEmail(params: { to: string; url: string }): Promise<void> {
-  const { to, url } = params;
-
-  if (!config.resend.apiKey || !config.resend.fromAddress) {
-    logger.info({ to }, 'RESEND_API_KEY not set — skipping password reset email send');
-    return;
-  }
-
-  const resend = new Resend(config.resend.apiKey);
-  await resend.emails.send({
-    from: config.resend.fromAddress,
-    to,
-    subject: SUBJECTS['forget-password'],
-    text: `Reset your Frugal password: ${url}\n\nIf you didn't request this, ignore this email.`,
+  await sendEmail(params.to, {
+    type: 'password-reset',
+    props: { url: params.url },
   });
 }
 
+/**
+ * Link-based email verification.
+ *
+ * Superseded by the OTP flow (sendOtpEmail with purpose 'email-verification');
+ * this stays until the web verify-email page switches to a code input, then it
+ * and its better-auth wiring can go.
+ */
 export async function sendVerificationLinkEmail(params: { to: string; url: string }): Promise<void> {
-  const { to, url } = params;
+  await sendEmail(params.to, {
+    type: 'verify-link',
+    props: { url: params.url },
+  });
+}
 
-  if (!config.resend.apiKey || !config.resend.fromAddress) {
-    logger.info({ to }, 'RESEND_API_KEY not set — skipping verification email send');
-    return;
-  }
-
-  const resend = new Resend(config.resend.apiKey);
-  await resend.emails.send({
-    from: config.resend.fromAddress,
-    to,
-    subject: SUBJECTS['email-verification'],
-    text: `Verify your Frugal email: ${url}`,
+export async function sendWelcomeEmail(params: { to: string; name?: string }): Promise<void> {
+  await sendEmail(params.to, {
+    type: 'welcome',
+    props: { name: params.name },
   });
 }
 
@@ -69,19 +52,61 @@ export async function sendBudgetAlertEmail(params: {
   projectName: string;
   spendAtTrigger: number;
   limitUsd: number;
+  actionTaken?: 'alert' | 'block' | 'throttle';
 }): Promise<void> {
-  const { to, projectName, spendAtTrigger, limitUsd } = params;
+  await sendEmail(params.to, {
+    type: 'budget-alert',
+    props: {
+      projectName: params.projectName,
+      spendAtTrigger: params.spendAtTrigger,
+      limitUsd: params.limitUsd,
+      actionTaken: params.actionTaken,
+    },
+  });
+}
 
-  if (!config.resend.apiKey || !config.resend.fromAddress) {
-    logger.info({ to, projectName }, 'RESEND_API_KEY not set — skipping budget alert email send');
-    return;
-  }
+export async function sendConnectionFailedEmail(params: {
+  to: string;
+  provider: string;
+  projectName?: string;
+  reason?: string;
+  failingSince?: string;
+}): Promise<void> {
+  await sendEmail(params.to, {
+    type: 'connection-failed',
+    props: {
+      provider: params.provider,
+      projectName: params.projectName,
+      reason: params.reason,
+      failingSince: params.failingSince,
+    },
+  });
+}
 
-  const resend = new Resend(config.resend.apiKey);
-  await resend.emails.send({
-    from: config.resend.fromAddress,
-    to,
-    subject: `Budget alert: ${projectName}`,
-    text: `${projectName} has spent $${spendAtTrigger.toFixed(2)} of its $${limitUsd.toFixed(2)} limit.`,
+export async function sendConnectionConnectedEmail(params: {
+  to: string;
+  provider: string;
+  projectName?: string;
+  recovered?: boolean;
+}): Promise<void> {
+  await sendEmail(params.to, {
+    type: 'connection-connected',
+    props: {
+      provider: params.provider,
+      projectName: params.projectName,
+      recovered: params.recovered,
+    },
+  });
+}
+
+export async function sendSupportReplyEmail(params: {
+  to: string;
+  name?: string;
+  message: string;
+  reference?: string;
+}): Promise<void> {
+  await sendEmail(params.to, {
+    type: 'support-reply',
+    props: { name: params.name, message: params.message, reference: params.reference },
   });
 }
