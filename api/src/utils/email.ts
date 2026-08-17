@@ -30,6 +30,40 @@ export async function sendOtpEmail(params: {
   });
 }
 
+export async function sendResetPasswordEmail(params: { to: string; url: string }): Promise<void> {
+  const { to, url } = params;
+
+  if (!config.resend.apiKey || !config.resend.fromAddress) {
+    logger.info({ to }, 'RESEND_API_KEY not set — skipping password reset email send');
+    return;
+  }
+
+  const resend = new Resend(config.resend.apiKey);
+  await resend.emails.send({
+    from: config.resend.fromAddress,
+    to,
+    subject: SUBJECTS['forget-password'],
+    text: `Reset your Frugal password: ${url}\n\nIf you didn't request this, ignore this email.`,
+  });
+}
+
+export async function sendVerificationLinkEmail(params: { to: string; url: string }): Promise<void> {
+  const { to, url } = params;
+
+  if (!config.resend.apiKey || !config.resend.fromAddress) {
+    logger.info({ to }, 'RESEND_API_KEY not set — skipping verification email send');
+    return;
+  }
+
+  const resend = new Resend(config.resend.apiKey);
+  await resend.emails.send({
+    from: config.resend.fromAddress,
+    to,
+    subject: SUBJECTS['email-verification'],
+    text: `Verify your Frugal email: ${url}`,
+  });
+}
+
 export async function sendBudgetAlertEmail(params: {
   to: string;
   projectName: string;

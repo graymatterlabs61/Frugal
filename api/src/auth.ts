@@ -4,7 +4,7 @@ import { bearer, emailOTP } from 'better-auth/plugins';
 import { importPKCS8, SignJWT } from 'jose';
 import { db } from './db/client.js';
 import { config } from './config/unifiedConfig.js';
-import { sendOtpEmail } from './utils/email.js';
+import { sendOtpEmail, sendResetPasswordEmail, sendVerificationLinkEmail } from './utils/email.js';
 import * as authSchema from './db/authSchema.js';
 
 async function generateAppleClientSecret(
@@ -30,7 +30,17 @@ export const auth = betterAuth({
   baseURL: config.betterAuth.url,
   secret: config.betterAuth.secret,
   trustedOrigins: config.cors.origins,
-  emailAndPassword: { enabled: true },
+  emailAndPassword: {
+    enabled: true,
+    async sendResetPassword({ user, url }) {
+      await sendResetPasswordEmail({ to: user.email, url });
+    },
+  },
+  emailVerification: {
+    async sendVerificationEmail({ user, url }) {
+      await sendVerificationLinkEmail({ to: user.email, url });
+    },
+  },
   plugins: [
     bearer(),
     emailOTP({
