@@ -26,6 +26,13 @@ export default function LoginPage() {
     setAuthError(null);
     const { error } = await authClient.signIn.email({ email, password });
     if (error) {
+      // An unverified account fails sign-in with its own code. Saying "invalid
+      // password" there sends people to reset a password that was fine.
+      if (error.status === 403 || error.code === 'EMAIL_NOT_VERIFIED') {
+        toast.info("Check your inbox — verify your email to finish signing in.");
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+        return;
+      }
       setAuthError("Invalid email or password");
       toast.error("Invalid email or password");
       setLoading(false);

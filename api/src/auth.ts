@@ -32,11 +32,21 @@ export const auth = betterAuth({
   trustedOrigins: config.cors.origins,
   emailAndPassword: {
     enabled: true,
+    // Without this a brand-new account gets a session immediately and lands on
+    // the dashboard unverified, which is what was happening.
+    requireEmailVerification: true,
     async sendResetPassword({ user, url }) {
       await sendResetPasswordEmail({ to: user.email, url });
     },
   },
   emailVerification: {
+    // Defaults to undefined, which means "follow requireEmailVerification" —
+    // set explicitly so sign-up always sends, regardless of that coupling.
+    sendOnSignUp: true,
+    // An unverified user who tries to sign in gets a fresh link rather than a
+    // dead end they can't escape without support.
+    sendOnSignIn: true,
+    autoSignInAfterVerification: true,
     async sendVerificationEmail({ user, url }) {
       await sendVerificationLinkEmail({ to: user.email, url });
     },

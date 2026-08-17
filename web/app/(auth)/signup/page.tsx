@@ -37,8 +37,9 @@ export default function SignupPage() {
       setLoading(false);
       return;
     }
-    router.push("/dashboard");
-    router.refresh();
+    // Sign-up no longer returns a session — the account has to be verified
+    // first — so send them to the "check your inbox" screen, not the dashboard.
+    router.push(`/verify-email?email=${encodeURIComponent(email)}`);
   };
 
   const handleGoogle = async () => {
