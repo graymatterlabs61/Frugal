@@ -33,7 +33,10 @@ export function Button({ href, children, variant = 'primary', inline = false }: 
         textAlign: 'center' as const,
         textDecoration: 'none',
         margin: `${space.sm} 0`,
-        ...(inline ? {} : { width: '100%' }),
+        // No width:100% — a display:block anchor already fills its container,
+        // and combining the two with horizontal padding overflows the parent
+        // in clients that don't honour box-sizing.
+        boxSizing: 'border-box' as const,
       }}
     >
       {children}

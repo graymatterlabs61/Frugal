@@ -2,6 +2,8 @@ import { Link, Text } from '@react-email/components';
 import { BaseLayout } from '../components/layout/base-layout.js';
 import { Button } from '../components/layout/button.js';
 import { Hero } from '../components/blocks/hero.js';
+import { Panel } from '../components/blocks/panel.js';
+import { Signoff } from '../components/blocks/signoff.js';
 import { color, space } from '../lib/tokens.js';
 
 export interface VerifyLinkEmailProps {
@@ -18,12 +20,15 @@ export interface VerifyLinkEmailProps {
 export function VerifyLinkEmail({ url, expiresInHours = 24 }: VerifyLinkEmailProps) {
   return (
     <BaseLayout preview="Confirm your email address to activate your Frugal account.">
-      <Hero eyebrow="Verify your email" heading="Confirm your" accent="email address">
-        One click and your Frugal account is active. This link expires in{' '}
-        {expiresInHours} hours.
-      </Hero>
+      <Panel>
+        <Hero eyebrow="Verify your email" heading="Confirm your" accent="email address">
+          You&apos;re receiving this because someone signed up for Frugal with
+          this address. One click and the account is active — the link expires
+          in {expiresInHours} hours.
+        </Hero>
 
-      <Button href={url}>Verify email address</Button>
+        <Button href={url}>Verify email address</Button>
+      </Panel>
 
       <Text style={styles.fallback}>
         Button not working? Paste this into your browser:
@@ -34,9 +39,11 @@ export function VerifyLinkEmail({ url, expiresInHours = 24 }: VerifyLinkEmailPro
       </Text>
 
       <Text style={styles.notice}>
-        If you didn&apos;t create a Frugal account, ignore this email — no
-        account is activated until this link is used.
+        If that wasn&apos;t you, ignore this email — no account is activated
+        until the link is used.
       </Text>
+
+      <Signoff />
     </BaseLayout>
   );
 }

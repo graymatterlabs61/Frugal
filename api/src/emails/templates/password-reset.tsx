@@ -2,6 +2,8 @@ import { Link, Text } from '@react-email/components';
 import { BaseLayout } from '../components/layout/base-layout.js';
 import { Button } from '../components/layout/button.js';
 import { Hero } from '../components/blocks/hero.js';
+import { Panel } from '../components/blocks/panel.js';
+import { Signoff } from '../components/blocks/signoff.js';
 import { color, space } from '../lib/tokens.js';
 
 export interface PasswordResetEmailProps {
@@ -13,12 +15,15 @@ export interface PasswordResetEmailProps {
 export function PasswordResetEmail({ url, expiresInMinutes = 60 }: PasswordResetEmailProps) {
   return (
     <BaseLayout preview="Reset your Frugal password — link expires in 1 hour.">
-      <Hero eyebrow="Password reset" heading="Set a new" accent="password">
-        Click below to choose a new password for your Frugal account. This link
-        expires in {expiresInMinutes} minutes and can only be used once.
-      </Hero>
+      <Panel>
+        <Hero eyebrow="Password reset" heading="Set a new" accent="password">
+          Someone asked to reset the password on your Frugal account. Choose a
+          new one below — the link expires in {expiresInMinutes} minutes and
+          works only once.
+        </Hero>
 
-      <Button href={url}>Reset password</Button>
+        <Button href={url}>Reset password</Button>
+      </Panel>
 
       {/* Plain URL fallback — some corporate clients strip or rewrite button hrefs */}
       <Text style={styles.fallback}>
@@ -30,9 +35,11 @@ export function PasswordResetEmail({ url, expiresInMinutes = 60 }: PasswordReset
       </Text>
 
       <Text style={styles.notice}>
-        If you didn&apos;t request a reset, ignore this email — your password
-        stays as it is. Someone may have entered your address by mistake.
+        If that wasn&apos;t you, ignore this email — your password stays as it
+        is, and nothing changes until the link is used.
       </Text>
+
+      <Signoff />
     </BaseLayout>
   );
 }

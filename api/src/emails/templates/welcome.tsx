@@ -4,6 +4,7 @@ import { Button } from '../components/layout/button.js';
 import { Hero } from '../components/blocks/hero.js';
 import { FeatureRow } from '../components/blocks/feature-row.js';
 import { Signoff } from '../components/blocks/signoff.js';
+import { Panel } from '../components/blocks/panel.js';
 import { color, space, SITE_URL } from '../lib/tokens.js';
 
 export interface WelcomeEmailProps {
@@ -21,14 +22,16 @@ export function WelcomeEmail({ name }: WelcomeEmailProps) {
 
   return (
     <BaseLayout preview="Your Frugal account is ready — connect your first provider.">
-      <Hero eyebrow="Account ready" heading={greeting} accent={greetingAccent}>
-        You&apos;re receiving this because you just verified your email, so your
-        Frugal account is live. Frugal watches what your AI providers are
-        charging you and says something before a bill gets out of hand — not
-        after it lands.
-      </Hero>
+      <Panel>
+        <Hero eyebrow="Account ready" heading={greeting} accent={greetingAccent}>
+          You&apos;re receiving this because you just verified your email, so
+          your Frugal account is live. Frugal watches what your AI providers are
+          charging you and says something before a bill gets out of hand — not
+          after it lands.
+        </Hero>
 
-      <Button href={`${SITE_URL}/dashboard`}>Go to dashboard</Button>
+        <Button href={`${SITE_URL}/dashboard`}>Go to dashboard</Button>
+      </Panel>
 
       <Text style={styles.sectionTitle}>
         Three steps to get set up
