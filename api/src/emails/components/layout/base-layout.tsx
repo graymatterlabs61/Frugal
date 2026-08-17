@@ -157,6 +157,19 @@ export function BaseLayout({ preview, children, hero, unsubscribeUrl }: BaseLayo
           </table>
 
           <Section style={styles.footer}>
+            {/* Decorative only — empty alt so screen readers skip it rather
+                than announcing a meaningless image. */}
+            <Row>
+              <Column align="center">
+                <Img
+                  src={`${SITE_URL}/email/footer-wave.png`}
+                  width="360"
+                  height="57"
+                  alt=""
+                  style={styles.footerWave}
+                />
+              </Column>
+            </Row>
             <Text style={styles.footerBrand}>Frugal</Text>
             <Text style={styles.footerTagline}>Know what your AI is costing you.</Text>
             <Text style={styles.footerHelp}>
@@ -295,6 +308,11 @@ const styles = {
   },
   footer: {
     paddingTop: 0,
+  },
+  footerWave: {
+    display: 'block' as const,
+    margin: '0 auto 14px',
+    maxWidth: '100%',
   },
   footerBrand: {
     color: color.text,

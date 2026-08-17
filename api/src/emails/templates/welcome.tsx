@@ -5,6 +5,7 @@ import { Hero } from '../components/blocks/hero.js';
 import { FeatureRow } from '../components/blocks/feature-row.js';
 import { Signoff } from '../components/blocks/signoff.js';
 import { Panel } from '../components/blocks/panel.js';
+import { HeroImage } from '../components/blocks/hero-image.js';
 import { color, space, SITE_URL } from '../lib/tokens.js';
 
 export interface WelcomeEmailProps {
@@ -21,7 +22,17 @@ export function WelcomeEmail({ name }: WelcomeEmailProps) {
   const greetingAccent = name ? `${name}.` : 'Frugal.';
 
   return (
-    <BaseLayout preview="Your Frugal account is ready — connect your first provider.">
+    <BaseLayout
+      preview="Your Frugal account is ready — connect your first provider."
+      hero={
+        <HeroImage
+          name="welcome-hero"
+          alt="Preview of the Frugal dashboard: monthly spend total beside a daily spend bar chart"
+          srcWidth={1196}
+          srcHeight={513}
+        />
+      }
+    >
       <Panel>
         <Hero eyebrow="Account ready" heading={greeting} accent={greetingAccent}>
           You&apos;re receiving this because you just verified your email, so

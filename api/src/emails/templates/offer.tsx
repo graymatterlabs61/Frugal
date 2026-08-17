@@ -3,6 +3,7 @@ import { BaseLayout } from '../components/layout/base-layout.js';
 import { Button } from '../components/layout/button.js';
 import { Hero } from '../components/blocks/hero.js';
 import { FeatureRow } from '../components/blocks/feature-row.js';
+import { HeroImage } from '../components/blocks/hero-image.js';
 import { color, space, SITE_URL } from '../lib/tokens.js';
 
 export interface OfferEmailProps {
@@ -41,7 +42,18 @@ export function OfferEmail({
   unsubscribeUrl,
 }: OfferEmailProps) {
   return (
-    <BaseLayout preview={heading} unsubscribeUrl={unsubscribeUrl}>
+    <BaseLayout
+      preview={heading}
+      unsubscribeUrl={unsubscribeUrl}
+      hero={
+        <HeroImage
+          name="offer-hero"
+          alt="A line chart of AI spend falling steeply from left to right"
+          srcWidth={1196}
+          srcHeight={498}
+        />
+      }
+    >
       <Hero {...(eyebrow ? { eyebrow } : {})} heading={heading}>
         {body}
       </Hero>
