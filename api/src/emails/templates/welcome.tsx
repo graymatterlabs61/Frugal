@@ -29,9 +29,12 @@ export function WelcomeEmail({ name }: WelcomeEmailProps) {
           charging you and says something before a bill gets out of hand — not
           after it lands.
         </Hero>
-
-        <Button href={`${SITE_URL}/dashboard`}>Go to dashboard</Button>
       </Panel>
+
+      {/* CTA sits at card level, not inside the panel — it's the action for
+          the whole email, and nesting it made it 50px narrower than the same
+          button in templates that have no panel. */}
+      <Button href={`${SITE_URL}/dashboard`}>Go to dashboard</Button>
 
       <Text style={styles.sectionTitle}>
         Three steps to get set up

@@ -21,9 +21,9 @@ export function PasswordResetEmail({ url, expiresInMinutes = 60 }: PasswordReset
           new one below — the link expires in {expiresInMinutes} minutes and
           works only once.
         </Hero>
-
-        <Button href={url}>Reset password</Button>
       </Panel>
+
+      <Button href={url}>Reset password</Button>
 
       {/* Plain URL fallback — some corporate clients strip or rewrite button hrefs */}
       <Text style={styles.fallback}>

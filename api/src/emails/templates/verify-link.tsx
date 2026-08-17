@@ -26,9 +26,9 @@ export function VerifyLinkEmail({ url, expiresInHours = 24 }: VerifyLinkEmailPro
           this address. One click and the account is active — the link expires
           in {expiresInHours} hours.
         </Hero>
-
-        <Button href={url}>Verify email address</Button>
       </Panel>
+
+      <Button href={url}>Verify email address</Button>
 
       <Text style={styles.fallback}>
         Button not working? Paste this into your browser:
