@@ -23,9 +23,10 @@ export async function sendEmail(to: string, payload: EmailPayload): Promise<void
   const { subject, text, from, replyTo } = resolve(payload);
   const html = await renderEmail(payload);
 
+  const sender = fromAddress(from);
   const resend = new Resend(config.resend.apiKey);
-  const { error } = await resend.emails.send({
-    from: fromAddress(from),
+  const { data, error } = await resend.emails.send({
+    from: sender,
     to,
     subject,
     html,
@@ -37,7 +38,20 @@ export async function sendEmail(to: string, payload: EmailPayload): Promise<void
   });
 
   if (error) {
+    logger.error(
+      { to, from: sender, type: payload.type, err: error.message },
+      'email send rejected by Resend',
+    );
     throw new Error(`Resend send failed (${payload.type}): ${error.message}`);
   }
+
+  // Log the provider's message id on success. Without this there's no way to
+  // tell "we never sent it" from "we sent it and it bounced" — the two look
+  // identical from the app side, and answering that question was otherwise
+  // impossible without read access to the Resend account.
+  logger.info(
+    { to, from: sender, type: payload.type, resendId: data?.id },
+    'email accepted by Resend',
+  );
 }
 

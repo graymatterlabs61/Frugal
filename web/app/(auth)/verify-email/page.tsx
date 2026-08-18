@@ -86,7 +86,7 @@ function VerifyEmailContent() {
           </p>
         </div>
 
-        <div className="animate-fade-in-up stagger-1">
+        <div className="animate-fade-in-up stagger-1 flex items-center justify-center">
           <InputOTP
             maxLength={CODE_LENGTH}
             value={code}
