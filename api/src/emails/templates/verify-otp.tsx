@@ -1,5 +1,6 @@
-import { Text } from '@react-email/components';
+import { Link, Text } from '@react-email/components';
 import { BaseLayout } from '../components/layout/base-layout.js';
+import { Divider } from '../components/layout/divider.js';
 import { Hero } from '../components/blocks/hero.js';
 import { HeroBand } from '../components/blocks/hero-band.js';
 import { color, space } from '../lib/tokens.js';
@@ -25,34 +26,49 @@ export interface VerifyOtpEmailProps {
  * No link and no CTA button by design — a code-only email can't be turned into
  * a phishing click, and there's nothing for a scanner to consume by prefetching.
  */
-const COPY: Record<OtpPurpose, { eyebrow: string; subject: string; heading: string; accent: string; body: string }> = {
+interface OtpCopy {
+  eyebrow: string;
+  subject: string;
+  heading: string;
+  accent: string;
+  /** Where the code goes. First thing a reader needs. */
+  body: string;
+  /** What happens after the code is accepted — removes the "then what?" gap. */
+  next: string;
+}
+
+const COPY: Record<OtpPurpose, OtpCopy> = {
   'email-verification': {
-    eyebrow: 'Verify your email',
+    eyebrow: 'One step left',
     subject: 'Verify your Frugal email',
-    heading: 'Enter this code to',
-    accent: 'continue',
-    body: 'Type it into the verification screen you already have open. Nothing happens on your account until the code is used.',
+    heading: "You're almost",
+    accent: 'there',
+    body: 'Enter the code above in the window where you started creating your account. It confirms the address is yours — nothing changes on your account until you do.',
+    next: 'Once it goes through, your account is active and you can connect your first provider.',
   },
   'sign-in': {
     eyebrow: 'Sign in',
     subject: 'Your Frugal sign-in code',
     heading: 'Enter this code to',
     accent: 'sign in',
-    body: 'Type it into the sign-in screen you already have open. It works once and only for this attempt.',
+    body: 'Enter the code above in the sign-in window you already have open. It works once, and only for this attempt.',
+    next: 'If you closed that window, start again from the sign-in page and request a new code.',
   },
   'forget-password': {
     eyebrow: 'Password reset',
     subject: 'Your Frugal password reset code',
-    heading: 'Enter this code to reset your',
+    heading: 'Reset your',
     accent: 'password',
-    body: 'Type it into the reset screen to choose a new password. Your current password stays active until you do.',
+    body: 'Enter the code above in the reset window you already have open, then choose a new password.',
+    next: 'Your current password keeps working until you finish, so nothing breaks if you stop here.',
   },
   'change-email': {
     eyebrow: 'Confirm new address',
     subject: 'Confirm your new Frugal email address',
-    heading: 'Enter this code to confirm your new',
+    heading: 'Confirm your new',
     accent: 'address',
-    body: 'Type it into the screen you already have open. Your account keeps using the old address until this is confirmed.',
+    body: 'Enter the code above in the window you already have open to confirm this address.',
+    next: 'Your account keeps using the old address, and keeps receiving alerts there, until this is confirmed.',
   },
 };
 
@@ -81,9 +97,22 @@ export function VerifyOtpEmail({
         {copy.body}
       </Hero>
 
+      <Text style={styles.next}>{copy.next}</Text>
+
+      <Divider spacing="22px" />
+
       <Text style={styles.notice}>
-        Frugal staff will never ask you for this code. If you didn&apos;t request
-        it, you can safely ignore this message.
+        <strong style={styles.noticeStrong}>Didn&apos;t request this?</strong>{' '}
+        Ignore this email — the code expires on its own and nothing happens
+        until it&apos;s used. Frugal staff will never ask you for it.
+      </Text>
+
+      <Text style={styles.help}>
+        Stuck, or the code isn&apos;t working?{' '}
+        <Link href="mailto:support@getfrugal.dev" style={styles.helpLink}>
+          Email support
+        </Link>{' '}
+        and a person will pick it up.
       </Text>
     </BaseLayout>
   );
@@ -100,20 +129,49 @@ export function verifyOtpText({
   purpose = 'email-verification',
   expiresInMinutes = 5,
 }: VerifyOtpEmailProps): string {
+  const copy = COPY[purpose];
   return [
-    `${COPY[purpose].subject}: ${code}`,
+    copy.subject,
     '',
-    `It expires in ${expiresInMinutes} minutes and can only be used once.`,
+    `    ${code}`,
     '',
-    "Frugal staff will never ask you for this code. If you didn't request it, ignore this email.",
+    `This code expires in ${expiresInMinutes} minutes and can only be used once.`,
+    '',
+    copy.body,
+    '',
+    copy.next,
+    '',
+    "Didn't request this? Ignore this email — the code expires on its own and nothing happens until it's used. Frugal staff will never ask you for it.",
+    '',
+    "Stuck, or the code isn't working? Email support@getfrugal.dev and a person will pick it up.",
   ].join('\n');
 }
 
 const styles = {
+  next: {
+    color: color.textMuted,
+    fontSize: '15px',
+    lineHeight: '24px',
+    margin: `0`,
+  },
   notice: {
     color: color.textMuted,
     fontSize: '13px',
     lineHeight: '20px',
-    margin: `${space.md} 0 0`,
+    margin: `0 0 ${space.sm}`,
+  },
+  noticeStrong: {
+    color: color.text,
+    fontWeight: 600,
+  },
+  help: {
+    color: color.textSubtle,
+    fontSize: '13px',
+    lineHeight: '20px',
+    margin: 0,
+  },
+  helpLink: {
+    color: color.primary,
+    textDecoration: 'underline',
   },
 } as const;
