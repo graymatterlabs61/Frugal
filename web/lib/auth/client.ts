@@ -1,4 +1,5 @@
 import { createAuthClient } from "better-auth/react";
+import { emailOTPClient } from "better-auth/client/plugins";
 import { BACKEND_URL } from "@/config";
 
 const TOKEN_KEY = "frugal_bearer_token";
@@ -22,6 +23,9 @@ export function getBearerToken(): string | null {
 
 export const authClient = createAuthClient({
   baseURL: BACKEND_URL,
+  // Mirrors the server's emailOTP plugin — without it the client has no
+  // emailOtp.* methods and the verification screen can't submit a code.
+  plugins: [emailOTPClient()],
   fetchOptions: {
     onSuccess: (ctx) => {
       const token = ctx.response.headers.get("set-auth-token");

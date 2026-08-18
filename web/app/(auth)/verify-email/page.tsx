@@ -1,30 +1,66 @@
 "use client";
 
-import { useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { ShowcaseVerifyEmail } from "@/components/auth/ShowcaseVerifyEmail";
 import { Button } from "@/components/ui/button";
-import { Mail, ArrowLeft, RefreshCw } from "lucide-react";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
 import { toast } from "sonner";
 
+const CODE_LENGTH = 6;
+const RESEND_COOLDOWN_SECONDS = 30;
+
 function VerifyEmailContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
+
+  const [code, setCode] = useState("");
+  const [verifying, setVerifying] = useState(false);
   const [resending, setResending] = useState(false);
-  const [resent, setResent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
+
+  const submit = async (value: string) => {
+    if (!email) {
+      toast.error("Missing email address — start from the sign-up page.");
+      return;
+    }
+    setVerifying(true);
+    const { error } = await authClient.emailOtp.verifyEmail({ email, otp: value });
+    if (error) {
+      // The code is wrong or expired. Clear it so the next attempt starts from
+      // an empty field rather than the user editing a stale value.
+      setCode("");
+      toast.error(error.message ?? "That code isn't valid. Check it and try again.");
+      setVerifying(false);
+      return;
+    }
+    toast.success("Email verified.");
+    router.push("/dashboard");
+  };
 
   const handleResend = async () => {
-    if (!email) return;
+    if (!email || cooldown > 0) return;
     setResending(true);
-    const { error } = await authClient.sendVerificationEmail({ email });
+    const { error } = await authClient.emailOtp.sendVerificationOtp({
+      email,
+      type: "email-verification",
+    });
     if (error) {
-      toast.error("Failed to resend. Try again.");
+      toast.error("Couldn't send a new code. Try again in a moment.");
     } else {
-      setResent(true);
-      toast.success("Verification email resent!");
+      toast.success("New code sent.");
+      setCooldown(RESEND_COOLDOWN_SECONDS);
     }
     setResending(false);
   };
@@ -32,66 +68,84 @@ function VerifyEmailContent() {
   return (
     <AuthLayout showcase={<ShowcaseVerifyEmail />}>
       <div className="flex flex-col space-y-6">
-        <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center animate-fade-in-scale">
-          <Mail className="w-7 h-7 text-primary" />
-        </div>
-
-        <div className="animate-fade-in-up stagger-1">
+        <div className="animate-fade-in-up">
           <h1 className="text-4xl font-bold tracking-tight mb-2">
-            Check your{" "}
-            <span className="font-serif italic font-normal gradient-text-warm">inbox</span>
+            Enter your{" "}
+            <span className="font-serif italic font-normal gradient-text-warm">code</span>
           </h1>
           <p className="text-muted-foreground">
             {email ? (
               <>
-                Verification link sent to{" "}
-                <span className="text-foreground font-medium">{email}</span>.
+                We sent a {CODE_LENGTH}-digit code to{" "}
+                <span className="text-foreground font-medium">{email}</span>. It
+                expires in 5 minutes.
               </>
             ) : (
-              "We sent a verification link to your email address."
+              `Enter the ${CODE_LENGTH}-digit code we emailed you.`
             )}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-5 py-5 space-y-3 animate-fade-in-up stagger-2">
-          {["Open your email client", "Click the verification link", "You'll land on your dashboard"].map(
-            (step, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center text-[9px] font-bold text-primary shrink-0">
-                  {i + 1}
-                </div>
-                <span className="text-sm text-muted-foreground">{step}</span>
-              </div>
-            )
-          )}
+        <div className="animate-fade-in-up stagger-1">
+          <InputOTP
+            maxLength={CODE_LENGTH}
+            value={code}
+            onChange={(v) => {
+              setCode(v);
+              // Submit as soon as the last digit lands — nobody wants to type
+              // six digits and then hunt for a button.
+              if (v.length === CODE_LENGTH) void submit(v);
+            }}
+            disabled={verifying}
+            autoFocus
+          >
+            <InputOTPGroup className="gap-2">
+              {Array.from({ length: CODE_LENGTH }).map((_, i) => (
+                <InputOTPSlot
+                  key={i}
+                  index={i}
+                  className="h-14 w-12 rounded-xl border-white/[0.10] bg-white/[0.05] text-lg font-semibold"
+                />
+              ))}
+            </InputOTPGroup>
+          </InputOTP>
         </div>
 
-        <p className="text-xs text-muted-foreground/60 text-center animate-fade-in-up stagger-3">
-          Check your spam folder if it doesn&apos;t arrive within a minute.
-        </p>
+        <Button
+          type="button"
+          onClick={() => submit(code)}
+          disabled={verifying || code.length !== CODE_LENGTH}
+          className="w-full h-12 rounded-xl font-semibold bg-primary hover:bg-primary/90 text-white btn-glow shadow-[0_4px_24px_rgba(255,80,11,0.3)] animate-fade-in-up stagger-2"
+        >
+          {verifying ? "Verifying…" : "Verify email"}
+        </Button>
 
-        {email && (
+        <div className="flex flex-col gap-3 animate-fade-in-up stagger-3">
           <Button
             variant="outline"
             onClick={handleResend}
-            disabled={resending || resent}
-            className="h-11 rounded-xl border-white/[0.10] bg-white/[0.03] hover:bg-white/[0.07] hover:border-white/[0.18] text-sm transition-all duration-200 animate-fade-in-up stagger-4"
+            disabled={resending || cooldown > 0 || !email}
+            className="h-11 rounded-xl border-white/[0.10] bg-white/[0.03] hover:bg-white/[0.07] hover:border-white/[0.18] text-sm transition-all duration-200"
           >
             {resending ? (
               <>
                 <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
                 Sending…
               </>
-            ) : resent ? (
-              "Email sent ✓"
+            ) : cooldown > 0 ? (
+              `Resend in ${cooldown}s`
             ) : (
               <>
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Resend verification email
+                Send a new code
               </>
             )}
           </Button>
-        )}
+
+          <p className="text-xs text-muted-foreground/60 text-center leading-relaxed">
+            Check your spam folder if it doesn&apos;t arrive within a minute.
+          </p>
+        </div>
 
         <p className="text-center animate-fade-in-up stagger-4">
           <Link

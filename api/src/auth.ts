@@ -40,11 +40,9 @@ export const auth = betterAuth({
     },
   },
   emailVerification: {
-    // Defaults to undefined, which means "follow requireEmailVerification" —
-    // set explicitly so sign-up always sends, regardless of that coupling.
-    sendOnSignUp: true,
-    // An unverified user who tries to sign in gets a fresh link rather than a
-    // dead end they can't escape without support.
+    // Kept as the fallback path. The emailOTP plugin's
+    // overrideDefaultEmailVerification replaces this with a code at runtime,
+    // so this only fires if that option is ever turned off.
     sendOnSignIn: true,
     autoSignInAfterVerification: true,
     async sendVerificationEmail({ user, url }) {
@@ -57,8 +55,16 @@ export const auth = betterAuth({
       async sendVerificationOTP({ email, otp, type }) {
         await sendOtpEmail({ to: email, otp, purpose: type });
       },
+      // Replaces the link-based verification with a 6-digit code, so there's
+      // one verification flow rather than two that can drift apart.
+      overrideDefaultEmailVerification: true,
+      sendVerificationOnSignUp: true,
       otpLength: 6,
       expiresIn: 300,
+      // Codes are short and guessable at scale; cap attempts and never store
+      // the plaintext, so a database leak can't be replayed.
+      allowedAttempts: 3,
+      storeOTP: 'hashed',
     }),
   ],
   socialProviders: {

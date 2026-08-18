@@ -15,7 +15,9 @@ export async function sendOtpEmail(params: {
 }): Promise<void> {
   await sendEmail(params.to, {
     type: 'verify-otp',
-    props: { code: params.otp, expiresInMinutes: 5 },
+    // Pass the purpose through — a reset code that says "verify your email"
+    // gives the recipient no way to tell a real message from a spoofed one.
+    props: { code: params.otp, purpose: params.purpose, expiresInMinutes: 5 },
   });
 }
 

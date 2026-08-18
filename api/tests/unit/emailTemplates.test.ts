@@ -73,6 +73,24 @@ describe('email templates', () => {
     expect(html).not.toContain(`background-color:${'#FF500B'}`);
   });
 
+  it('OTP copy matches the purpose it was sent for', async () => {
+    const reset = await renderEmail({
+      type: 'verify-otp',
+      props: { code: '482913', purpose: 'forget-password' },
+    });
+    expect(reset).toContain('Password reset');
+    // A reset code that says "verify your email" leaves the recipient unable to
+    // tell a real message from a spoofed one
+    expect(reset).not.toContain('Verify your email');
+
+    const signIn = await renderEmail({
+      type: 'verify-otp',
+      props: { code: '482913', purpose: 'sign-in' },
+    });
+    expect(signIn).toContain('sign in');
+    expect(signIn).not.toContain('Password reset');
+  });
+
   it('password reset embeds the token URL in both button and fallback', async () => {
     const url = 'https://getfrugal.dev/reset-password?token=xyz789';
     const html = await renderEmail({ type: 'password-reset', props: { url } });

@@ -87,7 +87,7 @@ export function resolve(payload: EmailPayload): Resolved {
     case 'verify-otp':
       return {
         element: VerifyOtpEmail(payload.props),
-        subject: verifyOtpSubject,
+        subject: verifyOtpSubject(payload.props),
         text: verifyOtpText(payload.props),
         from: 'noreply',
       };
