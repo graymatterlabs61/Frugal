@@ -4,7 +4,7 @@ import { bearer, emailOTP } from 'better-auth/plugins';
 import { importPKCS8, SignJWT } from 'jose';
 import { db } from './db/client.js';
 import { config } from './config/unifiedConfig.js';
-import { sendOtpEmail, sendResetPasswordEmail, sendVerificationLinkEmail } from './utils/email.js';
+import { sendOtpEmail, sendResetPasswordEmail } from './utils/email.js';
 import * as authSchema from './db/authSchema.js';
 
 async function generateAppleClientSecret(
@@ -40,14 +40,12 @@ export const auth = betterAuth({
     },
   },
   emailVerification: {
-    // Kept as the fallback path. The emailOTP plugin's
-    // overrideDefaultEmailVerification replaces this with a code at runtime,
-    // so this only fires if that option is ever turned off.
     sendOnSignIn: true,
     autoSignInAfterVerification: true,
-    async sendVerificationEmail({ user, url }) {
-      await sendVerificationLinkEmail({ to: user.email, url });
-    },
+    // Deliberately no sendVerificationEmail here. The emailOTP plugin installs
+    // its own via overrideDefaultEmailVerification, and a callback defined here
+    // wins over the plugin's — which silently sent the old link email instead
+    // of the code, with nothing in the logs to say why.
   },
   plugins: [
     bearer(),
